@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace AdmissionSystem2.Controllers
 {
+    [Route("api/applicant")]
     public class ApplicantController : Controller
     {
         
