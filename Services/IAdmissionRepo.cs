@@ -16,17 +16,21 @@ namespace AdmissionSystem2.Services
         void AddSibling(int applicantId, Sibling sibling);
         void AddMedicalDetails(int applicantId, MedicalHistory medicalHistory);
         void MakePayment(Payment payment);
-        ICollection<Document> GetDocuments();
         Applicant GetApplicant(int ApplicantId);
+        void UpdateApplicant(Applicant Applicant);
+        IEnumerable<ParentInfo> GetParentsInfos(int ApplicantId);
+        ParentInfo GetParentInfos(int ApplicantId, string Gender);
+        IEnumerable<EmergencyContact> GetEmergencyContacts(int ApplicantId);
+        AdmissionDetails GetAdmissionDetails(int ApplicantId);
+        void UpdateApplicant1(Applicant Applicant);
+        void UpdateParentInfo(ParentInfo ParentInfo);
         MedicalHistory GetMedicalHistory(int applicantId, Guid MedicalHistoryId);
         Sibling GetSibling(int applicantId, Guid siblingId);
         IEnumerable<Sibling> GetSiblings(int applicantId);
-        bool ApplicantExist(int _ApplicantId);
         void DeleteSibling(Sibling sibling);
         void UpdateSibling(Sibling sibling);
         void UpdateMedicalDetails(MedicalHistory medicalHistory);
-
-
+        bool ApplicantExist(int _ApplicantId);
         bool Save();
 
 
