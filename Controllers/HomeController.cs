@@ -1,4 +1,5 @@
 ﻿using AdmissionSystem2.Models;
+using AdmissionSystem2.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -12,10 +13,18 @@ namespace AdmissionSystem2.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        private readonly IMailingService _mailingService;
+        public HomeController(ILogger<HomeController> logger, IMailingService mailingService)
         {
             _logger = logger;
+            _mailingService = mailingService;
+        }
+        
+        [HttpPost("Send")]
+        public async Task<IActionResult> SendEmail([FromForm] EmailDto email)
+        {
+            await _mailingService.SendEmailAsync(email.ToEmail, email.Subject, email.Body, email.Attachments);
+            return Ok();
         }
 
         public IActionResult Index()

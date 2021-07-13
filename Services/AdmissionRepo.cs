@@ -119,6 +119,11 @@ namespace AdmissionSystem2.Services
             return (_AdmissionSystemDbContext.SaveChanges() >= 0);
         }
 
+        public AdmissionDetails GetAdmissionDetails(int applicantId, Guid AdmissionDetailsId)
+        {
+            return _AdmissionSystemDbContext.AdmissionDetails.Where(a => a.ApplicantId == applicantId && a.Id == AdmissionDetailsId).FirstOrDefault();
+        }
+
         public MedicalHistory GetMedicalHistory(int applicantId, Guid MedicalHistoryId)
         {
             return _AdmissionSystemDbContext.MedicalHistory.Where(a => a.ApplicantId == applicantId && a.MedicalHistoryId == MedicalHistoryId).FirstOrDefault();
@@ -147,6 +152,12 @@ namespace AdmissionSystem2.Services
         public void UpdateParentInfo(ParentInfo ParentInfo)
         {
             _AdmissionSystemDbContext.ParentInfo.Update(ParentInfo);
+            //throw new NotImplementedException();
+        }
+
+        public void UpdateAdmissionDetails(AdmissionDetails admissionDetails)
+        {
+            _AdmissionSystemDbContext.AdmissionDetails.Update(admissionDetails);
             //throw new NotImplementedException();
         }
 
