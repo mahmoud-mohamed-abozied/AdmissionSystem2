@@ -10,6 +10,7 @@ namespace AdmissionSystem2.Services
     {
         void AddApplicant(Applicant Applicant);
         void AddParentInfo(int _ApplicantId, ParentInfo parentInfo);
+        ParentInfo ParentInfoExist(int ApplicantId, Guid ParentInfoId);
         void AddEmergencyContact(int ApplicantId, EmergencyContact EmergencyContact);
         void AddDocument(int ApplicantId, Document Document);
         void AddAdmissionDetails(int ApplicantId, AdmissionDetails AdmissionDetails);
@@ -18,7 +19,9 @@ namespace AdmissionSystem2.Services
         void MakePayment(Payment payment);
         Applicant GetApplicant(int ApplicantId);
         void UpdateApplicant(Applicant Applicant);
-        IEnumerable<ParentInfo> GetParentsInfos(int ApplicantId);
+        IEnumerable<ParentInfo> GetParentsInfos (int ApplicantId);
+        void UpdateEmergencyContact(EmergencyContact EmergencyContact);
+        EmergencyContact GetEmergencyContact (int ApplicantId, Guid Id);
         ParentInfo GetParentInfos(int ApplicantId, string Gender);
         IEnumerable<EmergencyContact> GetEmergencyContacts(int ApplicantId);
         AdmissionDetails GetAdmissionDetails(int ApplicantId);

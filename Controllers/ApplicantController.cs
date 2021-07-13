@@ -587,6 +587,80 @@ namespace AdmissionSystem2.Controllers
             return NoContent();
         }
 
+
+        [HttpPatch("{ApplicantId}/ParentInfo/{Id}")]
+        public IActionResult UpdateParentInfo(int ApplicantId,Guid Id,[FromBody] JsonPatchDocument<ParentInfoForUpdate>patchDoc )
+        {
+            if (patchDoc == null)
+            {
+                return BadRequest();
+            }
+            if (!_AdmissionRepo.ApplicantExist(ApplicantId))
+            {
+                return NotFound();
+            }
+            if (_AdmissionRepo.ParentInfoExist(ApplicantId,Id) == null)
+            {
+                return NotFound();
+            }
+            var ParentInfoFromRepo = _AdmissionRepo.ParentInfoExist(ApplicantId,Id);
+
+            var ParentInfoToPatch = _Mapper.Map<ParentInfoForUpdate>(ParentInfoFromRepo);
+
+            patchDoc.ApplyTo(ParentInfoToPatch, ModelState);
+            if (!ModelState.IsValid)
+            {
+                return new UnprocessableEntityObjectResult(ModelState);
+
+            }
+            _Mapper.Map(ParentInfoToPatch, ParentInfoFromRepo);
+            _AdmissionRepo.UpdateParentInfo(ParentInfoFromRepo);
+            if (!_AdmissionRepo.Save())
+            {
+                throw new Exception("Failed to update parent info");
+
+            }
+            return NoContent();
+
+
+        }
+        [HttpPatch("{ApplicantId}/EmergencyContact/{Id}")]
+        public IActionResult UpdateEmergencyContact (int ApplicantId, Guid Id, [FromBody] JsonPatchDocument<EmergencyContactForUpdate> patchDoc)
+        {
+            if (patchDoc == null)
+            {
+                return BadRequest();
+            }
+            if (_AdmissionRepo.GetApplicant(ApplicantId)==null)
+            {
+                return NotFound();
+            }
+            if (_AdmissionRepo.GetEmergencyContacts(ApplicantId) == null)
+            {
+                return NotFound();
+            }
+            var EmergencyContactFromRepo = _AdmissionRepo.GetEmergencyContact(ApplicantId, Id);
+
+            var EmergencyContactToPatch = _Mapper.Map<EmergencyContactForUpdate>(EmergencyContactFromRepo);
+
+            patchDoc.ApplyTo(EmergencyContactToPatch, ModelState);
+            if (!ModelState.IsValid)
+            {
+                return new UnprocessableEntityObjectResult(ModelState);
+
+            }
+            _Mapper.Map(EmergencyContactToPatch,EmergencyContactFromRepo);
+            _AdmissionRepo.UpdateEmergencyContact(EmergencyContactFromRepo);
+            if (!_AdmissionRepo.Save())
+            {
+                throw new Exception("Failed to update Emergency Contact");
+
+            }
+            return NoContent();
+
+
+        }
+
         [HttpPatch("{applicantId}/siblings/{id}")]
         public IActionResult PartiallyUpdateSibling(int applicantId, Guid id,
            [FromBody] JsonPatchDocument<SiblingForUpdate> patchDoc)
