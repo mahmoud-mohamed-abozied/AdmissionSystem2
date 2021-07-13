@@ -29,7 +29,7 @@ namespace AdmissionSystem2
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
+            services.AddControllersWithViews().AddNewtonsoftJson();
             //  Auto Mapper Configurations
             var mappingConfig = new MapperConfiguration(mc => {
                 mc.AddProfile(new MappingProfile());
@@ -38,10 +38,12 @@ namespace AdmissionSystem2
             services.AddSingleton(mapper);
 
             services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
+            services.AddTransient<IMailingService, MailingService>();
 
-            services.AddDbContext<AdmissionSystemDbContext>(o => o.UseSqlServer(@"Server=(localdb)\MSSQLLocalDB; Database = AdmissionSystemDB; Trusted_Connection = True;"));
+            services.AddDbContext<AdmissionSystemDbContext>(o => o.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             
             services.AddScoped<IAdmissionRepo, AdmissionRepo>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

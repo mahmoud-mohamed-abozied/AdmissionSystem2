@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace AdmissionSystem2.Controllers
 {
+    [Route("api/applicant")]
     public class ApplicantController : Controller
     {
         
@@ -117,7 +118,7 @@ namespace AdmissionSystem2.Controllers
 
 
 
-        [HttpPost("{applicantId}/Sibling")]
+        [HttpPost("{applicantId}/Siblings")]
         public IActionResult AddSiblings(int applicantId, [FromBody] IEnumerable<SiblingForCreation> siblings)
         {
             if (siblings == null)
@@ -505,6 +506,48 @@ namespace AdmissionSystem2.Controllers
             if (!_AdmissionRepo.Save())
             {
                 throw new Exception("failed to update a sibling");
+            }
+
+            return NoContent();
+        }
+
+        [HttpPatch("{applicantId}/medical/{id}")]
+        public IActionResult PartiallyUpdateAdmissionDetails(int applicantId, Guid id,
+           [FromBody] JsonPatchDocument<AdmissionDetailsForUpdate> patchDoc)
+        {
+            if (patchDoc == null)
+            {
+                return BadRequest();
+            }
+
+            if (_AdmissionRepo.GetApplicant(applicantId) == null)
+            {
+                return NotFound();
+            }
+
+            var AdmissionDetailsFromRepo = _AdmissionRepo.GetAdmissionDetails(applicantId, id);
+            if (AdmissionDetailsFromRepo == null)
+            {
+                return NotFound();
+            }
+
+            var AdmissionDetailsToPatch = _Mapper.Map<AdmissionDetailsForUpdate>(AdmissionDetailsFromRepo);
+            patchDoc.ApplyTo(AdmissionDetailsToPatch, ModelState);
+
+
+            //add validation
+            //ModelState, any errors in the patch document will make modelState invalid
+            if (!ModelState.IsValid)
+            {
+                return new UnprocessableEntityObjectResult(ModelState);
+            }
+
+            _Mapper.Map(AdmissionDetailsToPatch, AdmissionDetailsFromRepo);
+
+            _AdmissionRepo.UpdateAdmissionDetails(AdmissionDetailsFromRepo);
+            if (!_AdmissionRepo.Save())
+            {
+                throw new Exception("failed to update a Admission Details");
             }
 
             return NoContent();

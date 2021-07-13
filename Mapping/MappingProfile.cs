@@ -17,12 +17,15 @@ namespace AdmissionSystem2.Mapping
             CreateMap<EmergencyContactForCreation, EmergencyContact>();
             CreateMap<SiblingForCreation, Sibling>();
             CreateMap<MedicalHistoryForCreation, MedicalHistory>();
-            //  CreateMap<Sibling, SiblingDto>();
-            // CreateMap<MedicalHistory, MedicalHistoryDto>();
-            CreateMap<Sibling, SiblingForUpdate>();
-            CreateMap<SiblingForUpdate, Sibling>();
-            CreateMap<MedicalHistory, MedicalHistoryForUpdate>();
-            CreateMap<MedicalHistoryForUpdate, MedicalHistory>();
+            CreateMap<Sibling, SiblingDto>();
+            CreateMap<MedicalHistory, MedicalHistoryDto>();
+            CreateMap<AdmissionDetails, AdmissionDetailsForUpdate>().ReverseMap();
+
+            CreateMap<Sibling, SiblingForUpdate>().ReverseMap();
+            
+            CreateMap<MedicalHistory, MedicalHistoryForUpdate>().ReverseMap();
+
+
 
         }
     }
