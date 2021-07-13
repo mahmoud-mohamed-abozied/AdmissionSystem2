@@ -47,10 +47,11 @@ namespace AdmissionSystem2.Controllers
 
             return Ok();
         }
+
         [HttpPost("{ApplicantId}/ParentInfo")]
         public IActionResult AddParentInfo(int ApplicantId, [FromBody] ParentInfoForCreation ParentInfoForCreation)
         {
-            //Hi
+           
             if (ParentInfoForCreation == null)
             {
                 return BadRequest();
@@ -66,6 +67,29 @@ namespace AdmissionSystem2.Controllers
 
         }
 
+        [HttpGet("{ApplicantId}/ParentInfo/{Gender}")]
+        public IActionResult GetParentInfo(int ApplicantId, string Gender)
+        {
+            var ParentInfo = _AdmissionRepo.GetParentInfos(ApplicantId, Gender);
+            if (ParentInfo == null)
+            {
+                return NotFound();
+            }
+            var ParentInfoToReturn = _Mapper.Map<ParentInfoDto>(ParentInfo);
+            return Ok(ParentInfoToReturn);
+        }
+
+        [HttpGet("{ApplicantId}/ParentInfo")]
+        public IActionResult GetParentsInfo(int ApplicantId)
+        {
+            var ParentInfo = _AdmissionRepo.GetParentsInfos(ApplicantId);
+            if (ParentInfo == null)
+            {
+                return NotFound();
+            }
+            var ParentInfoToReturn = _Mapper.Map<IEnumerable<ParentInfoDto>>(ParentInfo);
+            return Ok(ParentInfoToReturn);
+        }
 
         [HttpPost("{ApplicantId}/EmergencyContact")]
         public IActionResult AddEmergencyContact(int ApplicantId, [FromBody] EmergencyContactForCreation EmergencyContactForCreation)
@@ -83,10 +107,6 @@ namespace AdmissionSystem2.Controllers
             _AdmissionRepo.Save();
             return Ok();
         }
-
-
-
-
 
 
         [HttpPost("{applicantId}/Sibling")]
@@ -342,6 +362,73 @@ namespace AdmissionSystem2.Controllers
             return Ok();
         }
 
+
+        [HttpPost("{ApplicantId}/AdmissionDetails")]
+        public IActionResult AddAdmissionDetails(int ApplicantId, [FromBody] AdmissionDetailsForCreation admissionDetails)
+        {
+            if (admissionDetails == null)
+            {
+                return BadRequest();
+            }
+            if (_AdmissionRepo.GetApplicant(ApplicantId) == null)
+            {
+                return NotFound();
+            }
+            var AdmissionDetailsToSave = _Mapper.Map<AdmissionDetails>(admissionDetails);
+            _AdmissionRepo.AddAdmissionDetails(ApplicantId, AdmissionDetailsToSave);
+            if (!_AdmissionRepo.Save())
+            {
+                throw new Exception("failed to add a add Admission Details");
+            }
+            return Ok();
+
+
+
+        }
+
+
+        [HttpGet("{ApplicantId}")]
+        public IActionResult GetApplicant(int applicantId)
+        {
+            var Applicant = _AdmissionRepo.GetApplicant(applicantId);
+            if (Applicant == null)
+            {
+                return NotFound();
+            }
+            var ApplicantToRetrive = _Mapper.Map<ApplicantDto>(Applicant);
+            return Ok(ApplicantToRetrive);
+
+
+        }
+
+
+        [HttpGet("{ApplicantId}/EmergencyContacts")]
+        public IActionResult GetEmergencyContacts(int ApplicantId)
+        {
+            var EmergencyContacts = _AdmissionRepo.GetEmergencyContacts(ApplicantId);
+            if (EmergencyContacts == null)
+            {
+                return NotFound();
+            }
+            var EmergencyContactsToRetrive = _Mapper.Map<IEnumerable<EmergencyContactDto>>(EmergencyContacts);
+            return Ok(EmergencyContactsToRetrive);
+
+        }
+
+
+        [HttpGet("{ApplicantId}/AdmissionDetails")]
+        public IActionResult GetAdmissionDetails(int ApplicantId)
+        {
+            var AdmissionDetails = _AdmissionRepo.GetAdmissionDetails(ApplicantId);
+            if (AdmissionDetails == null)
+            {
+                return NotFound();
+            }
+            var AdmissionDetailsToReturn = _Mapper.Map<AdmissionDetailsDto>(AdmissionDetails);
+            return Ok(AdmissionDetailsToReturn);
+        }
+
+
         [HttpGet("{applicantId}/Medical/{id}")]
         public IActionResult GetMedicalDetails(int applicantId, Guid id)
         {
@@ -357,6 +444,7 @@ namespace AdmissionSystem2.Controllers
             return Ok(MedicalDetails);
 
         }
+
 
         [HttpGet("{applicantId}/Siblings/{id}", Name = "getSibling")]
         public IActionResult GetSibling(int applicantId, Guid id)
@@ -378,6 +466,7 @@ namespace AdmissionSystem2.Controllers
             return Ok(Sibling);
 
         }
+
 
         [HttpGet("{applicantId}/Siblings")]
         public IActionResult GetSiblings(int applicantId)
@@ -426,12 +515,42 @@ namespace AdmissionSystem2.Controllers
 
         }
 
+        [HttpPatch("{applicantId}")]
+        public IActionResult UpdateApplicant(int applicantId,[FromBody] JsonPatchDocument<ApplicantForUpdate> patchdoc)
+        {
+            if (patchdoc == null)
+            {
+                return BadRequest();
+            }
+           if (_AdmissionRepo.GetApplicant(applicantId) == null)
+            {
+                return BadRequest();
+            }
+            var ApplicantFromRepo = _AdmissionRepo.GetApplicant(applicantId);
+            var ApplicantToPatch = _Mapper.Map<ApplicantForUpdate>(ApplicantFromRepo);
+            patchdoc.ApplyTo(ApplicantToPatch, ModelState);
+            if (!ModelState.IsValid)
+            {
+                return new UnprocessableEntityObjectResult(ModelState);
+            }
+            _Mapper.Map(ApplicantToPatch, ApplicantFromRepo);
+            _AdmissionRepo.UpdateApplicant(ApplicantFromRepo);
+            if (!_AdmissionRepo.Save())
+            {
+                throw new Exception("Failed To Update Applicant");
+            }
+            return NoContent();
+
+        }
+        
+        
+
 
         [HttpPatch("{applicantId}/medical/{id}")]
         public IActionResult PartiallyUpdateMedicalHistory(int applicantId, Guid id,
            [FromBody] JsonPatchDocument<MedicalHistoryForUpdate> patchDoc)
         {
-            if (patchDoc == null)
+           if (patchDoc == null)
             {
                 return BadRequest();
             }

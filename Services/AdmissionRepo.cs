@@ -28,16 +28,30 @@ namespace AdmissionSystem2.Services
                 Applicant.ParentInfo.Add(parentInfo);
             }
         }
-        public ICollection<Document> GetDocuments()
-        {
-            var images = _AdmissionSystemDbContext.Documents.ToList();
-            return (images);
-        }
         public Applicant GetApplicant(int _ApplicantId)
         {
             var Applicant = _AdmissionSystemDbContext.Applicant.FirstOrDefault(a => a.ApplicantId == _ApplicantId);
             return Applicant;
 
+        }
+        public IEnumerable<ParentInfo> GetParentsInfos(int ApplicantId)
+        {
+            return _AdmissionSystemDbContext.ParentInfo.Where(a => a.ApplicantId == ApplicantId).ToList();
+
+        }
+        public ParentInfo GetParentInfos(int ApplicantId, string Gender)
+        {
+            return _AdmissionSystemDbContext.ParentInfo.Where(a => a.ApplicantId == ApplicantId && a.Gender == Gender).FirstOrDefault();
+
+        }
+
+        public IEnumerable<EmergencyContact> GetEmergencyContacts(int ApplicantId)
+        {
+            return _AdmissionSystemDbContext.EmergencyContact.Where(a => a.ApplicantId == ApplicantId).ToList();
+        }
+        public AdmissionDetails GetAdmissionDetails(int ApplicantId)
+        {
+            return _AdmissionSystemDbContext.AdmissionDetails.Where(a => a.ApplicantId == ApplicantId).FirstOrDefault();
         }
         public bool ApplicantExist(int _ApplicantId)
         {
@@ -95,11 +109,14 @@ namespace AdmissionSystem2.Services
         {
             throw new NotImplementedException();
         }
-
+        public void UpdateApplicant(Applicant Applicant)
+        {
+             _AdmissionSystemDbContext.Update(Applicant);
+        }
 
         public bool Save()
         {
-            return _AdmissionSystemDbContext.SaveChanges() >= 0;
+            return (_AdmissionSystemDbContext.SaveChanges() >= 0);
         }
 
         public AdmissionDetails GetAdmissionDetails(int applicantId, Guid AdmissionDetailsId)
@@ -126,6 +143,16 @@ namespace AdmissionSystem2.Services
         {
             _AdmissionSystemDbContext.Sibling.Remove(sibling);
             //Applicant.Sibling.Remove(sibling);
+        }
+       public void UpdateApplicant1(Applicant Applicant)
+        {
+            _AdmissionSystemDbContext.Applicant.Update(Applicant);
+            //throw new NotImplementedException();
+        }
+        public void UpdateParentInfo(ParentInfo ParentInfo)
+        {
+            _AdmissionSystemDbContext.ParentInfo.Update(ParentInfo);
+            //throw new NotImplementedException();
         }
 
         public void UpdateAdmissionDetails(AdmissionDetails admissionDetails)

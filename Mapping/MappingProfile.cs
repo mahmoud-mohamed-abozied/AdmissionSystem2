@@ -13,8 +13,13 @@ namespace AdmissionSystem2.Mapping
         public MappingProfile()
         {
             CreateMap<ApplicantForCreation, Applicant>();
+            CreateMap<Applicant, ApplicantDto>();
+            CreateMap<Applicant, ApplicantForUpdate>();
+            CreateMap<ApplicantForUpdate, Applicant>();
             CreateMap<ParentInfoForCreation, ParentInfo>();
+            CreateMap<ParentInfo, ParentInfoDto>();
             CreateMap<EmergencyContactForCreation, EmergencyContact>();
+
             CreateMap<SiblingForCreation, Sibling>();
             CreateMap<MedicalHistoryForCreation, MedicalHistory>();
             CreateMap<Sibling, SiblingDto>();
@@ -25,6 +30,19 @@ namespace AdmissionSystem2.Mapping
             
             CreateMap<MedicalHistory, MedicalHistoryForUpdate>().ReverseMap();
 
+
+
+            CreateMap<EmergencyContact, EmergencyContactDto>();
+            CreateMap<AdmissionDetailsForCreation, AdmissionDetails>();
+            CreateMap<AdmissionDetails, AdmissionDetailsDto>();
+            //  CreateMap<Sibling, SiblingDto>();
+            // CreateMap<MedicalHistory, MedicalHistoryDto>();
+            CreateMap<SiblingForCreation, Sibling>();
+            CreateMap<Sibling, SiblingForUpdate>();
+            CreateMap<SiblingForUpdate, Sibling>();
+            CreateMap<MedicalHistoryForCreation, MedicalHistory>();
+            CreateMap<MedicalHistory, MedicalHistoryForUpdate>();
+            CreateMap<MedicalHistoryForUpdate, MedicalHistory>();
 
 
         }

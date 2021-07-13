@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AdmissionSystem2.Entites
+namespace AdmissionSystem2.Models
 {
-    public class ParentInfo
+    public class ParentInfoDto
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid Id { get; set; }
         public String FirstName { set; get; }
         public String SecondName { set; get; }
         public String LastName { set; get; }
@@ -26,8 +21,5 @@ namespace AdmissionSystem2.Entites
         public String Email { set; get; }
         public String IdentificationType { set; get; }
         public String IdentificationNumber { set; get; }
-        [ForeignKey("ApplicantId")]
-        public Applicant Applicant { set; get; }
-        public int ApplicantId { set; get; }
     }
 }
