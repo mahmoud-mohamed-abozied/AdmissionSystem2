@@ -14,6 +14,8 @@ namespace AdmissionSystem2.Mapping
         {
             CreateMap<ApplicantForCreation, Applicant>();
             CreateMap<Applicant, ApplicantDto>();
+            CreateMap<Applicant, ApplicantForUpdate>();
+            CreateMap<ApplicantForUpdate, Applicant>();
             CreateMap<ParentInfoForCreation, ParentInfo>();
             CreateMap<ParentInfo, ParentInfoDto>();
             CreateMap<EmergencyContactForCreation, EmergencyContact>();

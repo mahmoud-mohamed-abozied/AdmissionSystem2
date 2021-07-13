@@ -109,7 +109,10 @@ namespace AdmissionSystem2.Services
         {
             throw new NotImplementedException();
         }
-
+        public void UpdateApplicant(Applicant Applicant)
+        {
+             _AdmissionSystemDbContext.Update(Applicant);
+        }
 
         public bool Save()
         {
@@ -136,7 +139,7 @@ namespace AdmissionSystem2.Services
             _AdmissionSystemDbContext.Sibling.Remove(sibling);
             //Applicant.Sibling.Remove(sibling);
         }
-        public void UpdateApplicant(Applicant Applicant)
+       public void UpdateApplicant1(Applicant Applicant)
         {
             _AdmissionSystemDbContext.Applicant.Update(Applicant);
             //throw new NotImplementedException();

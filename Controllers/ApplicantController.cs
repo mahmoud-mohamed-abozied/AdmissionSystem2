@@ -137,7 +137,7 @@ namespace AdmissionSystem2.Controllers
         }
 
 
-        [HttpPost("{applicantId}/Sibling")]
+        [HttpPost("{applicantId}/Siblings")]
         public IActionResult AddSiblings(int applicantId, [FromBody] IEnumerable<SiblingForCreation> siblings)
         {
             if (siblings == null)
@@ -514,12 +514,42 @@ namespace AdmissionSystem2.Controllers
 
         }
 
+        [HttpPatch("{applicantId}")]
+        public IActionResult UpdateApplicant(int applicantId,[FromBody] JsonPatchDocument<ApplicantForUpdate> patchdoc)
+        {
+            if (patchdoc == null)
+            {
+                return BadRequest();
+            }
+           if (_AdmissionRepo.GetApplicant(applicantId) == null)
+            {
+                return BadRequest();
+            }
+            var ApplicantFromRepo = _AdmissionRepo.GetApplicant(applicantId);
+            var ApplicantToPatch = _Mapper.Map<ApplicantForUpdate>(ApplicantFromRepo);
+            patchdoc.ApplyTo(ApplicantToPatch, ModelState);
+            if (!ModelState.IsValid)
+            {
+                return new UnprocessableEntityObjectResult(ModelState);
+            }
+            _Mapper.Map(ApplicantToPatch, ApplicantFromRepo);
+            _AdmissionRepo.UpdateApplicant(ApplicantFromRepo);
+            if (!_AdmissionRepo.Save())
+            {
+                throw new Exception("Failed To Update Applicant");
+            }
+            return NoContent();
+
+        }
+        
+        
+
 
         [HttpPatch("{applicantId}/medical/{id}")]
         public IActionResult PartiallyUpdateMedicalHistory(int applicantId, Guid id,
            [FromBody] JsonPatchDocument<MedicalHistoryForUpdate> patchDoc)
         {
-            if (patchDoc == null)
+           if (patchDoc == null)
             {
                 return BadRequest();
             }

@@ -17,11 +17,12 @@ namespace AdmissionSystem2.Services
         void AddMedicalDetails(int applicantId, MedicalHistory medicalHistory);
         void MakePayment(Payment payment);
         Applicant GetApplicant(int ApplicantId);
+        void UpdateApplicant(Applicant Applicant);
         IEnumerable<ParentInfo> GetParentsInfos(int ApplicantId);
         ParentInfo GetParentInfos(int ApplicantId, string Gender);
         IEnumerable<EmergencyContact> GetEmergencyContacts(int ApplicantId);
         AdmissionDetails GetAdmissionDetails(int ApplicantId);
-        void UpdateApplicant(Applicant Applicant);
+        void UpdateApplicant1(Applicant Applicant);
         void UpdateParentInfo(ParentInfo ParentInfo);
         MedicalHistory GetMedicalHistory(int applicantId, Guid MedicalHistoryId);
         Sibling GetSibling(int applicantId, Guid siblingId);

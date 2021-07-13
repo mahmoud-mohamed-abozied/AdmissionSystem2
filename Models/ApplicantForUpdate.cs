@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace AdmissionSystem2.Models
 {
-    public class ApplicantDto
+    public class ApplicantForUpdate
     {
         public int ID { get; set; }
         public String FirstName { set; get; }
