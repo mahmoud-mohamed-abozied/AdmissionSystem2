@@ -26,6 +26,7 @@ namespace AdmissionSystem2.Mapping
             CreateMap<EmergencyContactForUpdate, EmergencyContact>();
             CreateMap<AdmissionDetailsForCreation, AdmissionDetails>();
             CreateMap<AdmissionDetails, AdmissionDetailsDto>();
+            CreateMap<DocumentForCreation, Document>();
             //  CreateMap<Sibling, SiblingDto>();
             // CreateMap<MedicalHistory, MedicalHistoryDto>();
             CreateMap<SiblingForCreation, Sibling>();

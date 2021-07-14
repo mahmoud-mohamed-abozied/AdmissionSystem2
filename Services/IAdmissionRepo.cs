@@ -14,6 +14,7 @@ namespace AdmissionSystem2.Services
         void AddEmergencyContact(int ApplicantId, EmergencyContact EmergencyContact);
         void AddDocument(int ApplicantId, Document Document);
         void AddAdmissionDetails(int ApplicantId, AdmissionDetails AdmissionDetails);
+        void DeleteDocument(Document Document);
         void AddSibling(int applicantId, Sibling sibling);
         void AddMedicalDetails(int applicantId, MedicalHistory medicalHistory);
         void MakePayment(Payment payment);
@@ -21,6 +22,8 @@ namespace AdmissionSystem2.Services
         void UpdateApplicant(Applicant Applicant);
         IEnumerable<ParentInfo> GetParentsInfos (int ApplicantId);
         void UpdateEmergencyContact(EmergencyContact EmergencyContact);
+        void AddDocument(Document Document);
+        Document GetDocument(int ApplicantId, int DocumentId);
         EmergencyContact GetEmergencyContact (int ApplicantId, Guid Id);
         ParentInfo GetParentInfos(int ApplicantId, string Gender);
         IEnumerable<EmergencyContact> GetEmergencyContacts(int ApplicantId);

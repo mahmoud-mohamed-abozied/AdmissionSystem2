@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AdmissionSystem2.Migrations
 {
     [DbContext(typeof(AdmissionSystemDbContext))]
-    [Migration("20210713230729_TestByte[]")]
-    partial class TestByte
+    [Migration("20210714162310_Database")]
+    partial class Database
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

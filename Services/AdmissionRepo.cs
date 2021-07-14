@@ -38,6 +38,16 @@ namespace AdmissionSystem2.Services
             return Applicant;
 
         }
+
+       public void DeleteDocument(Document Document)
+        {
+            _AdmissionSystemDbContext.Documents.Remove(Document);
+
+        }
+        public Document GetDocument(int ApplicantId,int DocumentId)
+        {
+            return _AdmissionSystemDbContext.Documents.FirstOrDefault(a => a.ApplicantId == ApplicantId && a.Id == DocumentId);
+        }
         public IEnumerable<ParentInfo> GetParentsInfos(int ApplicantId)
         {
             return _AdmissionSystemDbContext.ParentInfo.Where(a => a.ApplicantId == ApplicantId).ToList();
@@ -47,6 +57,10 @@ namespace AdmissionSystem2.Services
         {
             return _AdmissionSystemDbContext.ParentInfo.Where(a => a.ApplicantId == ApplicantId && a.Gender == Gender).FirstOrDefault();
 
+        }
+        public void AddDocument(Document Document)
+        {
+            _AdmissionSystemDbContext.Documents.Add(Document);
         }
 
         public IEnumerable<EmergencyContact> GetEmergencyContacts(int ApplicantId)

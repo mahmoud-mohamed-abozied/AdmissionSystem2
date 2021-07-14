@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -14,7 +15,8 @@ namespace AdmissionSystem2.Entites
         public int Id { get; set; }
         public string DocumentType { get; set; }
         public string DocumentName { get; set; }
-        public string Copy { get; set; }
+        
+        public Byte[] Copy { get; set; }
         [ForeignKey("ApplicantId")]
         public Applicant Applicant { get; set; }
         public int ApplicantId { get; set; }

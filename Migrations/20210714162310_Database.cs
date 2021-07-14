@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace AdmissionSystem2.Migrations
 {
-    public partial class FirstMigration : Migration
+    public partial class Database : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -61,7 +61,7 @@ namespace AdmissionSystem2.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     DocumentType = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DocumentName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Copy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Copy = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
                     ApplicantId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -124,7 +124,8 @@ namespace AdmissionSystem2.Migrations
                 name: "ParentInfo",
                 columns: table => new
                 {
-                    FirstName = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SecondName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PlaceOfBirth = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -142,7 +143,7 @@ namespace AdmissionSystem2.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ParentInfo", x => x.FirstName);
+                    table.PrimaryKey("PK_ParentInfo", x => x.Id);
                     table.ForeignKey(
                         name: "FK_ParentInfo_Applicant_ApplicantId",
                         column: x => x.ApplicantId,

@@ -2,12 +2,14 @@
 using AdmissionSystem2.Models;
 using AdmissionSystem2.Services;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -382,6 +384,139 @@ namespace AdmissionSystem2.Controllers
             return Ok();
 
 
+
+        }
+
+
+        [HttpPost("{ApplicantId}/Document")]
+        public IActionResult AddDocument(int ApplicantID, [FromForm] DocumentForCreation DocumentForCreation)
+        {
+            if (DocumentForCreation == null)
+            {
+                return BadRequest();
+            }
+            if (_AdmissionRepo.GetApplicant(ApplicantID) == null)
+            {
+                return NotFound();
+            }
+        //    var DocumentToSave = _Mapper.Map<Document>(DocumentForCreation);
+           
+
+            var file = DocumentForCreation.Copy;
+            Document DocumentToSave = new Document();
+            if (file.Length > 0)
+            {
+                using var ms = new MemoryStream();
+                file.CopyTo(ms);
+                DocumentToSave.Copy= ms.ToArray();
+              /*  if (fileBytes.Length != 0) {
+                    // fileBytes.CopyTo(DocumentToSave.Copy, 1);
+                    Buffer.BlockCopy(fileBytes, 0, DocumentToSave.Copy, 0, fileBytes.Length);
+
+                }*/
+            }
+
+            DocumentToSave.ApplicantId = ApplicantID;
+            DocumentToSave.DocumentName = DocumentForCreation.DocumentName;
+            DocumentToSave.DocumentType = DocumentForCreation.DocumentType;
+            _AdmissionRepo.AddDocument(DocumentToSave);
+            if (!_AdmissionRepo.Save())
+            {
+                throw new Exception("Failed To Add Document");
+            }
+
+
+            return Ok();
+
+                  }
+
+        [HttpPost("{ApplicantId}/Document/{Id}")]
+        public IActionResult UpdateDocument(int ApplicantID,int Id ,[FromForm] DocumentForCreation DocumentForCreation)
+        {
+            if (DocumentForCreation == null)
+            {
+                return BadRequest();
+            }
+            if (_AdmissionRepo.GetApplicant(ApplicantID) == null)
+            {
+                return NotFound();
+            }
+            //    var DocumentToSave = _Mapper.Map<Document>(DocumentForCreation);
+
+
+            var file = DocumentForCreation.Copy;
+            Document DocumentToSave = new Document();
+            if (file.Length > 0)
+            {
+                using var ms = new MemoryStream();
+                file.CopyTo(ms);
+                DocumentToSave.Copy = ms.ToArray();
+                /*  if (fileBytes.Length != 0) {
+                      // fileBytes.CopyTo(DocumentToSave.Copy, 1);
+                      Buffer.BlockCopy(fileBytes, 0, DocumentToSave.Copy, 0, fileBytes.Length);
+
+                  }*/
+            }
+
+            DocumentToSave.ApplicantId = ApplicantID;
+            DocumentToSave.DocumentName = DocumentForCreation.DocumentName;
+            DocumentToSave.DocumentType = DocumentForCreation.DocumentType;
+            _AdmissionRepo.AddDocument(DocumentToSave);
+            _AdmissionRepo.DeleteDocument(_AdmissionRepo.GetDocument(ApplicantID,Id));
+            if (!_AdmissionRepo.Save())
+            {
+                throw new Exception("Failed To Add Document");
+            }
+
+
+            return Ok();
+
+        }
+
+        /*
+         [HttpPut("ApplicantId/Document/Id")]
+           public IActionResult UpdateDocument(int ApplicantID,int Id, [FromForm] JsonPatchDocument<DocumentForUpdate> patchDoc)
+           {
+               if (patchDoc == null)
+               {
+                   return BadRequest();
+               }
+               if (_AdmissionRepo.GetApplicant(ApplicantID) == null)
+               {
+                   return NotFound();
+
+               }
+               var DocumentFromRepo = _AdmissionRepo.GetDocument(ApplicantID, Id);
+            if (DocumentFromRepo == null)
+            {
+                return NotFound();
+            }
+               patchDoc.ApplyTo(DocumentToPatch, ModelState);
+                if (!ModelState.IsValid)
+                {
+                return new UnprocessableEntityObjectResult(ModelState);
+
+                }
+                DocumentFromRepo.DocumentName = DocumentToPatch.DocumentName;
+                DocumentFromRepo.DocumentType = DocumentToPatch.DocumentType; 
+                DocumentFromRepo.Copy = DocumentToPatch.Copy.
+
+        }
+
+        */
+        [HttpGet("{applicantId}/Document/{id}")]
+        public IActionResult GetDocument(int applicantId, int id)
+        {
+            var DocumentFromRepo = _AdmissionRepo.GetDocument(applicantId, id);
+            if (DocumentFromRepo == null)
+            {
+                return NotFound();
+            }
+
+
+            string imageBase64Data = Convert.ToBase64String(DocumentFromRepo.Copy);
+            string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+            return Ok(imageDataURL);
 
         }
 
