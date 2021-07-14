@@ -18,6 +18,8 @@ namespace AdmissionSystem2.Mapping
             CreateMap<ApplicantForUpdate, Applicant>();
             CreateMap<ParentInfoForCreation, ParentInfo>();
             CreateMap<ParentInfo, ParentInfoDto>();
+            CreateMap<ParentInfo, ParentInfoForUpdate>();
+            CreateMap<ParentInfoForUpdate, ParentInfo>();
             CreateMap<EmergencyContactForCreation, EmergencyContact>();
 
             CreateMap<SiblingForCreation, Sibling>();
@@ -33,8 +35,11 @@ namespace AdmissionSystem2.Mapping
 
 
             CreateMap<EmergencyContact, EmergencyContactDto>();
+            CreateMap<EmergencyContact, EmergencyContactForUpdate>();
+            CreateMap<EmergencyContactForUpdate, EmergencyContact>();
             CreateMap<AdmissionDetailsForCreation, AdmissionDetails>();
             CreateMap<AdmissionDetails, AdmissionDetailsDto>();
+            CreateMap<DocumentForCreation, Document>();
             //  CreateMap<Sibling, SiblingDto>();
             // CreateMap<MedicalHistory, MedicalHistoryDto>();
             CreateMap<SiblingForCreation, Sibling>();

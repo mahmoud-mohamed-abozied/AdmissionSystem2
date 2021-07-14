@@ -28,11 +28,25 @@ namespace AdmissionSystem2.Services
                 Applicant.ParentInfo.Add(parentInfo);
             }
         }
+        public ParentInfo ParentInfoExist(int ApplicantId,Guid ParentInfoId)
+        {
+            return _AdmissionSystemDbContext.ParentInfo.FirstOrDefault(a => a.ApplicantId == ApplicantId && a.Id == ParentInfoId);
+        }
         public Applicant GetApplicant(int _ApplicantId)
         {
             var Applicant = _AdmissionSystemDbContext.Applicant.FirstOrDefault(a => a.ApplicantId == _ApplicantId);
             return Applicant;
 
+        }
+
+       public void DeleteDocument(Document Document)
+        {
+            _AdmissionSystemDbContext.Documents.Remove(Document);
+
+        }
+        public Document GetDocument(int ApplicantId,int DocumentId)
+        {
+            return _AdmissionSystemDbContext.Documents.FirstOrDefault(a => a.ApplicantId == ApplicantId && a.Id == DocumentId);
         }
         public IEnumerable<ParentInfo> GetParentsInfos(int ApplicantId)
         {
@@ -44,10 +58,22 @@ namespace AdmissionSystem2.Services
             return _AdmissionSystemDbContext.ParentInfo.Where(a => a.ApplicantId == ApplicantId && a.Gender == Gender).FirstOrDefault();
 
         }
+        public void AddDocument(Document Document)
+        {
+            _AdmissionSystemDbContext.Documents.Add(Document);
+        }
 
         public IEnumerable<EmergencyContact> GetEmergencyContacts(int ApplicantId)
         {
             return _AdmissionSystemDbContext.EmergencyContact.Where(a => a.ApplicantId == ApplicantId).ToList();
+        }
+         public void UpdateEmergencyContact(EmergencyContact EmergencyContact)
+        {
+            _AdmissionSystemDbContext.Update(EmergencyContact);
+        }
+        public EmergencyContact GetEmergencyContact(int ApplicantId,Guid Id)
+        {
+            return _AdmissionSystemDbContext.EmergencyContact.FirstOrDefault(a => a.ApplicantId == ApplicantId && a.Id == Id);
         }
         public AdmissionDetails GetAdmissionDetails(int ApplicantId)
         {

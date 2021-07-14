@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AdmissionSystem2.Migrations
 {
     [DbContext(typeof(AdmissionSystemDbContext))]
-    [Migration("20210713113548_AddIDForParentInfo")]
-    partial class AddIDForParentInfo
+    [Migration("20210714162310_Database")]
+    partial class Database
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -108,8 +108,8 @@ namespace AdmissionSystem2.Migrations
                     b.Property<int>("ApplicantId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Copy")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<byte[]>("Copy")
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("DocumentName")
                         .HasColumnType("nvarchar(max)");

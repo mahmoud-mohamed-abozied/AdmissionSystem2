@@ -106,8 +106,8 @@ namespace AdmissionSystem2.Migrations
                     b.Property<int>("ApplicantId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Copy")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<byte[]>("Copy")
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("DocumentName")
                         .HasColumnType("nvarchar(max)");
