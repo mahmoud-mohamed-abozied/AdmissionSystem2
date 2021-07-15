@@ -1,4 +1,5 @@
 ﻿using AdmissionSystem2.Entites;
+using AdmissionSystem2.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,8 @@ namespace AdmissionSystem2.Services
         void DeleteDocument(Document Document);
         void AddSibling(int applicantId, Sibling sibling);
         void AddMedicalDetails(int applicantId, MedicalHistory medicalHistory);
+        IEnumerable<Document> GetDocuments(int ApplicantId);
+        Application GetApplication(int ApplicantId);
         void MakePayment(Payment payment);
         Applicant GetApplicant(int ApplicantId);
         void UpdateApplicant(Applicant Applicant);
@@ -30,7 +33,7 @@ namespace AdmissionSystem2.Services
         AdmissionDetails GetAdmissionDetails(int ApplicantId);
         void UpdateApplicant1(Applicant Applicant);
         void UpdateParentInfo(ParentInfo ParentInfo);
-        MedicalHistory GetMedicalHistory(int applicantId, Guid MedicalHistoryId);
+        MedicalHistory GetMedicalHistory(int applicantId);
         Sibling GetSibling(int applicantId, Guid siblingId);
         IEnumerable<Sibling> GetSiblings(int applicantId);
         void DeleteSibling(Sibling sibling);

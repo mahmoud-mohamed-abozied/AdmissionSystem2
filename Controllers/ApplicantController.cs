@@ -563,10 +563,10 @@ namespace AdmissionSystem2.Controllers
         }
 
 
-        [HttpGet("{applicantId}/Medical/{id}")]
-        public IActionResult GetMedicalDetails(int applicantId, Guid id)
+        [HttpGet("{applicantId}/Medical")]
+        public IActionResult GetMedicalDetails(int applicantId)
         {
-            var MedicalDetailsFromRepo = _AdmissionRepo.GetMedicalHistory(applicantId, id);
+            var MedicalDetailsFromRepo = _AdmissionRepo.GetMedicalHistory(applicantId);
             if (MedicalDetailsFromRepo == null)
             {
                 return NotFound();
@@ -621,6 +621,16 @@ namespace AdmissionSystem2.Controllers
 
             return Ok(Siblings);
 
+        }
+        [HttpGet("{ApplicantId}/GetApplication")]
+        public IActionResult GetApplication(int ApplicantId)
+        {
+            if (_AdmissionRepo.GetApplicant(ApplicantId) == null)
+            {
+                return NotFound();
+            }
+            Application  ApplicationToReturn = _AdmissionRepo.GetApplication(ApplicantId);
+            return Ok (ApplicationToReturn);
         }
 
 
@@ -694,7 +704,7 @@ namespace AdmissionSystem2.Controllers
                 return NotFound();
             }
 
-            var MedicalHistoryFromRepo = _AdmissionRepo.GetMedicalHistory(applicantId, id);
+            var MedicalHistoryFromRepo = _AdmissionRepo.GetMedicalHistory(applicantId);
             if (MedicalHistoryFromRepo == null)
             {
                 return NotFound();

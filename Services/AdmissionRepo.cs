@@ -1,4 +1,5 @@
 ﻿using AdmissionSystem2.Entites;
+using AdmissionSystem2.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,6 +40,24 @@ namespace AdmissionSystem2.Services
 
         }
 
+        public Application GetApplication(int ApplicantId)
+        {
+            Application Application = new Application();
+            Application.Applicant= _AdmissionSystemDbContext.Applicant.FirstOrDefault(a => a.ApplicantId == ApplicantId);
+            Application.AdmissionDetails = GetAdmissionDetails(ApplicantId);
+            Application.EmergencyContact = GetEmergencyContacts(ApplicantId);
+            Application.Sibling = GetSiblings(ApplicantId);
+            Application.MedicalHistory = GetMedicalHistory(ApplicantId);
+            Application.ParentInfo = GetParentsInfos(ApplicantId);
+            Application.Documents = GetDocuments(ApplicantId);
+            return Application;
+
+        }
+
+        public IEnumerable<Document>GetDocuments(int ApplicantId)
+        {
+            return _AdmissionSystemDbContext.Documents.Where(a => a.ApplicantId == ApplicantId).ToList();
+        }
        public void DeleteDocument(Document Document)
         {
             _AdmissionSystemDbContext.Documents.Remove(Document);
@@ -145,9 +164,9 @@ namespace AdmissionSystem2.Services
             return (_AdmissionSystemDbContext.SaveChanges() >= 0);
         }
 
-        public MedicalHistory GetMedicalHistory(int applicantId, Guid MedicalHistoryId)
+        public MedicalHistory GetMedicalHistory(int applicantId)
         {
-            return _AdmissionSystemDbContext.MedicalHistory.Where(a => a.ApplicantId == applicantId && a.MedicalHistoryId == MedicalHistoryId).FirstOrDefault();
+            return _AdmissionSystemDbContext.MedicalHistory.Where(a => a.ApplicantId == applicantId).FirstOrDefault();
         }
 
         public Sibling GetSibling(int applicantId, Guid siblingId)
