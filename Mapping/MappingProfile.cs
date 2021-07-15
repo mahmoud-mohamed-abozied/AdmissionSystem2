@@ -21,6 +21,19 @@ namespace AdmissionSystem2.Mapping
             CreateMap<ParentInfo, ParentInfoForUpdate>();
             CreateMap<ParentInfoForUpdate, ParentInfo>();
             CreateMap<EmergencyContactForCreation, EmergencyContact>();
+
+            CreateMap<SiblingForCreation, Sibling>();
+            CreateMap<MedicalHistoryForCreation, MedicalHistory>();
+            CreateMap<Sibling, SiblingDto>();
+            CreateMap<MedicalHistory, MedicalHistoryDto>();
+            CreateMap<AdmissionDetails, AdmissionDetailsForUpdate>().ReverseMap();
+
+            CreateMap<Sibling, SiblingForUpdate>().ReverseMap();
+            
+            CreateMap<MedicalHistory, MedicalHistoryForUpdate>().ReverseMap();
+
+
+
             CreateMap<EmergencyContact, EmergencyContactDto>();
             CreateMap<EmergencyContact, EmergencyContactForUpdate>();
             CreateMap<EmergencyContactForUpdate, EmergencyContact>();
@@ -35,6 +48,7 @@ namespace AdmissionSystem2.Mapping
             CreateMap<MedicalHistoryForCreation, MedicalHistory>();
             CreateMap<MedicalHistory, MedicalHistoryForUpdate>();
             CreateMap<MedicalHistoryForUpdate, MedicalHistory>();
+
 
         }
     }

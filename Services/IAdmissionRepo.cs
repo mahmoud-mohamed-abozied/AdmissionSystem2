@@ -35,11 +35,19 @@ namespace AdmissionSystem2.Services
         void UpdateParentInfo(ParentInfo ParentInfo);
         MedicalHistory GetMedicalHistory(int applicantId);
         Sibling GetSibling(int applicantId, Guid siblingId);
+        AdmissionDetails GetAdmissionDetails(int applicantId, Guid AdmissionDetailsId);
         IEnumerable<Sibling> GetSiblings(int applicantId);
         void DeleteSibling(Sibling sibling);
         void UpdateSibling(Sibling sibling);
         void UpdateMedicalDetails(MedicalHistory medicalHistory);
+
+
+        void UpdateAdmissionDetails(AdmissionDetails admissionDetails);
+
+
+
         bool ApplicantExist(int _ApplicantId);
+
         bool Save();
 
 

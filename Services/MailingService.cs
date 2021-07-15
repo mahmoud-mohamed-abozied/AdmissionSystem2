@@ -19,7 +19,7 @@ namespace AdmissionSystem2.Services
         {
             _mailSettings = mailSettings.Value;
         }
-        public async Task SendEmailAsync(string mailTo, string Subject, string Body, List<IFormFile> Attachments = null)
+        public async Task SendEmailAsync(string mailTo, string Subject, string Body, IList<IFormFile> Attachments = null)
         {
             var email = new MimeMessage
             {
