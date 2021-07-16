@@ -40,7 +40,7 @@ namespace AdmissionSystem2.Services
 
         }
 
-        public Application GetApplication(int ApplicantId)
+       /* public Application GetApplication(int ApplicantId)
         {
             Application Application = new Application();
             Application.Applicant= _AdmissionSystemDbContext.Applicant.FirstOrDefault(a => a.ApplicantId == ApplicantId);
@@ -52,7 +52,7 @@ namespace AdmissionSystem2.Services
             Application.Documents = GetDocuments(ApplicantId);
             return Application;
 
-        }
+        }*/
 
         public IEnumerable<Document>GetDocuments(int ApplicantId)
         {
@@ -163,13 +163,13 @@ namespace AdmissionSystem2.Services
         {
             return (_AdmissionSystemDbContext.SaveChanges() >= 0);
         }
-        public MedicalHistory GetMedicalHistory(int applicantId)
+        
 
         public AdmissionDetails GetAdmissionDetails(int applicantId, Guid AdmissionDetailsId)
         {
             return _AdmissionSystemDbContext.AdmissionDetails.Where(a => a.ApplicantId == applicantId && a.Id == AdmissionDetailsId).FirstOrDefault();
         }
-
+        //public MedicalHistory GetMedicalHistory(int applicantId)
         public MedicalHistory GetMedicalHistory(int applicantId, Guid MedicalHistoryId)
 
         {

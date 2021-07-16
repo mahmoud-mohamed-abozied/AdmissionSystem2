@@ -11,35 +11,43 @@ namespace AdmissionSystem2.Services
     {
         void AddApplicant(Applicant Applicant);
         void AddParentInfo(int _ApplicantId, ParentInfo parentInfo);
-        ParentInfo ParentInfoExist(int ApplicantId, Guid ParentInfoId);
-        void AddEmergencyContact(int ApplicantId, EmergencyContact EmergencyContact);
-        void AddDocument(int ApplicantId, Document Document);
         void AddAdmissionDetails(int ApplicantId, AdmissionDetails AdmissionDetails);
-        void DeleteDocument(Document Document);
+        void AddEmergencyContact(int ApplicantId, EmergencyContact EmergencyContact);
         void AddSibling(int applicantId, Sibling sibling);
         void AddMedicalDetails(int applicantId, MedicalHistory medicalHistory);
-        IEnumerable<Document> GetDocuments(int ApplicantId);
-        Application GetApplication(int ApplicantId);
+        void AddDocument(int ApplicantId, Document Document);
+        void AddDocument(Document Document);
         void MakePayment(Payment payment);
         Applicant GetApplicant(int ApplicantId);
-        void UpdateApplicant(Applicant Applicant);
-        IEnumerable<ParentInfo> GetParentsInfos (int ApplicantId);
-        void UpdateEmergencyContact(EmergencyContact EmergencyContact);
-        void AddDocument(Document Document);
-        Document GetDocument(int ApplicantId, int DocumentId);
-        EmergencyContact GetEmergencyContact (int ApplicantId, Guid Id);
+        IEnumerable<ParentInfo> GetParentsInfos(int ApplicantId);
         ParentInfo GetParentInfos(int ApplicantId, string Gender);
-        IEnumerable<EmergencyContact> GetEmergencyContacts(int ApplicantId);
         AdmissionDetails GetAdmissionDetails(int ApplicantId);
+        AdmissionDetails GetAdmissionDetails(int applicantId, Guid AdmissionDetailsId);
+        IEnumerable<EmergencyContact> GetEmergencyContacts(int ApplicantId);
+        EmergencyContact GetEmergencyContact(int ApplicantId, Guid Id);
+        IEnumerable<Sibling> GetSiblings(int applicantId);
+        Sibling GetSibling(int applicantId, Guid siblingId);
+        Document GetDocument(int ApplicantId, int DocumentId);
+        IEnumerable<Document> GetDocuments(int ApplicantId);
+        //Application GetApplication(int ApplicantId);
+        
+        
+        void UpdateApplicant(Applicant Applicant);
+        
+        void UpdateEmergencyContact(EmergencyContact EmergencyContact);
+       
+        
         void UpdateApplicant1(Applicant Applicant);
         void UpdateParentInfo(ParentInfo ParentInfo);
-        MedicalHistory GetMedicalHistory(int applicantId);
-        Sibling GetSibling(int applicantId, Guid siblingId);
-        AdmissionDetails GetAdmissionDetails(int applicantId, Guid AdmissionDetailsId);
-        IEnumerable<Sibling> GetSiblings(int applicantId);
+        //MedicalHistory GetMedicalHistory(int applicantId);
+        
+        
         void DeleteSibling(Sibling sibling);
         void UpdateSibling(Sibling sibling);
         void UpdateMedicalDetails(MedicalHistory medicalHistory);
+        ParentInfo ParentInfoExist(int ApplicantId, Guid ParentInfoId);
+
+        void DeleteDocument(Document Document);
 
 
         void UpdateAdmissionDetails(AdmissionDetails admissionDetails);
