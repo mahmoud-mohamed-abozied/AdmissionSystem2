@@ -564,7 +564,7 @@ namespace AdmissionSystem2.Controllers
         }
 
 
-        [HttpGet("{applicantId}/Medical")]
+       /* [HttpGet("{applicantId}/Medical")]
         public IActionResult GetMedicalDetails(int applicantId)
         {
             var MedicalDetailsFromRepo = _AdmissionRepo.GetMedicalHistory(applicantId);
@@ -579,7 +579,7 @@ namespace AdmissionSystem2.Controllers
             return Ok(MedicalDetails);
 
         }
-
+       */
 
         [HttpGet("{applicantId}/Siblings/{id}", Name = "getSibling")]
         public IActionResult GetSibling(int applicantId, Guid id)
@@ -623,7 +623,7 @@ namespace AdmissionSystem2.Controllers
             return Ok(Siblings);
 
         }
-        [HttpGet("{ApplicantId}/GetApplication")]
+       /* [HttpGet("{ApplicantId}/GetApplication")]
         public IActionResult GetApplication(int ApplicantId)
         {
             if (_AdmissionRepo.GetApplicant(ApplicantId) == null)
@@ -632,7 +632,7 @@ namespace AdmissionSystem2.Controllers
             }
             Application  ApplicationToReturn = _AdmissionRepo.GetApplication(ApplicantId);
             return Ok (ApplicationToReturn);
-        }
+        }*/
 
 
         [HttpDelete("{applicantId}/siblings/{id}")]
@@ -691,7 +691,7 @@ namespace AdmissionSystem2.Controllers
         
 
 
-        [HttpPatch("{applicantId}/medical/{id}")]
+       /* [HttpPatch("{applicantId}/medical/{id}")]
         public IActionResult PartiallyUpdateMedicalHistory(int applicantId, Guid id,
            [FromBody] JsonPatchDocument<MedicalHistoryForUpdate> patchDoc)
         {
@@ -732,6 +732,7 @@ namespace AdmissionSystem2.Controllers
 
             return NoContent();
         }
+       */
 
 
         [HttpPatch("{ApplicantId}/ParentInfo/{Id}")]
