@@ -43,6 +43,7 @@ namespace AdmissionSystem2
             services.AddDbContext<AdmissionSystemDbContext>(o => o.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             
             services.AddScoped<IAdmissionRepo, AdmissionRepo>();
+            services.AddScoped<IAdminRepo, AdminRepo>();
 
         }
 

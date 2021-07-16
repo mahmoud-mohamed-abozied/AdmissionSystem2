@@ -27,6 +27,8 @@ namespace AdmissionSystem2.Entites
         public DbSet<Fawry> Fawry { get; set; }
         public DbSet<MasterCard> MasterCard { get; set; }
         public DbSet<BankElahly> BankElahly { get; set; }
+        public DbSet<Application> Appliaction { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Applicant>().ToTable("Applicant");
@@ -41,6 +43,8 @@ namespace AdmissionSystem2.Entites
             modelBuilder.Entity<Fawry>().ToTable("Fawry");
             modelBuilder.Entity<MasterCard>().ToTable("MasterCard");
             modelBuilder.Entity<BankElahly>().ToTable("BankElahly");
+
+            modelBuilder.Entity<Application>().ToTable("Application");
         }
 
 
