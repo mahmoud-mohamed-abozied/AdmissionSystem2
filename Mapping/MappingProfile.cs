@@ -13,7 +13,9 @@ namespace AdmissionSystem2.Mapping
         public MappingProfile()
         {
             CreateMap<ApplicantForCreation, Applicant>();
-            CreateMap<Applicant, ApplicantDto>();
+            CreateMap<Applicant, ApplicantDto>(); 
+         //   CreateMap<Application, ApplicationDto>().ForMember(dest => dest.AppliantName, src => src.MapFrom(
+           //     src => $"{src.Applicant.FirstName}{src.Applicant.SecondName}{src.Applicant.LastName}" ));
             CreateMap<Applicant, ApplicantForUpdate>();
             CreateMap<ApplicantForUpdate, Applicant>();
             CreateMap<ParentInfoForCreation, ParentInfo>();

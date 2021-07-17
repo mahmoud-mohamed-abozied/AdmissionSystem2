@@ -30,6 +30,7 @@ namespace AdmissionSystem2.Services
 
         }
 
+
         public void AddParentInfo(int _ApplicantId, ParentInfo parentInfo)
         {
             var Applicant = GetApplicant(_ApplicantId);
@@ -38,7 +39,21 @@ namespace AdmissionSystem2.Services
                 Applicant.ParentInfo.Add(parentInfo);
             }
         }
-       
+
+       /* public Application GetApplication(int ApplicantId)
+        {
+            Application Application = new Application();
+            Application.Applicant= _AdmissionSystemDbContext.Applicant.FirstOrDefault(a => a.ApplicantId == ApplicantId);
+            Application.AdmissionDetails = GetAdmissionDetails(ApplicantId);
+            Application.EmergencyContact = GetEmergencyContacts(ApplicantId);
+            Application.Sibling = GetSiblings(ApplicantId);
+            Application.MedicalHistory = GetMedicalHistory(ApplicantId);
+            Application.ParentInfo = GetParentsInfos(ApplicantId);
+            Application.Documents = GetDocuments(ApplicantId);
+            return Application;
+
+        }*/
+
 
         
        public void DeleteDocument(Document Document)
@@ -124,6 +139,33 @@ namespace AdmissionSystem2.Services
             return (_AdmissionSystemDbContext.SaveChanges() >= 0);
         }
         
+        public AdmissionDetails GetAdmissionDetails(int applicantId, Guid AdmissionDetailsId)
+        {
+            return _AdmissionSystemDbContext.AdmissionDetails.Where(a => a.ApplicantId == applicantId && a.Id == AdmissionDetailsId).FirstOrDefault();
+        }
+        //public MedicalHistory GetMedicalHistory(int applicantId)
+        public MedicalHistory GetMedicalHistory(int applicantId, Guid MedicalHistoryId)
+
+        {
+            return _AdmissionSystemDbContext.MedicalHistory.Where(a => a.ApplicantId == applicantId).FirstOrDefault();
+        }
+
+        public Sibling GetSibling(int applicantId, Guid siblingId)
+        {
+            return _AdmissionSystemDbContext.Sibling.Where(a => a.ApplicantId == applicantId && a.SibilingId == siblingId).FirstOrDefault();
+        }
+
+        public IEnumerable<Sibling> GetSiblings(int applicantId)
+        {
+            return _AdmissionSystemDbContext.Sibling.Where(a => a.ApplicantId == applicantId).OrderBy(a => a.SiblingName).ToList();
+        }
+
+        public void DeleteSibling(Sibling sibling)
+        {
+            _AdmissionSystemDbContext.Sibling.Remove(sibling);
+            //Applicant.Sibling.Remove(sibling);
+        }
+
        public void UpdateApplicant1(Applicant Applicant)
         {
             _AdmissionSystemDbContext.Applicant.Update(Applicant);
