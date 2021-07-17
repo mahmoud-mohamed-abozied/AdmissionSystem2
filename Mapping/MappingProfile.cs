@@ -50,6 +50,7 @@ namespace AdmissionSystem2.Mapping
             CreateMap<MedicalHistoryForCreation, MedicalHistory>();
             CreateMap<MedicalHistory, MedicalHistoryForUpdate>();
             CreateMap<MedicalHistoryForUpdate, MedicalHistory>();
+            CreateMap<MedicalHistory, MedicalHistoryDto>();
 
 
         }

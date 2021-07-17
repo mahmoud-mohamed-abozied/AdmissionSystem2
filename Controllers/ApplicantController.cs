@@ -22,21 +22,25 @@ namespace AdmissionSystem2.Controllers
     {
         
         private IAdmissionRepo _AdmissionRepo;
+        private IAdminRepo _AdminRepo;
         private readonly IMapper _Mapper;
-        public ApplicantController(IAdmissionRepo AdmissionRepo, IMapper Mapper)
+        public ApplicantController(IAdmissionRepo AdmissionRepo,IAdminRepo AdminRepo ,IMapper Mapper)
         {
             _AdmissionRepo = AdmissionRepo;
+            _AdminRepo = AdminRepo;
             _Mapper = Mapper;
         }
-        public IActionResult Index()
-        {
-            return View();
-        }
+        
 
         [HttpGet("Test")]
         public IActionResult Test()
         {
             return Ok();
+        }
+
+        public IActionResult Index()
+        {
+            return View();
         }
 
 
@@ -69,29 +73,7 @@ namespace AdmissionSystem2.Controllers
 
         }
 
-        [HttpGet("{ApplicantId}/ParentInfo/{Gender}")]
-        public IActionResult GetParentInfo(int ApplicantId, string Gender)
-        {
-            var ParentInfo = _AdmissionRepo.GetParentInfos(ApplicantId, Gender);
-            if (ParentInfo == null)
-            {
-                return NotFound();
-            }
-            var ParentInfoToReturn = _Mapper.Map<ParentInfoDto>(ParentInfo);
-            return Ok(ParentInfoToReturn);
-        }
-
-        [HttpGet("{ApplicantId}/ParentInfo")]
-        public IActionResult GetParentsInfo(int ApplicantId)
-        {
-            var ParentInfo = _AdmissionRepo.GetParentsInfos(ApplicantId);
-            if (ParentInfo == null)
-            {
-                return NotFound();
-            }
-            var ParentInfoToReturn = _Mapper.Map<IEnumerable<ParentInfoDto>>(ParentInfo);
-            return Ok(ParentInfoToReturn);
-        }
+        
 
         [HttpPost("{ApplicantId}/EmergencyContact")]
         public IActionResult AddEmergencyContact(int ApplicantId, [FromBody] EmergencyContactForCreation EmergencyContactForCreation)
@@ -660,14 +642,15 @@ namespace AdmissionSystem2.Controllers
 
         }
 
+
         [HttpPatch("{applicantId}")]
-        public IActionResult UpdateApplicant(int applicantId,[FromBody] JsonPatchDocument<ApplicantForUpdate> patchdoc)
+        public IActionResult UpdateApplicant(int applicantId, [FromBody] JsonPatchDocument<ApplicantForUpdate> patchdoc)
         {
             if (patchdoc == null)
             {
                 return BadRequest();
             }
-           if (_AdmissionRepo.GetApplicant(applicantId) == null)
+            if (_AdmissionRepo.GetApplicant(applicantId) == null)
             {
                 return BadRequest();
             }
@@ -687,15 +670,15 @@ namespace AdmissionSystem2.Controllers
             return NoContent();
 
         }
-        
-        
+
+
 
 
        /* [HttpPatch("{applicantId}/medical/{id}")]
         public IActionResult PartiallyUpdateMedicalHistory(int applicantId, Guid id,
            [FromBody] JsonPatchDocument<MedicalHistoryForUpdate> patchDoc)
         {
-           if (patchDoc == null)
+            if (patchDoc == null)
             {
                 return BadRequest();
             }
@@ -705,7 +688,7 @@ namespace AdmissionSystem2.Controllers
                 return NotFound();
             }
 
-            var MedicalHistoryFromRepo = _AdmissionRepo.GetMedicalHistory(applicantId);
+            var MedicalHistoryFromRepo = _AdminRepo.GetMedicalHistory(applicantId);
             if (MedicalHistoryFromRepo == null)
             {
                 return NotFound();
@@ -736,7 +719,7 @@ namespace AdmissionSystem2.Controllers
 
 
         [HttpPatch("{ApplicantId}/ParentInfo/{Id}")]
-        public IActionResult UpdateParentInfo(int ApplicantId,Guid Id,[FromBody] JsonPatchDocument<ParentInfoForUpdate>patchDoc )
+        public IActionResult UpdateParentInfo(int ApplicantId, Guid Id, [FromBody] JsonPatchDocument<ParentInfoForUpdate> patchDoc)
         {
             if (patchDoc == null)
             {
@@ -746,11 +729,11 @@ namespace AdmissionSystem2.Controllers
             {
                 return NotFound();
             }
-            if (_AdmissionRepo.ParentInfoExist(ApplicantId,Id) == null)
+            if (_AdmissionRepo.ParentInfoExist(ApplicantId, Id) == null)
             {
                 return NotFound();
             }
-            var ParentInfoFromRepo = _AdmissionRepo.ParentInfoExist(ApplicantId,Id);
+            var ParentInfoFromRepo = _AdmissionRepo.ParentInfoExist(ApplicantId, Id);
 
             var ParentInfoToPatch = _Mapper.Map<ParentInfoForUpdate>(ParentInfoFromRepo);
 
@@ -772,21 +755,21 @@ namespace AdmissionSystem2.Controllers
 
         }
         [HttpPatch("{ApplicantId}/EmergencyContact/{Id}")]
-        public IActionResult UpdateEmergencyContact (int ApplicantId, Guid Id, [FromBody] JsonPatchDocument<EmergencyContactForUpdate> patchDoc)
+        public IActionResult UpdateEmergencyContact(int ApplicantId, Guid Id, [FromBody] JsonPatchDocument<EmergencyContactForUpdate> patchDoc)
         {
             if (patchDoc == null)
             {
                 return BadRequest();
             }
-            if (_AdmissionRepo.GetApplicant(ApplicantId)==null)
+            if (_AdmissionRepo.GetApplicant(ApplicantId) == null)
             {
                 return NotFound();
             }
-            if (_AdmissionRepo.GetEmergencyContacts(ApplicantId) == null)
+            if (_AdminRepo.GetEmergencyContacts(ApplicantId) == null)
             {
                 return NotFound();
             }
-            var EmergencyContactFromRepo = _AdmissionRepo.GetEmergencyContact(ApplicantId, Id);
+            var EmergencyContactFromRepo = _AdminRepo.GetEmergencyContact(ApplicantId, Id);
 
             var EmergencyContactToPatch = _Mapper.Map<EmergencyContactForUpdate>(EmergencyContactFromRepo);
 
@@ -796,7 +779,7 @@ namespace AdmissionSystem2.Controllers
                 return new UnprocessableEntityObjectResult(ModelState);
 
             }
-            _Mapper.Map(EmergencyContactToPatch,EmergencyContactFromRepo);
+            _Mapper.Map(EmergencyContactToPatch, EmergencyContactFromRepo);
             _AdmissionRepo.UpdateEmergencyContact(EmergencyContactFromRepo);
             if (!_AdmissionRepo.Save())
             {
@@ -822,7 +805,7 @@ namespace AdmissionSystem2.Controllers
                 return NotFound();
             }
 
-            var SiblingFromRepo = _AdmissionRepo.GetSibling(applicantId, id);
+            var SiblingFromRepo = _AdminRepo.GetSibling(applicantId, id);
             if (SiblingFromRepo == null)
             {
                 return NotFound();
@@ -864,7 +847,7 @@ namespace AdmissionSystem2.Controllers
                 return NotFound();
             }
 
-            var AdmissionDetailsFromRepo = _AdmissionRepo.GetAdmissionDetails(applicantId, id);
+            var AdmissionDetailsFromRepo = _AdminRepo.GetAdmissionDetails(applicantId, id);
             if (AdmissionDetailsFromRepo == null)
             {
                 return NotFound();
@@ -890,6 +873,48 @@ namespace AdmissionSystem2.Controllers
             }
 
             return NoContent();
+        }
+        [HttpPost("{ApplicantId}/Document/{Id}")]
+        public IActionResult UpdateDocument(int ApplicantID, int Id, [FromForm] DocumentForCreation DocumentForCreation)
+        {
+            if (DocumentForCreation == null)
+            {
+                return BadRequest();
+            }
+            if (_AdmissionRepo.GetApplicant(ApplicantID) == null)
+            {
+                return NotFound();
+            }
+            //    var DocumentToSave = _Mapper.Map<Document>(DocumentForCreation);
+
+
+            var file = DocumentForCreation.Copy;
+            Document DocumentToSave = new Document();
+            if (file.Length > 0)
+            {
+                using var ms = new MemoryStream();
+                file.CopyTo(ms);
+                DocumentToSave.Copy = ms.ToArray();
+                /*  if (fileBytes.Length != 0) {
+                      // fileBytes.CopyTo(DocumentToSave.Copy, 1);
+                      Buffer.BlockCopy(fileBytes, 0, DocumentToSave.Copy, 0, fileBytes.Length);
+
+                  }*/
+            }
+
+            DocumentToSave.ApplicantId = ApplicantID;
+            DocumentToSave.DocumentName = DocumentForCreation.DocumentName;
+            DocumentToSave.DocumentType = DocumentForCreation.DocumentType;
+            _AdmissionRepo.AddDocument(DocumentToSave);
+            _AdmissionRepo.DeleteDocument(_AdminRepo.GetDocument(ApplicantID, Id));
+            if (!_AdmissionRepo.Save())
+            {
+                throw new Exception("Failed To Add Document");
+            }
+
+
+            return Ok();
+
         }
 
 
