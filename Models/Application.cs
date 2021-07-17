@@ -15,7 +15,7 @@ namespace AdmissionSystem2.Models
         public AdmissionDetails AdmissionDetails { set; get; }
         public IEnumerable<Sibling> Sibling { set; get; }
             = new List<Sibling>();
-        public MedicalHistory MedicalHistory { set; get; }
+        public MedicalHistoryDto MedicalHistory { set; get; }
         public Payment Payment { set; get; }
     }
 }

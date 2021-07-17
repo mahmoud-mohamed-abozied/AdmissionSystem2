@@ -1,5 +1,6 @@
 ﻿using AdmissionSystem2.Entites;
 using AdmissionSystem2.Models;
+using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +11,12 @@ namespace AdmissionSystem2.Services
     public class AdmissionRepo : IAdmissionRepo
     {
         private AdmissionSystemDbContext _AdmissionSystemDbContext;
+        private IMapper _Mapper;
 
-        public AdmissionRepo(AdmissionSystemDbContext admissionSystemDbContext)
+        public AdmissionRepo(AdmissionSystemDbContext admissionSystemDbContext,IMapper Mapper)
         {
             _AdmissionSystemDbContext = admissionSystemDbContext;
+            _Mapper = Mapper;
         }
 
         public void AddApplicant(Applicant Applicant)
@@ -40,16 +43,17 @@ namespace AdmissionSystem2.Services
 
         }
 
-        public Application GetApplication(int ApplicantId)
+       public Application GetApplication(int ApplicantId)
         {
             Application Application = new Application();
             Application.Applicant= _AdmissionSystemDbContext.Applicant.FirstOrDefault(a => a.ApplicantId == ApplicantId);
-            Application.AdmissionDetails = GetAdmissionDetails(ApplicantId);
+            Application.AdmissionDetails = _AdmissionSystemDbContext.AdmissionDetails.FirstOrDefault(a => a.ApplicantId == ApplicantId);
             Application.EmergencyContact = GetEmergencyContacts(ApplicantId);
             Application.Sibling = GetSiblings(ApplicantId);
-            Application.MedicalHistory = GetMedicalHistory(ApplicantId);
+            Application.MedicalHistory =  _Mapper.Map<MedicalHistoryDto>(GetMedicalHistory(ApplicantId));
+            
             Application.ParentInfo = GetParentsInfos(ApplicantId);
-            Application.Documents = GetDocuments(ApplicantId);
+         ///   Application.Documents = GetDocuments(ApplicantId);
             return Application;
 
         }

@@ -28,15 +28,17 @@ namespace AdmissionSystem2.Controllers
             _AdmissionRepo = AdmissionRepo;
             _Mapper = Mapper;
         }
-        public IActionResult Index()
-        {
-            return View();
-        }
+        
 
         [HttpGet("Test")]
         public IActionResult Test()
         {
             return Ok();
+        }
+
+        public IActionResult Index()
+        {
+            return View();
         }
 
 
