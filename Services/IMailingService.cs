@@ -8,6 +8,6 @@ namespace AdmissionSystem2.Services
 {
     public interface IMailingService
     {
-        Task SendEmailAsync(String mailTo, String Subject, String Body, List<IFormFile> Attachments = null);
+        Task SendEmailAsync(String mailTo, String Subject, String Body, IList<IFormFile> Attachments = null);
     }
 }
