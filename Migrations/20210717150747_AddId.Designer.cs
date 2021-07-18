@@ -4,14 +4,16 @@ using AdmissionSystem2.Entites;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AdmissionSystem2.Migrations
 {
     [DbContext(typeof(AdmissionSystemDbContext))]
-    partial class AdmissionSystemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210717150747_AddId")]
+    partial class AddId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,30 +48,6 @@ namespace AdmissionSystem2.Migrations
                         .IsUnique();
 
                     b.ToTable("AdmissionDetails");
-                });
-
-            modelBuilder.Entity("AdmissionSystem2.Entites.AdmissionPeriod", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("EndDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EndTime")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StartDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StartTime")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AdmissionPeriod");
                 });
 
             modelBuilder.Entity("AdmissionSystem2.Entites.Applicant", b =>
@@ -201,56 +179,6 @@ namespace AdmissionSystem2.Migrations
                         .IsUnique();
 
                     b.ToTable("FamilyStatues");
-                });
-
-            modelBuilder.Entity("AdmissionSystem2.Entites.Interview", b =>
-                {
-                    b.Property<int>("InterviewId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("AcadmicYear")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ApplicantId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("InterviewType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("InterviewerName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("InterviewId");
-
-                    b.ToTable("Interview");
-                });
-
-            modelBuilder.Entity("AdmissionSystem2.Entites.InterviewCriteria", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("BreakTime")
-                        .HasColumnType("int");
-
-                    b.Property<string>("EndDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("InterviewTime")
-                        .HasColumnType("int");
-
-                    b.Property<int>("NumberOfInterviewer")
-                        .HasColumnType("int");
-
-                    b.Property<string>("StartDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("InterviewCriteria");
                 });
 
             modelBuilder.Entity("AdmissionSystem2.Entites.MedicalHistory", b =>

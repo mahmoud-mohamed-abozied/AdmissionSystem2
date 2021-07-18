@@ -115,7 +115,32 @@ namespace AdmissionSystem2.Controllers
 
         }
 
+        [HttpPost("AdmissionPeriod")]
+        public IActionResult AddAdmissionPeriod([FromBody]AdmissionPeriodForCreation AdmissionPeriodForCreation)
+        {
+            if (AdmissionPeriodForCreation == null)
+            {
+                return BadRequest();
+            }
+            var AdmissionPeriodToAdd = _Mapper.Map<AdmissionPeriod>(AdmissionPeriodForCreation);
+            if (!_AdmissionRepo.AddAdmissionPeriod(AdmissionPeriodToAdd))
+            {
+                _AdmissionRepo.Save();
+                return Ok();
 
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpGet("PeriodLeft")]
+        public IActionResult GetPeriodLeft()
+        {
+            var periodLeft = _AdmissionRepo.GetPeriodLeft();
+            return Ok(periodLeft);
+        }
         [HttpGet("{ApplicantId}/EmergencyContacts")]
         public IActionResult GetEmergencyContacts(int ApplicantId)
         {
@@ -142,6 +167,17 @@ namespace AdmissionSystem2.Controllers
             return Ok(AdmissionDetailsToReturn);
         }
 
+        [HttpPost("AdmissionPeriodExtension")]
+        public IActionResult ExtendAdmissionPeriod([FromBody]string Period)
+        {
+            if (Period == null)
+            {
+                return BadRequest();
+            }
+            _AdmissionRepo.ExtendAdmissionPeriod(Period);
+            _AdmissionRepo.Save();
+            return Ok();
+        }
 
         [HttpGet("{applicantId}/Medical")]
         public IActionResult GetMedicalDetails(int applicantId)
@@ -202,7 +238,7 @@ namespace AdmissionSystem2.Controllers
             return Ok(Siblings);
 
         }
-        [HttpGet("{ApplicantId}/GetApplication")]
+     /*   [HttpGet("{ApplicantId}/GetApplication")]
         public IActionResult GetApplication(int ApplicantId)
         {
             if (_AdmissionRepo.GetApplicant(ApplicantId) == null)
@@ -212,7 +248,7 @@ namespace AdmissionSystem2.Controllers
             Application ApplicationToReturn = _AdmissionRepo.GetApplication(ApplicantId);
             return Ok(ApplicationToReturn);
         }
-
+     */
 
         [HttpDelete("{applicantId}/siblings/{id}")]
         public IActionResult DeleteSibling(int applicantId, Guid id)

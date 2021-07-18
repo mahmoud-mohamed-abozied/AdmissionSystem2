@@ -62,7 +62,7 @@ namespace AdmissionSystem2.Controllers
             {
                 return BadRequest();
             }
-            if (_AdmissionRepo.GetApplicant(ApplicantId) == null)
+            if (_AdminRepo.GetApplicant(ApplicantId) == null)
             {
                 return NotFound();
             }
@@ -82,7 +82,7 @@ namespace AdmissionSystem2.Controllers
             {
                 return BadRequest();
             }
-            if (_AdmissionRepo.GetApplicant(ApplicantId) == null)
+            if (_AdminRepo.GetApplicant(ApplicantId) == null)
             {
                 return NotFound();
             }
@@ -91,7 +91,25 @@ namespace AdmissionSystem2.Controllers
             _AdmissionRepo.Save();
             return Ok();
         }
-
+        [HttpPost("{ApplicantId}/FamilyStatus")]
+        public IActionResult AddFamilyStatus(int ApplicantId, [FromBody] FamilyStatusForCreation familyStatusForCreation)
+        {
+            if (familyStatusForCreation == null)
+            {
+                return BadRequest();
+            }
+            if (_AdmissionRepo.GetApplicant(ApplicantId) == null)
+            {
+                return NotFound();
+            }
+            var FamilyStatus = _Mapper.Map<FamilyStatus>(familyStatusForCreation);
+            _AdmissionRepo.AddFamilyStatus(ApplicantId,FamilyStatus );
+           if(!_AdmissionRepo.Save())
+            {
+                throw new Exception("failed to add Family Status ");
+            }
+            return Ok();
+        }
 
         [HttpPost("{applicantId}/Sibling")]
         public IActionResult AddSibling(int applicantId, [FromBody] SiblingForCreation sibling)
@@ -119,8 +137,6 @@ namespace AdmissionSystem2.Controllers
             return CreatedAtRoute("getSibling", new { applicantId = applicantId, id = siblingToReturn.SibilingId }, siblingToReturn);
 
         }
-
-
 
         [HttpPost("{applicantId}/Siblings")]
         public IActionResult AddSiblings(int applicantId, [FromBody] IEnumerable<SiblingForCreation> siblings)
@@ -445,7 +461,7 @@ namespace AdmissionSystem2.Controllers
             DocumentToSave.DocumentName = DocumentForCreation.DocumentName;
             DocumentToSave.DocumentType = DocumentForCreation.DocumentType;
             _AdmissionRepo.AddDocument(DocumentToSave);
-            _AdmissionRepo.DeleteDocument(_AdmissionRepo.GetDocument(ApplicantID,Id));
+            _AdmissionRepo.DeleteDocument(_AdminRepo.GetDocument(ApplicantID,Id));
             if (!_AdmissionRepo.Save())
             {
                 throw new Exception("Failed To Add Document");
@@ -487,10 +503,10 @@ namespace AdmissionSystem2.Controllers
         }
 
         */
-        [HttpGet("{applicantId}/Document/{id}")]
+    /*    [HttpGet("{applicantId}/Document/{id}")]
         public IActionResult GetDocument(int applicantId, int id)
         {
-            var DocumentFromRepo = _AdmissionRepo.GetDocument(applicantId, id);
+            var DocumentFromRepo = _AdminRepo.GetDocument(applicantId, id);
             if (DocumentFromRepo == null)
             {
                 return NotFound();
@@ -522,7 +538,7 @@ namespace AdmissionSystem2.Controllers
         [HttpGet("{ApplicantId}/EmergencyContacts")]
         public IActionResult GetEmergencyContacts(int ApplicantId)
         {
-            var EmergencyContacts = _AdmissionRepo.GetEmergencyContacts(ApplicantId);
+            var EmergencyContacts = _AdminRepo.GetEmergencyContacts(ApplicantId);
             if (EmergencyContacts == null)
             {
                 return NotFound();
@@ -536,7 +552,7 @@ namespace AdmissionSystem2.Controllers
         [HttpGet("{ApplicantId}/AdmissionDetails")]
         public IActionResult GetAdmissionDetails(int ApplicantId)
         {
-            var AdmissionDetails = _AdmissionRepo.GetAdmissionDetails(ApplicantId);
+            var AdmissionDetails = _AdminRepo.GetAdmissionDetails(ApplicantId);
             if (AdmissionDetails == null)
             {
                 return NotFound();
@@ -546,7 +562,7 @@ namespace AdmissionSystem2.Controllers
         }
 
 
-       /* [HttpGet("{applicantId}/Medical")]
+        [HttpGet("{applicantId}/Medical")]
         public IActionResult GetMedicalDetails(int applicantId)
         {
             var MedicalDetailsFromRepo = _AdmissionRepo.GetMedicalHistory(applicantId);
@@ -561,7 +577,7 @@ namespace AdmissionSystem2.Controllers
             return Ok(MedicalDetails);
 
         }
-       */
+       
 
         [HttpGet("{applicantId}/Siblings/{id}", Name = "getSibling")]
         public IActionResult GetSibling(int applicantId, Guid id)
@@ -571,7 +587,7 @@ namespace AdmissionSystem2.Controllers
                 return NotFound();
             }
 
-            var SiblingFromRepo = _AdmissionRepo.GetSibling(applicantId, id);
+            var SiblingFromRepo = _AdminRepo.GetSibling(applicantId, id);
             if (SiblingFromRepo == null)
             {
                 return NotFound();
@@ -593,7 +609,7 @@ namespace AdmissionSystem2.Controllers
                 return NotFound();
             }
 
-            var SiblingsFromRepo = _AdmissionRepo.GetSiblings(applicantId);
+            var SiblingsFromRepo = _AdminRepo.GetSiblings(applicantId);
             if (SiblingsFromRepo == null)
             {
                 return NotFound();
@@ -605,7 +621,7 @@ namespace AdmissionSystem2.Controllers
             return Ok(Siblings);
 
         }
-       /* [HttpGet("{ApplicantId}/GetApplication")]
+       [HttpGet("{ApplicantId}/GetApplication")]
         public IActionResult GetApplication(int ApplicantId)
         {
             if (_AdmissionRepo.GetApplicant(ApplicantId) == null)
@@ -615,7 +631,7 @@ namespace AdmissionSystem2.Controllers
             Application  ApplicationToReturn = _AdmissionRepo.GetApplication(ApplicantId);
             return Ok (ApplicationToReturn);
         }*/
-
+       
 
         [HttpDelete("{applicantId}/siblings/{id}")]
         public IActionResult DeleteSibling(int applicantId, Guid id)
@@ -625,7 +641,7 @@ namespace AdmissionSystem2.Controllers
                 return NotFound();
             }
 
-            var SiblingFromRepo = _AdmissionRepo.GetSibling(applicantId, id);
+            var SiblingFromRepo = _AdminRepo.GetSibling(applicantId, id);
             if (SiblingFromRepo == null)
             {
                 return NotFound();
@@ -874,7 +890,7 @@ namespace AdmissionSystem2.Controllers
 
             return NoContent();
         }
-        [HttpPost("{ApplicantId}/Document/{Id}")]
+       /* [HttpPost("{ApplicantId}/Document/{Id}")]
         public IActionResult UpdateDocument(int ApplicantID, int Id, [FromForm] DocumentForCreation DocumentForCreation)
         {
             if (DocumentForCreation == null)
@@ -899,7 +915,7 @@ namespace AdmissionSystem2.Controllers
                       // fileBytes.CopyTo(DocumentToSave.Copy, 1);
                       Buffer.BlockCopy(fileBytes, 0, DocumentToSave.Copy, 0, fileBytes.Length);
 
-                  }*/
+                  }
             }
 
             DocumentToSave.ApplicantId = ApplicantID;
@@ -915,7 +931,7 @@ namespace AdmissionSystem2.Controllers
 
             return Ok();
 
-        }
+        }*/
 
 
     }

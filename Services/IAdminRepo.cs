@@ -11,10 +11,10 @@ using System.Threading.Tasks;
 namespace AdmissionSystem2.Services
 {
 
-     public interface IAdminRepo
+    public interface IAdminRepo
     {
         IEnumerable<Document> GetDocuments(int ApplicantId);
-        Application GetApplication(int ApplicantId);
+      //  Application GetApplication(int ApplicantId);
         Applicant GetApplicant(int ApplicantId);
         Document GetDocument(int ApplicantId, int DocumentId);
         EmergencyContact GetEmergencyContact(int ApplicantId, Guid Id);
@@ -27,12 +27,13 @@ namespace AdmissionSystem2.Services
         IEnumerable<Sibling> GetSiblings(int applicantId);
         IEnumerable<ParentInfo> GetParentsInfos(int ApplicantId);
         ParentInfo ParentInfoExist(int ApplicantId, Guid ParentInfoId);
+        AdmissionPeriod GetAdmissionPeriod();
+        string GetPeriodLeft();
+        void ExtendAdmissionPeriod(string ExtraPeriod);
         void DeleteSibling(Sibling sibling);
+        bool CheakAdmissionPeriod();
+        bool AddAdmissionPeriod(AdmissionPeriod AdmissionPeriod);
         bool Save();
-
-    public interface IAdminRepo
-    {
-        IEnumerable<Application> GetApplication(ResourceParameters resourceParameters);
 
     }
 }
