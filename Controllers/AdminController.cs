@@ -26,7 +26,7 @@ namespace AdmissionSystem2.Controllers
             return View();
         }
 
-        [HttpGet("Application")]
+       /* [HttpGet("Application")]
         public IActionResult GetApplication(ResourceParameters resourceParameters)
         {
             var Applications = _AdminRepo.GetApplication(resourceParameters);
@@ -34,6 +34,6 @@ namespace AdmissionSystem2.Controllers
             var ApplicationToReturn = _Mapper.Map<IEnumerable<ApplicationDto>>(Applications);
 
             return Ok(ApplicationToReturn);
-        }
+        }*/
     }
 }
