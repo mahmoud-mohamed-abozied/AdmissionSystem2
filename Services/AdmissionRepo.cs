@@ -143,21 +143,7 @@ namespace AdmissionSystem2.Services
             return _AdmissionSystemDbContext.AdmissionDetails.Where(a => a.ApplicantId == applicantId && a.Id == AdmissionDetailsId).FirstOrDefault();
         }
         //public MedicalHistory GetMedicalHistory(int applicantId)
-        public MedicalHistory GetMedicalHistory(int applicantId, Guid MedicalHistoryId)
 
-        {
-            return _AdmissionSystemDbContext.MedicalHistory.Where(a => a.ApplicantId == applicantId).FirstOrDefault();
-        }
-
-        public Sibling GetSibling(int applicantId, Guid siblingId)
-        {
-            return _AdmissionSystemDbContext.Sibling.Where(a => a.ApplicantId == applicantId && a.SibilingId == siblingId).FirstOrDefault();
-        }
-
-        public IEnumerable<Sibling> GetSiblings(int applicantId)
-        {
-            return _AdmissionSystemDbContext.Sibling.Where(a => a.ApplicantId == applicantId).OrderBy(a => a.SiblingName).ToList();
-        }
 
         public void DeleteSibling(Sibling sibling)
         {
@@ -194,11 +180,15 @@ namespace AdmissionSystem2.Services
         {
             _AdmissionSystemDbContext.MedicalHistory.Update(medicalHistory);
         }
+        
 
-        public void DeleteSibling(Sibling sibling)
+    public void AddFamilyStatus(int ApplicantId, FamilyStatus familyStatus)
         {
-            _AdmissionSystemDbContext.Sibling.Remove(sibling);
+            var applicant = GetApplicant(ApplicantId);
+            if (applicant != null)
+            {
+                applicant.Family_Status = familyStatus;
+            }
         }
-       
     }
 }

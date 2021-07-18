@@ -238,7 +238,7 @@ namespace AdmissionSystem2.Controllers
             return Ok(Siblings);
 
         }
-        [HttpGet("{ApplicantId}/GetApplication")]
+     /*   [HttpGet("{ApplicantId}/GetApplication")]
         public IActionResult GetApplication(int ApplicantId)
         {
             if (_AdmissionRepo.GetApplicant(ApplicantId) == null)
@@ -248,7 +248,7 @@ namespace AdmissionSystem2.Controllers
             Application ApplicationToReturn = _AdmissionRepo.GetApplication(ApplicantId);
             return Ok(ApplicationToReturn);
         }
-
+     */
 
         [HttpDelete("{applicantId}/siblings/{id}")]
         public IActionResult DeleteSibling(int applicantId, Guid id)
