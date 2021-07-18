@@ -23,7 +23,13 @@ namespace AdmissionSystem2.Services
         IEnumerable<Sibling> GetSiblings(int applicantId);
         IEnumerable<ParentInfo> GetParentsInfos(int ApplicantId);
         ParentInfo ParentInfoExist(int ApplicantId, Guid ParentInfoId);
+        AdmissionPeriod GetAdmissionPeriod();
+        string GetPeriodLeft();
+        void ExtendAdmissionPeriod(string ExtraPeriod);
+
         void DeleteSibling(Sibling sibling);
+        bool CheakAdmissionPeriod();
+        bool AddAdmissionPeriod(AdmissionPeriod AdmissionPeriod);
         bool Save();
 
     }

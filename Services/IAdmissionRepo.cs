@@ -11,6 +11,7 @@ namespace AdmissionSystem2.Services
     {
         void AddApplicant(Applicant Applicant);
         void AddParentInfo(int _ApplicantId, ParentInfo parentInfo);
+        void AddFamilyStatus(int ApplicantId, FamilyStatus familyStatus);
         void AddEmergencyContact(int ApplicantId, EmergencyContact EmergencyContact);
         void AddDocument(int ApplicantId, Document Document);
         void AddAdmissionDetails(int ApplicantId, AdmissionDetails AdmissionDetails);

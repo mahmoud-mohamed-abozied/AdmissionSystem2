@@ -32,5 +32,6 @@ namespace AdmissionSystem2.Entites
             = new List<Sibling>();
         public MedicalHistory MedicalHistory { set; get; }
         public Payment Payment { set; get; }
+        public FamilyStatus Family_Status { get; set; }
     }
 }

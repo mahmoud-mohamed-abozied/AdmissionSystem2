@@ -10,6 +10,6 @@ namespace AdmissionSystem2.Models
         public string Relationship { set; get; }
         public string SiblingName { set; get; }
         public int Age { set; get; }
-        public string SchoolName { set; get; }
+        public string SchoolBranch { set; get; }
     }
 }

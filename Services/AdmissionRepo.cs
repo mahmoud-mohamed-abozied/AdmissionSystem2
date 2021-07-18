@@ -123,8 +123,20 @@ namespace AdmissionSystem2.Services
         {
             return (_AdmissionSystemDbContext.SaveChanges() >= 0);
         }
-        
-       public void UpdateApplicant1(Applicant Applicant)
+
+        public  void AddFamilyStatus(int ApplicantId, FamilyStatus familyStatus)
+        {
+            var Applicant = GetApplicant(ApplicantId);
+            if (Applicant != null)
+            {
+                Applicant.Family_Status = familyStatus;
+                
+            }
+
+        }
+
+
+        public void UpdateApplicant1(Applicant Applicant)
         {
             _AdmissionSystemDbContext.Applicant.Update(Applicant);
             //throw new NotImplementedException();

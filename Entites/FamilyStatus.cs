@@ -7,19 +7,19 @@ using System.Threading.Tasks;
 
 namespace AdmissionSystem2.Entites
 {
-    public class Sibling
+    public class FamilyStatus
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid SibilingId { set; get; }
-        public string Relationship { set; get; }
-        public string SiblingName { set; get; }
-        public int Age { set; get; }
-        public string SchoolBranch { set; get; }
-
+        public Guid Id { get; set; }
+        public string Guardian { get; set; }
+        public string GuardianAddress { get; set; }
+        public string LanguageSpoken { get; set; }
+        public string MaritalStatus { get; set; }
         [ForeignKey("ApplicantId")]
-        public Applicant Applicant { set; get; }
-        public int ApplicantId { set; get; }
+        public Applicant Applicant { get; set; }
+        public int ApplicantId { get; set; }
+
 
     }
 }

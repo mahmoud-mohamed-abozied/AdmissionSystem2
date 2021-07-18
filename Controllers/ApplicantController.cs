@@ -91,7 +91,25 @@ namespace AdmissionSystem2.Controllers
             _AdmissionRepo.Save();
             return Ok();
         }
-
+        [HttpPost("{ApplicantId}/FamilyStatus")]
+        public IActionResult AddFamilyStatus(int ApplicantId, [FromBody] FamilyStatusForCreation familyStatusForCreation)
+        {
+            if (familyStatusForCreation == null)
+            {
+                return BadRequest();
+            }
+            if (_AdmissionRepo.GetApplicant(ApplicantId) == null)
+            {
+                return NotFound();
+            }
+            var FamilyStatus = _Mapper.Map<FamilyStatus>(familyStatusForCreation);
+            _AdmissionRepo.AddFamilyStatus(ApplicantId,FamilyStatus );
+           if(!_AdmissionRepo.Save())
+            {
+                throw new Exception("failed to add Family Status ");
+            }
+            return Ok();
+        }
 
         [HttpPost("{applicantId}/Sibling")]
         public IActionResult AddSibling(int applicantId, [FromBody] SiblingForCreation sibling)
