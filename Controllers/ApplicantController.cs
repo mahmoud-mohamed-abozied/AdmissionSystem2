@@ -73,8 +73,6 @@ namespace AdmissionSystem2.Controllers
 
         }
 
-        
-
         [HttpPost("{ApplicantId}/EmergencyContact")]
         public IActionResult AddEmergencyContact(int ApplicantId, [FromBody] EmergencyContactForCreation EmergencyContactForCreation)
         {
