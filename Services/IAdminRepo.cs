@@ -1,5 +1,8 @@
 ﻿using AdmissionSystem2.Entites;
+
 using AdmissionSystem2.Models;
+
+using AdmissionSystem2.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace AdmissionSystem2.Services
 {
+
      public interface IAdminRepo
     {
         IEnumerable<Document> GetDocuments(int ApplicantId);
@@ -31,6 +35,10 @@ namespace AdmissionSystem2.Services
         bool CheakAdmissionPeriod();
         bool AddAdmissionPeriod(AdmissionPeriod AdmissionPeriod);
         bool Save();
+
+    public interface IAdminRepo
+    {
+        IEnumerable<Application> GetApplication(ResourceParameters resourceParameters);
 
     }
 }
