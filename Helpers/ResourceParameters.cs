@@ -9,7 +9,7 @@ namespace AdmissionSystem2.Helpers
     {
         const int MaxPageSize = 20;
 
-        public int PageNumber = 1;
+        public int PageNumber { get; set; } = 1;
 
         private int _PageSize = 10;
 
@@ -25,7 +25,12 @@ namespace AdmissionSystem2.Helpers
             }
         }
 
-        public string SearchQuery { get; set; }
+        public string Name { get; set; }
+        public string Date { get; set; }
+        public string Status { get; set; }
+        public String SearchQuery { get; set; }
+        public string OrderBy { get; set; } = "Name";
+        
 
     }
 }

@@ -201,7 +201,7 @@ namespace AdmissionSystem2.Controllers
         }
 
 
-        [HttpGet("{applicantId}/Siblings/{id}", Name = "getSibling")]
+        [HttpGet("{applicantId}/Siblings/{id}")]
         public IActionResult GetSibling(int applicantId, Guid id)
         {
             if (_AdmissionRepo.GetApplicant(applicantId) == null)
@@ -250,7 +250,7 @@ namespace AdmissionSystem2.Controllers
             {
                 return NotFound();
             }
-            Application ApplicationToReturn = _AdmissionRepo.GetApplication(ApplicantId);
+            Applicant ApplicationToReturn = _AdmissionRepo.GetApplication(ApplicantId);
             return Ok(ApplicationToReturn);
         }
      */

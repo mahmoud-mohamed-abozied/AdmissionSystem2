@@ -51,7 +51,7 @@ namespace AdmissionSystem2.Entites
             modelBuilder.Entity<InterviewCriteria>().ToTable("InterviewCriteria");
             modelBuilder.Entity<Interview>().ToTable("Interview");
 
-            modelBuilder.Entity<Application>().ToTable("Application");
+           
         }
 
 

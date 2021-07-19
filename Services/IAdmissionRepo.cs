@@ -1,4 +1,5 @@
 ﻿using AdmissionSystem2.Entites;
+using AdmissionSystem2.Helpers;
 using AdmissionSystem2.Models;
 using System;
 using System.Collections.Generic;
@@ -27,8 +28,23 @@ namespace AdmissionSystem2.Services
         void DeleteSibling(Sibling sibling);
         void UpdateSibling(Sibling sibling);
         void UpdateMedicalDetails(MedicalHistory medicalHistory);
+        Applicant GetApplicant(int ApplicantId);
+        PagedList<Applicant> GetApplicants(ResourceParameters resourceParameters);
+        //IEnumerable<ParentInfo> GetParentsInfos(int ApplicantId);
+        //ParentInfo GetParentInfos(int ApplicantId, string Gender);
+        // AdmissionDetails GetAdmissionDetails(int ApplicantId);
+        AdmissionDetails GetAdmissionDetails(int applicantId, Guid AdmissionDetailsId);
+        //IEnumerable<EmergencyContact> GetEmergencyContacts(int ApplicantId);
+        //EmergencyContact GetEmergencyContact(int ApplicantId, Guid Id);
+        IEnumerable<Sibling> GetSiblings(int applicantId);
+        Sibling GetSibling(int applicantId, Guid siblingId);
+        Document GetDocument(int ApplicantId, int DocumentId);
+        //IEnumerable<Document> GetDocuments(int ApplicantId);
       //  void AddDocument(int ApplicantId, Document Document);
         //Application GetApplication(int ApplicantId);
+   
+        
+         ParentInfo ParentInfoExist(int ApplicantId, Guid ParentInfoId);
         //MedicalHistory GetMedicalHistory(int applicantId);
         ParentInfo ParentInfoExist(int ApplicantId, Guid ParentInfoId);
         void DeleteDocument(Document Document);

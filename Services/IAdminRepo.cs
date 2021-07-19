@@ -14,6 +14,7 @@ namespace AdmissionSystem2.Services
     public interface IAdminRepo
     {
         IEnumerable<Document> GetDocuments(int ApplicantId);
+        Applicant GetApplication(int ApplicantId);
         //  Application GetApplication(int ApplicantId);
         int GetApplicantsCount();
         Applicant GetApplicant(int ApplicantId);

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace AdmissionSystem2.Services
 {
@@ -90,19 +91,35 @@ namespace AdmissionSystem2.Services
         {
             _AdmissionSystemDbContext.Sibling.Remove(sibling);
         }
+        public Applicant GetApplication(int ApplicantId)
       /*  public Application GetApplication(int ApplicantId)
         {
-            Application Application = new Application();
+            Applicant Applicant = _AdmissionSystemDbContext.Applicant
+                .Include(a => a.ParentInfo)
+                .Include(a => a.AdmissionDetails)
+                .Include(a => a.EmergencyContact)
+                .Include(a => a.Sibling)
+                .Include(a=>a.MedicalHistory)
+                .Include(a => a.Documents)
+                .Include(a => a.Payment)
+                .FirstOrDefault(a => a.ApplicantId == ApplicantId);
+            /*Application Application = new Application();
             Application.Applicant = _AdmissionSystemDbContext.Applicant.FirstOrDefault(a => a.ApplicantId == ApplicantId);
             Application.AdmissionDetails = _AdmissionSystemDbContext.AdmissionDetails.FirstOrDefault(a => a.ApplicantId == ApplicantId);
             Application.EmergencyContact = GetEmergencyContacts(ApplicantId);
             Application.Sibling = GetSiblings(ApplicantId);
             Application.MedicalHistory = _Mapper.Map<MedicalHistoryDto>(GetMedicalHistory(ApplicantId));
 
-            Application.ParentInfo = GetParentsInfos(ApplicantId);
+            Application.ParentInfo = GetParentsInfos(ApplicantId);*/
             ///   Application.Documents = GetDocuments(ApplicantId);
-            return Application;
+            return Applicant;
 
+        }
+        public bool Save()
+        {
+            return (_AdmissionSystemDbContext.SaveChanges() >= 0);
+        }
+    
         }*/
         public bool CheakAdmissionPeriod()
         {

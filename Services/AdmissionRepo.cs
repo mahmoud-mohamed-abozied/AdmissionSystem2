@@ -1,4 +1,5 @@
 ﻿using AdmissionSystem2.Entites;
+using AdmissionSystem2.Helpers;
 using AdmissionSystem2.Models;
 using AutoMapper;
 using System;
@@ -180,6 +181,9 @@ namespace AdmissionSystem2.Services
         {
             _AdmissionSystemDbContext.MedicalHistory.Update(medicalHistory);
         }
+
+     
+       
         
 
     public void AddFamilyStatus(int ApplicantId, FamilyStatus familyStatus)
