@@ -14,7 +14,7 @@ namespace AdmissionSystem2.Entites
         public Guid Id { get; set; }
         public string StartDate { get; set; }
         public string EndDate { get; set; }
-        public int InterviewTime {get; set;}
+        public int InterviewDuration {get; set;}
         public int BreakTime { get; set; }
         public int NumberOfInterviewer { get; set; }
 
