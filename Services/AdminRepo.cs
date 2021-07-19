@@ -6,11 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace AdmissionSystem2.Services
 {
 
-    public class AdminRepo:IAdminRepo
+    public class AdminRepo : IAdminRepo
     {
         private AdmissionSystemDbContext _AdmissionSystemDbContext;
         private IMapper _Mapper;
@@ -85,38 +86,33 @@ namespace AdmissionSystem2.Services
         {
             _AdmissionSystemDbContext.Sibling.Remove(sibling);
         }
-        public Application GetApplication(int ApplicantId)
+        public Applicant GetApplication(int ApplicantId)
         {
-            Application Application = new Application();
+            Applicant Applicant = _AdmissionSystemDbContext.Applicant
+                .Include(a => a.ParentInfo)
+                .Include(a => a.AdmissionDetails)
+                .Include(a => a.EmergencyContact)
+                .Include(a => a.Sibling)
+                .Include(a=>a.MedicalHistory)
+                .Include(a => a.Documents)
+                .Include(a => a.Payment)
+                .FirstOrDefault(a => a.ApplicantId == ApplicantId);
+            /*Application Application = new Application();
             Application.Applicant = _AdmissionSystemDbContext.Applicant.FirstOrDefault(a => a.ApplicantId == ApplicantId);
             Application.AdmissionDetails = _AdmissionSystemDbContext.AdmissionDetails.FirstOrDefault(a => a.ApplicantId == ApplicantId);
             Application.EmergencyContact = GetEmergencyContacts(ApplicantId);
             Application.Sibling = GetSiblings(ApplicantId);
             Application.MedicalHistory = _Mapper.Map<MedicalHistoryDto>(GetMedicalHistory(ApplicantId));
 
-            Application.ParentInfo = GetParentsInfos(ApplicantId);
+            Application.ParentInfo = GetParentsInfos(ApplicantId);*/
             ///   Application.Documents = GetDocuments(ApplicantId);
-            return Application;
+            return Applicant;
 
         }
         public bool Save()
         {
             return (_AdmissionSystemDbContext.SaveChanges() >= 0);
-            }
-    public class AdminRepo : IAdminRepo
-    {
-        private AdmissionSystemDbContext _AdmissionSystemDbContext;
-
-        public AdminRepo(AdmissionSystemDbContext admissionSystemDbContext)
-        {
-            _AdmissionSystemDbContext = admissionSystemDbContext;
         }
-        public IEnumerable<Application> GetApplication(ResourceParameters resourceParameters)
-        {
-            return _AdmissionSystemDbContext.Appliaction
-                .Skip(resourceParameters.PageSize*(resourceParameters.PageNumber-1))
-                .Take(resourceParameters.PageSize)
-                .ToList();
-        }
+    
     }
 }
