@@ -15,6 +15,8 @@ namespace AdmissionSystem2.Services
     {
         IEnumerable<Document> GetDocuments(int ApplicantId);
         Applicant GetApplication(int ApplicantId);
+        //  Application GetApplication(int ApplicantId);
+        int GetApplicantsCount();
         Applicant GetApplicant(int ApplicantId);
         Document GetDocument(int ApplicantId, int DocumentId);
         EmergencyContact GetEmergencyContact(int ApplicantId, Guid Id);
@@ -27,7 +29,12 @@ namespace AdmissionSystem2.Services
         IEnumerable<Sibling> GetSiblings(int applicantId);
         IEnumerable<ParentInfo> GetParentsInfos(int ApplicantId);
         ParentInfo ParentInfoExist(int ApplicantId, Guid ParentInfoId);
+        AdmissionPeriod GetAdmissionPeriod();
+        string GetPeriodLeft();
+        void ExtendAdmissionPeriod(string ExtraPeriod);
         void DeleteSibling(Sibling sibling);
+        bool CheakAdmissionPeriod();
+        bool AddAdmissionPeriod(AdmissionPeriod AdmissionPeriod);
         bool Save();
 
     }

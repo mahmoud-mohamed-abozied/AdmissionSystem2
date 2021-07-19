@@ -11,12 +11,12 @@ namespace AdmissionSystem2.Services
     public interface IAdmissionRepo
     {
         void AddApplicant(Applicant Applicant);
+        Applicant GetApplicant(int _ApplicantId);
         void AddParentInfo(int _ApplicantId, ParentInfo parentInfo);
-
+        void AddFamilyStatus(int ApplicantId, FamilyStatus familyStatus);
         void AddEmergencyContact(int ApplicantId, EmergencyContact EmergencyContact);
         void AddDocument(int ApplicantId, Document Document);
         void AddAdmissionDetails(int ApplicantId, AdmissionDetails AdmissionDetails);
-        
         void AddSibling(int applicantId, Sibling sibling);
         void AddMedicalDetails(int applicantId, MedicalHistory medicalHistory);
         void MakePayment(Payment payment);
@@ -40,16 +40,17 @@ namespace AdmissionSystem2.Services
         Sibling GetSibling(int applicantId, Guid siblingId);
         Document GetDocument(int ApplicantId, int DocumentId);
         //IEnumerable<Document> GetDocuments(int ApplicantId);
+      //  void AddDocument(int ApplicantId, Document Document);
         //Application GetApplication(int ApplicantId);
    
         
          ParentInfo ParentInfoExist(int ApplicantId, Guid ParentInfoId);
+        //MedicalHistory GetMedicalHistory(int applicantId);
+        ParentInfo ParentInfoExist(int ApplicantId, Guid ParentInfoId);
         void DeleteDocument(Document Document);
-
         void UpdateAdmissionDetails(AdmissionDetails admissionDetails);
         bool ApplicantExist(int _ApplicantId);
         bool Save();
-     
 
 
 

@@ -18,13 +18,13 @@ namespace AdmissionSystem2.Entites
         public String PlaceOfBirth { set; get; }
         public String DateOfBirth { set; get; }
         public String Nationality { set; get; }
-        public String Relegion { set; get; }
+        public String Religion { set; get; }
         public String Mobile { set; get; }
         public String Gender { set; get; }
-        public String FamilyStatus { set; get; }
         public String SpokenLanguage { set; get; }
         public String Status { set; get; }
-        public ICollection<ParentInfo> ParentInfo { set; get; } = new List<ParentInfo>(); //Collection navigation property
+        public string AdmissionDate { get; set; }
+        public ICollection<ParentInfo> ParentInfo { set; get; } = new List<ParentInfo>();
         public ICollection<EmergencyContact> EmergencyContact { set; get; } = new List<EmergencyContact>();
         public ICollection<Document> Documents { set; get; } = new List<Document>();
         public AdmissionDetails AdmissionDetails { set; get; }
@@ -32,5 +32,6 @@ namespace AdmissionSystem2.Entites
             = new List<Sibling>();
         public MedicalHistory MedicalHistory { set; get; }
         public Payment Payment { set; get; }
+        public FamilyStatus Family_Status { get; set; }
     }
 }

@@ -4,14 +4,16 @@ using AdmissionSystem2.Entites;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AdmissionSystem2.Migrations
 {
     [DbContext(typeof(AdmissionSystemDbContext))]
-    partial class AdmissionSystemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210718002115_AddAdmintables")]
+    partial class AddAdmintables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,10 +81,10 @@ namespace AdmissionSystem2.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("AdmissionDate")
+                    b.Property<string>("DateOfBirth")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DateOfBirth")
+                    b.Property<string>("FamilyStatus")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FirstName")
@@ -103,7 +105,7 @@ namespace AdmissionSystem2.Migrations
                     b.Property<string>("PlaceOfBirth")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Religion")
+                    b.Property<string>("Relegion")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecondName")
@@ -120,44 +122,6 @@ namespace AdmissionSystem2.Migrations
                     b.ToTable("Applicant");
                 });
 
-            modelBuilder.Entity("AdmissionSystem2.Entites.Application", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("AdmissionDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("AdmissionDetailsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("ApplicantId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("MedicalHistoryId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("PaymentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AdmissionDetailsId");
-
-                    b.HasIndex("ApplicantId");
-
-                    b.HasIndex("MedicalHistoryId");
-
-                    b.HasIndex("PaymentId");
-
-                    b.ToTable("Application");
-                });
-
             modelBuilder.Entity("AdmissionSystem2.Entites.Document", b =>
                 {
                     b.Property<int>("Id")
@@ -166,9 +130,6 @@ namespace AdmissionSystem2.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("ApplicantId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ApplicationId")
                         .HasColumnType("int");
 
                     b.Property<byte[]>("Copy")
@@ -184,8 +145,6 @@ namespace AdmissionSystem2.Migrations
 
                     b.HasIndex("ApplicantId");
 
-                    b.HasIndex("ApplicationId");
-
                     b.ToTable("Document");
                 });
 
@@ -196,9 +155,6 @@ namespace AdmissionSystem2.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("ApplicantId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ApplicationId")
                         .HasColumnType("int");
 
                     b.Property<string>("FullName")
@@ -216,8 +172,6 @@ namespace AdmissionSystem2.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicantId");
-
-                    b.HasIndex("ApplicationId");
 
                     b.ToTable("EmergencyContact");
                 });
@@ -264,22 +218,10 @@ namespace AdmissionSystem2.Migrations
                     b.Property<int>("ApplicantId")
                         .HasColumnType("int");
 
-                    b.Property<string>("InterviewDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("InterviewTime")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("InterviewType")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("InterviewerName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Score")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ScoreGrade")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("InterviewId");
@@ -299,7 +241,7 @@ namespace AdmissionSystem2.Migrations
                     b.Property<string>("EndDate")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("InterviewDuration")
+                    b.Property<int>("InterviewTime")
                         .HasColumnType("int");
 
                     b.Property<int>("NumberOfInterviewer")
@@ -354,9 +296,6 @@ namespace AdmissionSystem2.Migrations
                     b.Property<int>("ApplicantId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ApplicationId")
-                        .HasColumnType("int");
-
                     b.Property<string>("CompanyName")
                         .HasColumnType("nvarchar(max)");
 
@@ -403,8 +342,6 @@ namespace AdmissionSystem2.Migrations
 
                     b.HasIndex("ApplicantId");
 
-                    b.HasIndex("ApplicationId");
-
                     b.ToTable("ParentInfo");
                 });
 
@@ -449,9 +386,6 @@ namespace AdmissionSystem2.Migrations
                     b.Property<int>("ApplicantId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ApplicationId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Relationship")
                         .HasColumnType("nvarchar(max)");
 
@@ -464,8 +398,6 @@ namespace AdmissionSystem2.Migrations
                     b.HasKey("SibilingId");
 
                     b.HasIndex("ApplicantId");
-
-                    b.HasIndex("ApplicationId");
 
                     b.ToTable("Sibling");
                 });
@@ -535,35 +467,6 @@ namespace AdmissionSystem2.Migrations
                     b.Navigation("Applicant");
                 });
 
-            modelBuilder.Entity("AdmissionSystem2.Entites.Application", b =>
-                {
-                    b.HasOne("AdmissionSystem2.Entites.AdmissionDetails", "AdmissionDetails")
-                        .WithMany()
-                        .HasForeignKey("AdmissionDetailsId");
-
-                    b.HasOne("AdmissionSystem2.Entites.Applicant", "Applicant")
-                        .WithMany()
-                        .HasForeignKey("ApplicantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AdmissionSystem2.Entites.MedicalHistory", "MedicalHistory")
-                        .WithMany()
-                        .HasForeignKey("MedicalHistoryId");
-
-                    b.HasOne("AdmissionSystem2.Entites.Payment", "Payment")
-                        .WithMany()
-                        .HasForeignKey("PaymentId");
-
-                    b.Navigation("AdmissionDetails");
-
-                    b.Navigation("Applicant");
-
-                    b.Navigation("MedicalHistory");
-
-                    b.Navigation("Payment");
-                });
-
             modelBuilder.Entity("AdmissionSystem2.Entites.Document", b =>
                 {
                     b.HasOne("AdmissionSystem2.Entites.Applicant", "Applicant")
@@ -571,10 +474,6 @@ namespace AdmissionSystem2.Migrations
                         .HasForeignKey("ApplicantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("AdmissionSystem2.Entites.Application", null)
-                        .WithMany("Documents")
-                        .HasForeignKey("ApplicationId");
 
                     b.Navigation("Applicant");
                 });
@@ -586,10 +485,6 @@ namespace AdmissionSystem2.Migrations
                         .HasForeignKey("ApplicantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("AdmissionSystem2.Entites.Application", null)
-                        .WithMany("EmergencyContact")
-                        .HasForeignKey("ApplicationId");
 
                     b.Navigation("Applicant");
                 });
@@ -624,10 +519,6 @@ namespace AdmissionSystem2.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AdmissionSystem2.Entites.Application", null)
-                        .WithMany("ParentInfo")
-                        .HasForeignKey("ApplicationId");
-
                     b.Navigation("Applicant");
                 });
 
@@ -649,10 +540,6 @@ namespace AdmissionSystem2.Migrations
                         .HasForeignKey("ApplicantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("AdmissionSystem2.Entites.Application", null)
-                        .WithMany("Sibling")
-                        .HasForeignKey("ApplicationId");
 
                     b.Navigation("Applicant");
                 });
@@ -708,17 +595,6 @@ namespace AdmissionSystem2.Migrations
                     b.Navigation("ParentInfo");
 
                     b.Navigation("Payment");
-
-                    b.Navigation("Sibling");
-                });
-
-            modelBuilder.Entity("AdmissionSystem2.Entites.Application", b =>
-                {
-                    b.Navigation("Documents");
-
-                    b.Navigation("EmergencyContact");
-
-                    b.Navigation("ParentInfo");
 
                     b.Navigation("Sibling");
                 });

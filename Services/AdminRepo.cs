@@ -21,6 +21,11 @@ namespace AdmissionSystem2.Services
             _AdmissionSystemDbContext = admissionSystemDbContext;
             _Mapper = Mapper;
         }
+
+        public int GetApplicantsCount()
+        {
+            return _AdmissionSystemDbContext.Applicant.Count();
+        }
         public MedicalHistory GetMedicalHistory(int applicantId)
         {
             return _AdmissionSystemDbContext.MedicalHistory.FirstOrDefault(a => a.ApplicantId == applicantId);
@@ -87,6 +92,7 @@ namespace AdmissionSystem2.Services
             _AdmissionSystemDbContext.Sibling.Remove(sibling);
         }
         public Applicant GetApplication(int ApplicantId)
+      /*  public Application GetApplication(int ApplicantId)
         {
             Applicant Applicant = _AdmissionSystemDbContext.Applicant
                 .Include(a => a.ParentInfo)
@@ -114,5 +120,88 @@ namespace AdmissionSystem2.Services
             return (_AdmissionSystemDbContext.SaveChanges() >= 0);
         }
     
+        }*/
+        public bool CheakAdmissionPeriod()
+        {
+            return _AdmissionSystemDbContext.AdmissionPeriod.Any();
+        }
+        public bool AddAdmissionPeriod(AdmissionPeriod AdmissionPeriod)
+        {
+            if (!CheakAdmissionPeriod())
+            {
+                _AdmissionSystemDbContext.AdmissionPeriod.Add(AdmissionPeriod);
+                return false;
+            }
+            return CheakAdmissionPeriod();
+        }
+        public AdmissionPeriod GetAdmissionPeriod()
+        {
+            return _AdmissionSystemDbContext.AdmissionPeriod.FirstOrDefault();
+        }
+        public string GetPeriodLeft()
+        {
+            DateTime startTime = DateTime.Now;
+            string Date = GetAdmissionPeriod().EndDate + " " + GetAdmissionPeriod().EndTime;
+            DateTime oDate = DateTime.ParseExact(Date, "yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture);
+            TimeSpan span = oDate.Subtract(startTime);
+            String yourString = string.Format("{0} days, {1} hours",
+                span.Days, span.Hours);
+            return yourString;
+        }
+        public void ExtendAdmissionPeriod(string ExtraPeriod)
+        {
+            string[] period = ExtraPeriod.Split('/');
+            var AdmissionPeriod = GetAdmissionPeriod();
+            string[] Admission_Date = AdmissionPeriod.EndDate.Split('-');
+            string Admission_Time = AdmissionPeriod.EndTime.Substring(0, 2);
+            string h = AdmissionPeriod.EndTime.Substring(2);
+            int Days = Int16.Parse(Admission_Date[2]) + Int16.Parse(period[0]);
+            int Hours = Int16.Parse(period[1]) + Int16.Parse(Admission_Time);
+            int Month = Int16.Parse(Admission_Date[1]);
+            if (Hours > 24)
+            {
+                Days += 1;
+                Hours -= 24;
+            }
+            if (Days > 30)
+            {
+                Month += 1;
+                Days -= 30;
+            }
+            if (Month < 10)
+            {
+                Admission_Date[1] = "0" + Month.ToString();
+            }
+            else
+            {
+                Admission_Date[1] = Month.ToString();
+            }
+            if (Days < 10)
+            {
+                Admission_Date[2] = "0" + Days.ToString();
+            }
+            else
+            {
+                Admission_Date[2] = Days.ToString();
+            }
+            if (Hours < 10)
+            {
+                Admission_Time = "0" + Hours.ToString();
+            }
+            else
+            {
+                Admission_Time = Hours.ToString();
+            }
+            AdmissionPeriod.EndDate = Admission_Date[0] + "-" + Admission_Date[1] + "-" + Admission_Date[2];
+            AdmissionPeriod.EndTime = Admission_Time + h;
+            _AdmissionSystemDbContext.AdmissionPeriod.Update(AdmissionPeriod);
+        }
+        public bool Save()
+        {
+            return (_AdmissionSystemDbContext.SaveChanges() >= 0);
+        }
+
+        
     }
-}
+    }
+
