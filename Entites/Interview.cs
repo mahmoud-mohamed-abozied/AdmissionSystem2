@@ -13,9 +13,13 @@ namespace AdmissionSystem2.Entites
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int InterviewId { get; set; }
         public string InterviewerName { get; set; }
+        public string InterviewDate { get; set; }
+        public string InterviewTime { get; set; }
         public int ApplicantId { get; set; }
         public string InterviewType { get; set; }
         public string AcadmicYear { get; set; }
+        public int Score { get; set; }
+        public String ScoreGrade { get; set; } 
 
 
 

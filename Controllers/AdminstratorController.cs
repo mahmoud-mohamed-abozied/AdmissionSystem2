@@ -51,7 +51,12 @@ namespace AdmissionSystem2.Controllers
             return Ok(ParentInfoToReturn);
         }
 
-       
+       [HttpGet("ApplicantsCount")]
+       public IActionResult GetApplicantsCount()
+        {
+            var Count = _AdmissionRepo.GetApplicantsCount();
+            return Ok(Count);
+        }
 
         /*
          [HttpPut("ApplicantId/Document/Id")]

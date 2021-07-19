@@ -2009,8 +2009,9 @@ class submission {
         };
     }
     submitStudent() {
-        return this.http.post("https://localhost:44363/api/applicant", this.studentData).subscribe((Response) => {
-            console.log(Response);
+        return this.http.post("https://localhost:44363/api/applicant", this.studentData).subscribe((response) => {
+            console.log(this.studentData);
+            console.log(response);
         });
     }
 }

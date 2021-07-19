@@ -47,6 +47,10 @@ namespace AdmissionSystem2.Controllers
         [HttpPost()]
         public IActionResult AddApplicant([FromBody] ApplicantForCreation ApplicantForCreation)
         {
+            if (ApplicantForCreation == null)
+            {
+                return BadRequest();
+            }
             var final = _Mapper.Map<Applicant>(ApplicantForCreation);
             _AdmissionRepo.AddApplicant(final);
             _AdmissionRepo.Save();

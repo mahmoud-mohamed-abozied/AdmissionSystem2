@@ -20,6 +20,11 @@ namespace AdmissionSystem2.Services
             _AdmissionSystemDbContext = admissionSystemDbContext;
             _Mapper = Mapper;
         }
+
+        public int GetApplicantsCount()
+        {
+            return _AdmissionSystemDbContext.Applicant.Count();
+        }
         public MedicalHistory GetMedicalHistory(int applicantId)
         {
             return _AdmissionSystemDbContext.MedicalHistory.FirstOrDefault(a => a.ApplicantId == applicantId);
