@@ -30,7 +30,11 @@ namespace AdmissionSystem2.Services
         ParentInfo ParentInfoExist(int ApplicantId, Guid ParentInfoId);
         AdmissionPeriod GetAdmissionPeriod();
         string GetPeriodLeft();
+        void AddInterviewDatesForApplicant(InterviewCriteriaForCreation InterviewCriteriaForCreation);
         void ExtendAdmissionPeriod(string ExtraPeriod);
+        void AddInterviewCritera(InterviewCriteria interviewCriteria);
+        bool CheakInterviewCriteria(InterviewCriteriaForCreation InterviewCriteriaForCreation);
+        bool CheakInterviewCriteria();
         void DeleteSibling(Sibling sibling);
         bool CheakAdmissionPeriod();
         bool AddAdmissionPeriod(AdmissionPeriod AdmissionPeriod);
