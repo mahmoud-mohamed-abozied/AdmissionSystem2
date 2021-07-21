@@ -11,7 +11,7 @@ namespace AdmissionSystem2.Entites
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ApplicantId { set; get; }
+        public Guid ApplicantId { set; get; }
         public String FirstName { set; get; }
         public String SecondName { set; get; }
         public String LastName { set; get; }
@@ -23,7 +23,9 @@ namespace AdmissionSystem2.Entites
         public String Gender { set; get; }
         public String SpokenLanguage { set; get; }
         public String Status { set; get; }
-        public string AdmissionDate { get; set; }
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy/MM/dd}")]
+        public DateTime AdmissionDate { get; set; }
+        public string Email { get; set; }
         public ICollection<ParentInfo> ParentInfo { set; get; } = new List<ParentInfo>();
         public ICollection<EmergencyContact> EmergencyContact { set; get; } = new List<EmergencyContact>();
         public ICollection<Document> Documents { set; get; } = new List<Document>();

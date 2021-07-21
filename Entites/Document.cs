@@ -15,10 +15,9 @@ namespace AdmissionSystem2.Entites
         public int Id { get; set; }
         public string DocumentType { get; set; }
         public string DocumentName { get; set; }
-        
         public Byte[] Copy { get; set; }
         [ForeignKey("ApplicantId")]
         public Applicant Applicant { get; set; }
-        public int ApplicantId { get; set; }
+        public Guid ApplicantId { get; set; }
     }
 }

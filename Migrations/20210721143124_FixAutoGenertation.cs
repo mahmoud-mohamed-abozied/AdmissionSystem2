@@ -2,7 +2,7 @@
 
 namespace AdmissionSystem2.Migrations
 {
-    public partial class Database2 : Migration
+    public partial class FixAutoGenertation : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

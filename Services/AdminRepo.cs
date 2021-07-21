@@ -25,15 +25,15 @@ namespace AdmissionSystem2.Services
         {
             return _AdmissionSystemDbContext.Applicant.Count();
         }
-        public MedicalHistory GetMedicalHistory(int applicantId)
+        public MedicalHistory GetMedicalHistory(Guid applicantId)
         {
             return _AdmissionSystemDbContext.MedicalHistory.FirstOrDefault(a => a.ApplicantId == applicantId);
         }
-        public AdmissionDetails GetAdmissionDetails(int applicantId, Guid AdmissionDetailsId)
+        public AdmissionDetails GetAdmissionDetails(Guid applicantId, Guid AdmissionDetailsId)
         {
             return _AdmissionSystemDbContext.AdmissionDetails.Where(a => a.ApplicantId == applicantId && a.Id == AdmissionDetailsId).FirstOrDefault();
         }
-        public MedicalHistory GetMedicalHistory(int applicantId, Guid MedicalHistoryId)
+        public MedicalHistory GetMedicalHistory(Guid applicantId, Guid MedicalHistoryId)
 
         {
             return _AdmissionSystemDbContext.MedicalHistory.Where(a => a.ApplicantId == applicantId).FirstOrDefault();
@@ -153,49 +153,49 @@ namespace AdmissionSystem2.Services
         {
             return _AdmissionSystemDbContext.InterviewCriteria.Any();
         }
-        public Sibling GetSibling(int applicantId, Guid siblingId)
+        public Sibling GetSibling(Guid applicantId, Guid siblingId)
         {
             return _AdmissionSystemDbContext.Sibling.Where(a => a.ApplicantId == applicantId && a.SibilingId == siblingId).FirstOrDefault();
         }
-        public IEnumerable<Sibling> GetSiblings(int applicantId)
+        public IEnumerable<Sibling> GetSiblings(Guid applicantId)
         {
             return _AdmissionSystemDbContext.Sibling.Where(a => a.ApplicantId == applicantId).OrderBy(a => a.SiblingName).ToList();
         }
-        public EmergencyContact GetEmergencyContact(int ApplicantId, Guid Id)
+        public EmergencyContact GetEmergencyContact(Guid ApplicantId, Guid Id)
         {
             return _AdmissionSystemDbContext.EmergencyContact.FirstOrDefault(a => a.ApplicantId == ApplicantId && a.Id == Id);
         }
-        public Document GetDocument(int ApplicantId, int DocumentId)
+        public Document GetDocument(Guid ApplicantId, int DocumentId)
         {
             return _AdmissionSystemDbContext.Documents.FirstOrDefault(a => a.ApplicantId == ApplicantId && a.Id == DocumentId);
         }
-        public IEnumerable<ParentInfo> GetParentsInfos(int ApplicantId)
+        public IEnumerable<ParentInfo> GetParentsInfos(Guid ApplicantId)
         {
             return _AdmissionSystemDbContext.ParentInfo.Where(a => a.ApplicantId == ApplicantId).ToList();
 
         }
-        public ParentInfo GetParentInfos(int ApplicantId, string Gender)
+        public ParentInfo GetParentInfos(Guid ApplicantId, string Gender)
         {
             return _AdmissionSystemDbContext.ParentInfo.Where(a => a.ApplicantId == ApplicantId && a.Gender == Gender).FirstOrDefault();
 
         }
-        public AdmissionDetails GetAdmissionDetails(int ApplicantId)
+        public AdmissionDetails GetAdmissionDetails(Guid ApplicantId)
         {
             return _AdmissionSystemDbContext.AdmissionDetails.Where(a => a.ApplicantId == ApplicantId).FirstOrDefault();
         }
-        public IEnumerable<EmergencyContact> GetEmergencyContacts(int ApplicantId)
+        public IEnumerable<EmergencyContact> GetEmergencyContacts(Guid ApplicantId)
         {
             return _AdmissionSystemDbContext.EmergencyContact.Where(a => a.ApplicantId == ApplicantId).ToList();
         }
-        public IEnumerable<Document> GetDocuments(int ApplicantId)
+        public IEnumerable<Document> GetDocuments(Guid ApplicantId)
         {
             return _AdmissionSystemDbContext.Documents.Where(a => a.ApplicantId == ApplicantId).ToList();
         }
-        public ParentInfo ParentInfoExist(int ApplicantId, Guid ParentInfoId)
+        public ParentInfo ParentInfoExist(Guid ApplicantId, Guid ParentInfoId)
         {
             return _AdmissionSystemDbContext.ParentInfo.FirstOrDefault(a => a.ApplicantId == ApplicantId && a.Id == ParentInfoId);
         }
-        public Applicant GetApplicant(int _ApplicantId)
+        public Applicant GetApplicant(Guid _ApplicantId)
         {
             var Applicant = _AdmissionSystemDbContext.Applicant.FirstOrDefault(a => a.ApplicantId == _ApplicantId);
             return Applicant;

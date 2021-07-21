@@ -53,10 +53,10 @@ namespace AdmissionSystem2.Controllers
         [HttpPost()]
         public IActionResult AddApplicant([FromBody] ApplicantForCreation ApplicantForCreation)
         {
-            if (ApplicantForCreation == null)
+          /*  if (ApplicantForCreation == null)
             {
                 return BadRequest();
-            }
+            }*/
             var final = _Mapper.Map<Applicant>(ApplicantForCreation);
             _AdmissionRepo.AddApplicant(final);
             _AdmissionRepo.Save();
@@ -65,7 +65,7 @@ namespace AdmissionSystem2.Controllers
         }
 
         [HttpPost("{ApplicantId}/ParentInfo")]
-        public IActionResult AddParentInfo(int ApplicantId, [FromBody] ParentInfoForCreation ParentInfoForCreation)
+        public IActionResult AddParentInfo(Guid ApplicantId, [FromBody] ParentInfoForCreation ParentInfoForCreation)
         {
            
             if (ParentInfoForCreation == null)
@@ -84,7 +84,7 @@ namespace AdmissionSystem2.Controllers
         }
 
         [HttpPost("{ApplicantId}/EmergencyContact")]
-        public IActionResult AddEmergencyContact(int ApplicantId, [FromBody] EmergencyContactForCreation EmergencyContactForCreation)
+        public IActionResult AddEmergencyContact(Guid ApplicantId, [FromBody] EmergencyContactForCreation EmergencyContactForCreation)
         {
             if (EmergencyContactForCreation == null)
             {
@@ -100,7 +100,7 @@ namespace AdmissionSystem2.Controllers
             return Ok();
         }
         [HttpPost("{ApplicantId}/FamilyStatus")]
-        public IActionResult AddFamilyStatus(int ApplicantId, [FromBody] FamilyStatusForCreation familyStatusForCreation)
+        public IActionResult AddFamilyStatus(Guid ApplicantId, [FromBody] FamilyStatusForCreation familyStatusForCreation)
         {
             if (familyStatusForCreation == null)
             {
@@ -120,7 +120,7 @@ namespace AdmissionSystem2.Controllers
         }
 
         [HttpPost("{applicantId}/Sibling")]
-        public IActionResult AddSibling(int applicantId, [FromBody] SiblingForCreation sibling)
+        public IActionResult AddSibling(Guid applicantId, [FromBody] SiblingForCreation sibling)
 
         {
             if (sibling == null)
@@ -147,7 +147,7 @@ namespace AdmissionSystem2.Controllers
         }
 
         [HttpPost("{applicantId}/Siblings")]
-        public IActionResult AddSiblings(int applicantId, [FromBody] IEnumerable<SiblingForCreation> siblings)
+        public IActionResult AddSiblings(Guid applicantId, [FromBody] IEnumerable<SiblingForCreation> siblings)
         {
             if (siblings == null)
             {
@@ -176,7 +176,7 @@ namespace AdmissionSystem2.Controllers
 
 
         [HttpPost("{applicantId}/Medical")]
-        public IActionResult AddMedicalDetails(int applicantId, [FromBody] MedicalHistoryForCreation medicalHistory)
+        public IActionResult AddMedicalDetails(Guid applicantId, [FromBody] MedicalHistoryForCreation medicalHistory)
         {
             if (medicalHistory == null)
             {
@@ -372,7 +372,7 @@ namespace AdmissionSystem2.Controllers
 
 
         [HttpPost("{ApplicantId}/AdmissionDetails")]
-        public IActionResult AddAdmissionDetails(int ApplicantId, [FromBody] AdmissionDetailsForCreation admissionDetails)
+        public IActionResult AddAdmissionDetails(Guid ApplicantId, [FromBody] AdmissionDetailsForCreation admissionDetails)
         {
             if (admissionDetails == null)
             {
@@ -393,7 +393,7 @@ namespace AdmissionSystem2.Controllers
 
 
         [HttpPost("{ApplicantId}/Document")]
-        public IActionResult AddDocument(int ApplicantID, [FromForm] DocumentForCreation DocumentForCreation)
+        public IActionResult AddDocument(Guid ApplicantID, [FromForm] DocumentForCreation DocumentForCreation)
         {
             if (DocumentForCreation == null)
             {
@@ -435,7 +435,7 @@ namespace AdmissionSystem2.Controllers
                   }
 
         [HttpPost("{ApplicantId}/Document/{Id}")]
-        public IActionResult UpdateDocument(int ApplicantID, int Id, [FromForm] DocumentForCreation DocumentForCreation)
+        public IActionResult UpdateDocument(Guid ApplicantID,int Id ,[FromForm] DocumentForCreation DocumentForCreation)
         {
             if (DocumentForCreation == null)
             {
@@ -734,7 +734,7 @@ namespace AdmissionSystem2.Controllers
 
 
         [HttpDelete("{applicantId}/siblings/{id}")]
-        public IActionResult DeleteSibling(int applicantId, Guid id)
+        public IActionResult DeleteSibling(Guid applicantId, Guid id)
         {
             if (_AdmissionRepo.GetApplicant(applicantId) == null)
             {
@@ -760,7 +760,7 @@ namespace AdmissionSystem2.Controllers
 
 
         [HttpPatch("{applicantId}")]
-        public IActionResult UpdateApplicant(int applicantId, [FromBody] JsonPatchDocument<ApplicantForUpdate> patchdoc)
+        public IActionResult UpdateApplicant(Guid applicantId, [FromBody] JsonPatchDocument<ApplicantForUpdate> patchdoc)
         {
             if (patchdoc == null)
             {
@@ -835,7 +835,7 @@ namespace AdmissionSystem2.Controllers
 
 
         [HttpPatch("{ApplicantId}/ParentInfo/{Id}")]
-        public IActionResult UpdateParentInfo(int ApplicantId, Guid Id, [FromBody] JsonPatchDocument<ParentInfoForUpdate> patchDoc)
+        public IActionResult UpdateParentInfo(Guid ApplicantId, Guid Id, [FromBody] JsonPatchDocument<ParentInfoForUpdate> patchDoc)
         {
             if (patchDoc == null)
             {
@@ -871,7 +871,7 @@ namespace AdmissionSystem2.Controllers
 
         }
         [HttpPatch("{ApplicantId}/EmergencyContact/{Id}")]
-        public IActionResult UpdateEmergencyContact(int ApplicantId, Guid Id, [FromBody] JsonPatchDocument<EmergencyContactForUpdate> patchDoc)
+        public IActionResult UpdateEmergencyContact(Guid ApplicantId, Guid Id, [FromBody] JsonPatchDocument<EmergencyContactForUpdate> patchDoc)
         {
             if (patchDoc == null)
             {
@@ -908,7 +908,7 @@ namespace AdmissionSystem2.Controllers
         }
 
         [HttpPatch("{applicantId}/siblings/{id}")]
-        public IActionResult PartiallyUpdateSibling(int applicantId, Guid id,
+        public IActionResult PartiallyUpdateSibling(Guid applicantId, Guid id,
            [FromBody] JsonPatchDocument<SiblingForUpdate> patchDoc)
         {
             if (patchDoc == null)
@@ -950,7 +950,7 @@ namespace AdmissionSystem2.Controllers
         }
 
         [HttpPatch("{applicantId}/medical/{id}")]
-        public IActionResult PartiallyUpdateAdmissionDetails(int applicantId, Guid id,
+        public IActionResult PartiallyUpdateAdmissionDetails(Guid applicantId, Guid id,
            [FromBody] JsonPatchDocument<AdmissionDetailsForUpdate> patchDoc)
         {
             if (patchDoc == null)

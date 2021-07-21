@@ -28,7 +28,7 @@ namespace AdmissionSystem2.Controllers
             return View();
         }
         [HttpGet("{ApplicantId}/ParentInfo/{Gender}")]
-        public IActionResult GetParentInfo(int ApplicantId, string Gender)
+        public IActionResult GetParentInfo(Guid ApplicantId, string Gender)
         {
             var ParentInfo = _AdmissionRepo.GetParentInfos(ApplicantId, Gender);
             if (ParentInfo == null)
@@ -40,7 +40,7 @@ namespace AdmissionSystem2.Controllers
         }
 
         [HttpGet("{ApplicantId}/ParentInfo")]
-        public IActionResult GetParentsInfo(int ApplicantId)
+        public IActionResult GetParentsInfo(Guid ApplicantId)
         {
             var ParentInfo = _AdmissionRepo.GetParentsInfos(ApplicantId);
             if (ParentInfo == null)
@@ -91,7 +91,7 @@ namespace AdmissionSystem2.Controllers
 
         */
         [HttpGet("{applicantId}/Document/{id}")]
-        public IActionResult GetDocument(int applicantId, int id)
+        public IActionResult GetDocument(Guid applicantId, int id)
         {
             var DocumentFromRepo = _AdmissionRepo.GetDocument(applicantId, id);
             if (DocumentFromRepo == null)
@@ -108,7 +108,7 @@ namespace AdmissionSystem2.Controllers
 
 
         [HttpGet("{ApplicantId}")]
-        public IActionResult GetApplicant(int applicantId)
+        public IActionResult GetApplicant(Guid applicantId)
         {
             var Applicant = _AdmissionRepo.GetApplicant(applicantId);
             if (Applicant == null)
@@ -123,7 +123,7 @@ namespace AdmissionSystem2.Controllers
 
 
         [HttpGet("{ApplicantId}/EmergencyContacts")]
-        public IActionResult GetEmergencyContacts(int ApplicantId)
+        public IActionResult GetEmergencyContacts(Guid ApplicantId)
         {
             var EmergencyContacts = _AdmissionRepo.GetEmergencyContacts(ApplicantId);
             if (EmergencyContacts == null)
@@ -137,7 +137,7 @@ namespace AdmissionSystem2.Controllers
 
 
         [HttpGet("{ApplicantId}/AdmissionDetails")]
-        public IActionResult GetAdmissionDetails(int ApplicantId)
+        public IActionResult GetAdmissionDetails(Guid ApplicantId)
         {
             var AdmissionDetails = _AdmissionRepo.GetAdmissionDetails(ApplicantId);
             if (AdmissionDetails == null)
@@ -150,7 +150,7 @@ namespace AdmissionSystem2.Controllers
 
 
         [HttpGet("{applicantId}/Medical")]
-        public IActionResult GetMedicalDetails(int applicantId)
+        public IActionResult GetMedicalDetails(Guid applicantId)
         {
             var MedicalDetailsFromRepo = _AdmissionRepo.GetMedicalHistory(applicantId);
             if (MedicalDetailsFromRepo == null)
@@ -167,7 +167,7 @@ namespace AdmissionSystem2.Controllers
 
 
         [HttpGet("{applicantId}/Siblings/{id}", Name = "getSibling")]
-        public IActionResult GetSibling(int applicantId, Guid id)
+        public IActionResult GetSibling(Guid applicantId, Guid id)
         {
             if (_AdmissionRepo.GetApplicant(applicantId) == null)
             {
@@ -189,7 +189,7 @@ namespace AdmissionSystem2.Controllers
 
 
         [HttpGet("{applicantId}/Siblings")]
-        public IActionResult GetSiblings(int applicantId)
+        public IActionResult GetSiblings(Guid applicantId)
         {
             if (_AdmissionRepo.GetApplicant(applicantId) == null)
             {
@@ -250,7 +250,7 @@ namespace AdmissionSystem2.Controllers
 
 
         [HttpDelete("{applicantId}/siblings/{id}")]
-        public IActionResult DeleteSibling(int applicantId, Guid id)
+        public IActionResult DeleteSibling(Guid applicantId, Guid id)
         {
             if (_AdmissionRepo.GetApplicant(applicantId) == null)
             {

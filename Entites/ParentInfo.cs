@@ -28,6 +28,6 @@ namespace AdmissionSystem2.Entites
         public String IdentificationNumber { set; get; }
         [ForeignKey("ApplicantId")]
         public Applicant Applicant { set; get; }
-        public int ApplicantId { set; get; }
+        public Guid ApplicantId { set; get; }
     }
 }

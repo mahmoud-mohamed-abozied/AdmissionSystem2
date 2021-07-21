@@ -18,7 +18,7 @@ namespace AdmissionSystem2.Entites
         public string MaritalStatus { get; set; }
         [ForeignKey("ApplicantId")]
         public Applicant Applicant { get; set; }
-        public int ApplicantId { get; set; }
+        public Guid ApplicantId { get; set; }
 
 
     }

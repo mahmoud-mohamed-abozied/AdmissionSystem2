@@ -28,8 +28,8 @@ namespace AdmissionSystem2.Migrations
                     b.Property<string>("AcademicYear")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ApplicantId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ApplicantId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Grade")
                         .HasColumnType("nvarchar(max)");
@@ -74,15 +74,17 @@ namespace AdmissionSystem2.Migrations
 
             modelBuilder.Entity("AdmissionSystem2.Entites.Applicant", b =>
                 {
-                    b.Property<int>("ApplicantId")
+                    b.Property<Guid>("ApplicantId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("AdmissionDate")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("AdmissionDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("DateOfBirth")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FirstName")
@@ -133,8 +135,8 @@ namespace AdmissionSystem2.Migrations
                     b.Property<Guid?>("AdmissionDetailsId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("ApplicantId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ApplicantId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("MedicalHistoryId")
                         .HasColumnType("uniqueidentifier");
@@ -165,8 +167,8 @@ namespace AdmissionSystem2.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("ApplicantId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ApplicantId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int?>("ApplicationId")
                         .HasColumnType("int");
@@ -195,8 +197,8 @@ namespace AdmissionSystem2.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("ApplicantId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ApplicantId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int?>("ApplicationId")
                         .HasColumnType("int");
@@ -228,8 +230,8 @@ namespace AdmissionSystem2.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("ApplicantId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ApplicantId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Guardian")
                         .HasColumnType("nvarchar(max)");
@@ -264,8 +266,8 @@ namespace AdmissionSystem2.Migrations
                     b.Property<string>("ApplicantEmail")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ApplicantId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ApplicantId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("InterviewDate")
                         .HasColumnType("nvarchar(max)");
@@ -328,8 +330,8 @@ namespace AdmissionSystem2.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("ApplicantId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ApplicantId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("Glass")
                         .HasColumnType("bit");
@@ -360,8 +362,8 @@ namespace AdmissionSystem2.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("ApplicantId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ApplicantId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int?>("ApplicationId")
                         .HasColumnType("int");
@@ -426,8 +428,8 @@ namespace AdmissionSystem2.Migrations
                     b.Property<float>("Amount")
                         .HasColumnType("real");
 
-                    b.Property<int>("ApplicantId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ApplicantId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
@@ -455,8 +457,8 @@ namespace AdmissionSystem2.Migrations
                     b.Property<int>("Age")
                         .HasColumnType("int");
 
-                    b.Property<int>("ApplicantId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ApplicantId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int?>("ApplicationId")
                         .HasColumnType("int");
