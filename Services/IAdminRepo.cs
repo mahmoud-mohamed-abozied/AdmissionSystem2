@@ -1,7 +1,5 @@
 ﻿using AdmissionSystem2.Entites;
-
 using AdmissionSystem2.Models;
-
 using AdmissionSystem2.Helpers;
 using System;
 using System.Collections.Generic;
@@ -36,8 +34,6 @@ namespace AdmissionSystem2.Services
         bool CheakInterviewCriteria(InterviewCriteriaForCreation InterviewCriteriaForCreation);
         bool CheakInterviewCriteria();
         void DeleteSibling(Sibling sibling);
-        bool CheakAdmissionPeriod();
-        bool AddAdmissionPeriod(AdmissionPeriod AdmissionPeriod);
         bool Save();
 
     }

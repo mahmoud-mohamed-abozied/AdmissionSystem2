@@ -1,4 +1,5 @@
 ﻿using AdmissionSystem2.Entites;
+using AdmissionSystem2.Helpers;
 using AdmissionSystem2.Models;
 using AutoMapper;
 using System;
@@ -143,14 +144,29 @@ namespace AdmissionSystem2.Services
             return _AdmissionSystemDbContext.AdmissionDetails.Where(a => a.ApplicantId == applicantId && a.Id == AdmissionDetailsId).FirstOrDefault();
         }
         //public MedicalHistory GetMedicalHistory(int applicantId)
+        public MedicalHistory GetMedicalHistory(int applicantId, Guid MedicalHistoryId)
 
+        {
+            return _AdmissionSystemDbContext.MedicalHistory.Where(a => a.ApplicantId == applicantId).FirstOrDefault();
+        }
+
+        public Sibling GetSibling(int applicantId, Guid siblingId)
+        {
+            return _AdmissionSystemDbContext.Sibling.Where(a => a.ApplicantId == applicantId && a.SibilingId == siblingId).FirstOrDefault();
+        }
+
+        public IEnumerable<Sibling> GetSiblings(int applicantId)
+        {
+            return _AdmissionSystemDbContext.Sibling.Where(a => a.ApplicantId == applicantId).OrderBy(a => a.SiblingName).ToList();
+        }
 
         public void DeleteSibling(Sibling sibling)
         {
             _AdmissionSystemDbContext.Sibling.Remove(sibling);
             //Applicant.Sibling.Remove(sibling);
         }
-        public void UpdateApplicant1(Applicant Applicant)
+
+       public void UpdateApplicant1(Applicant Applicant)
         {
             _AdmissionSystemDbContext.Applicant.Update(Applicant);
             //throw new NotImplementedException();
@@ -182,7 +198,7 @@ namespace AdmissionSystem2.Services
         }
         
 
-    public void AddFamilyStatus(Guid ApplicantId, FamilyStatus familyStatus)
+    public void AddFamilyStatus(int ApplicantId, FamilyStatus familyStatus)
         {
             var applicant = GetApplicant(ApplicantId);
             if (applicant != null)
@@ -190,5 +206,6 @@ namespace AdmissionSystem2.Services
                 applicant.Family_Status = familyStatus;
             }
         }
+
     }
 }
