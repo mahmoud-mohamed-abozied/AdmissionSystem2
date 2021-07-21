@@ -13,10 +13,12 @@ namespace AdmissionSystem2.Entites
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
         public string StartDate { get; set; }
+        public string StartTime{ get; set; }
         public string EndDate { get; set; }
+        public string EndTime { get; set; }
         public int InterviewDuration {get; set;}
         public int BreakTime { get; set; }
-        public int NumberOfInterviewer { get; set; }
+        public int NumberOfInterviewers { get; set; }
 
     }
 }

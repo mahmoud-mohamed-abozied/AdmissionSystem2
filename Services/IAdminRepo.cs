@@ -1,7 +1,5 @@
 ﻿using AdmissionSystem2.Entites;
-
 using AdmissionSystem2.Models;
-
 using AdmissionSystem2.Helpers;
 using System;
 using System.Collections.Generic;
@@ -29,6 +27,13 @@ namespace AdmissionSystem2.Services
         IEnumerable<Sibling> GetSiblings(int applicantId);
         IEnumerable<ParentInfo> GetParentsInfos(int ApplicantId);
         ParentInfo ParentInfoExist(int ApplicantId, Guid ParentInfoId);
+        AdmissionPeriod GetAdmissionPeriod();
+        string GetPeriodLeft();
+        void AddInterviewDatesForApplicant(InterviewCriteriaForCreation InterviewCriteriaForCreation);
+        void ExtendAdmissionPeriod(string ExtraPeriod);
+        void AddInterviewCritera(InterviewCriteria interviewCriteria);
+        bool CheakInterviewCriteria(InterviewCriteriaForCreation InterviewCriteriaForCreation);
+        bool CheakInterviewCriteria();
         void DeleteSibling(Sibling sibling);
         bool Save();
 

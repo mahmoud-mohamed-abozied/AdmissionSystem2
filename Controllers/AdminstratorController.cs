@@ -208,6 +208,35 @@ namespace AdmissionSystem2.Controllers
             return Ok(Siblings);
 
         }
+
+        
+        [HttpPost("InterviewCriteria")]
+        public IActionResult SetInterviewCriteria([FromBody]InterviewCriteriaForCreation InterviewCriteriaForCreation)
+        {
+            if (InterviewCriteriaForCreation == null)
+            {
+                return BadRequest();
+            }
+            if (_AdmissionRepo.CheakInterviewCriteria())
+            {
+                return BadRequest("Interview Criteria Already been set ");
+            }
+            if (!_AdmissionRepo.CheakInterviewCriteria(InterviewCriteriaForCreation))
+            {
+                return BadRequest("Not Fit Criteria");
+            }
+
+            var InterviewCriteriaToAdd = _Mapper.Map<InterviewCriteria>(InterviewCriteriaForCreation);
+            _AdmissionRepo.AddInterviewCritera(InterviewCriteriaToAdd);
+            if (!_AdmissionRepo.Save())
+            {
+                throw new Exception("Failed to Add Interview Criteria");
+            }
+            _AdmissionRepo.AddInterviewDatesForApplicant(InterviewCriteriaForCreation);
+            return Ok("Successful Add For Interview Criteria");
+        }
+     /*   [HttpGet("{ApplicantId}/GetApplication")]
+
         [HttpGet("{ApplicantId}/GetApplication")]
         public IActionResult GetApplication(int ApplicantId)
         {
@@ -244,7 +273,7 @@ namespace AdmissionSystem2.Controllers
             return NoContent();
 
         }
-
+*/
         
     }
 }

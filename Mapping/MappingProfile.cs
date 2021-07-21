@@ -32,9 +32,6 @@ namespace AdmissionSystem2.Mapping
             CreateMap<MedicalHistory, MedicalHistoryForUpdate>().ReverseMap();
             CreateMap<FamilyStatusForCreation, FamilyStatus>();
             CreateMap<AdmissionPeriodForCreation, AdmissionPeriod>();
-
-
-
             CreateMap<EmergencyContact, EmergencyContactDto>();
             CreateMap<EmergencyContact, EmergencyContactForUpdate>();
             CreateMap<EmergencyContactForUpdate, EmergencyContact>();
@@ -50,6 +47,7 @@ namespace AdmissionSystem2.Mapping
             CreateMap<MedicalHistory, MedicalHistoryForUpdate>();
             CreateMap<MedicalHistoryForUpdate, MedicalHistory>();
             CreateMap<MedicalHistory, MedicalHistoryDto>();
+            CreateMap<InterviewCriteriaForCreation, InterviewCriteria>();
 
 
         }

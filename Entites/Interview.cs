@@ -18,6 +18,7 @@ namespace AdmissionSystem2.Entites
         public int ApplicantId { get; set; }
         public string InterviewType { get; set; }
         public string AcadmicYear { get; set; }
+        public string ApplicantEmail { get; set;}
         public int Score { get; set; }
         public String ScoreGrade { get; set; } 
 
