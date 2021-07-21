@@ -45,6 +45,8 @@ namespace AdmissionSystem2
             services.AddScoped<IAdmissionRepo, AdmissionRepo>();
             services.AddScoped<IAdminRepo, AdminRepo>();
 
+            services.AddHttpContextAccessor();
+            services.AddTransient<IPropertyMappingService, PropertyMappingService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

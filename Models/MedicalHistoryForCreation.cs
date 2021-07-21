@@ -7,7 +7,6 @@ namespace AdmissionSystem2.Models
 {
     public class MedicalHistoryForCreation
     {
-        public Guid MedicalHistoryId { set; get; }
         public bool Glass { set; get; }
         public bool Hearing { set; get; }
         public string MedicalConditions { set; get; }

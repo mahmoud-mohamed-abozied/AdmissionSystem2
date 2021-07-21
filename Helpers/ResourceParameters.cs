@@ -25,7 +25,12 @@ namespace AdmissionSystem2.Helpers
             }
         }
 
-        public string SearchQuery { get; set; }
+        public string Name { get; set; }
+        public string Date { get; set; }
+        public string Status { get; set; }
+        public String SearchQuery { get; set; }
+        public string OrderBy { get; set; } = "Name";
+
 
     }
 }

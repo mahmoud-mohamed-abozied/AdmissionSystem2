@@ -18,7 +18,7 @@ namespace AdmissionSystem2.Entites
         public string SchoolBranch { set; get; }
 
         [ForeignKey("ApplicantId")]
-        public Applicant Applicant { set; get; }
+        public Applicant Applicant { set; get; } //Reference navigation property
         public int ApplicantId { set; get; }
 
     }

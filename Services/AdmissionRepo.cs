@@ -1,4 +1,5 @@
 ﻿using AdmissionSystem2.Entites;
+using AdmissionSystem2.Helpers;
 using AdmissionSystem2.Models;
 using AutoMapper;
 using System;
@@ -138,19 +139,55 @@ namespace AdmissionSystem2.Services
         {
             return (_AdmissionSystemDbContext.SaveChanges() >= 0);
         }
+
+        public PagedList<Applicant> GetApplicants(ResourceParameters resourceParameters)
+        {
+            var collectionBeforePaging = _AdmissionSystemDbContext.Applicant.OrderBy(a => a.FirstName).ThenBy(a => a.SecondName).AsQueryable();
+            if (!string.IsNullOrEmpty(resourceParameters.Name))
+            {
+                var NameForWherecclause = resourceParameters.Name.Trim().ToLowerInvariant();
+                collectionBeforePaging = collectionBeforePaging.Where(a => a.FirstName.ToLower() == NameForWherecclause);
+            }
+            if (!String.IsNullOrEmpty(resourceParameters.SearchQuery))
+            {
+                var SearchQueryForWherecclause = resourceParameters.SearchQuery.Trim().ToLowerInvariant();
+                collectionBeforePaging = collectionBeforePaging
+                    .Where(a => a.FirstName.ToLower().Contains(SearchQueryForWherecclause)
+                    || a.SecondName.ToLower().Contains(SearchQueryForWherecclause)
+                        || a.LastName.ToLower().Contains(SearchQueryForWherecclause)
+                       || a.Status.ToLower().Contains(SearchQueryForWherecclause));
+            }
+            return PagedList<Applicant>.Create(collectionBeforePaging, resourceParameters.PageNumber, resourceParameters.PageSize);
+
+        }
         public AdmissionDetails GetAdmissionDetails(int applicantId, Guid AdmissionDetailsId)
         {
             return _AdmissionSystemDbContext.AdmissionDetails.Where(a => a.ApplicantId == applicantId && a.Id == AdmissionDetailsId).FirstOrDefault();
         }
         //public MedicalHistory GetMedicalHistory(int applicantId)
+        public MedicalHistory GetMedicalHistory(int applicantId, Guid MedicalHistoryId)
 
+        {
+            return _AdmissionSystemDbContext.MedicalHistory.Where(a => a.ApplicantId == applicantId).FirstOrDefault();
+        }
+
+        public Sibling GetSibling(int applicantId, Guid siblingId)
+        {
+            return _AdmissionSystemDbContext.Sibling.Where(a => a.ApplicantId == applicantId && a.SibilingId == siblingId).FirstOrDefault();
+        }
+
+        public IEnumerable<Sibling> GetSiblings(int applicantId)
+        {
+            return _AdmissionSystemDbContext.Sibling.Where(a => a.ApplicantId == applicantId).OrderBy(a => a.SiblingName).ToList();
+        }
 
         public void DeleteSibling(Sibling sibling)
         {
             _AdmissionSystemDbContext.Sibling.Remove(sibling);
             //Applicant.Sibling.Remove(sibling);
         }
-        public void UpdateApplicant1(Applicant Applicant)
+
+       public void UpdateApplicant1(Applicant Applicant)
         {
             _AdmissionSystemDbContext.Applicant.Update(Applicant);
             //throw new NotImplementedException();
@@ -180,9 +217,7 @@ namespace AdmissionSystem2.Services
         {
             _AdmissionSystemDbContext.MedicalHistory.Update(medicalHistory);
         }
-        
-
-    public void AddFamilyStatus(int ApplicantId, FamilyStatus familyStatus)
+        public void AddFamilyStatus(int ApplicantId, FamilyStatus familyStatus)
         {
             var applicant = GetApplicant(ApplicantId);
             if (applicant != null)
@@ -190,5 +225,6 @@ namespace AdmissionSystem2.Services
                 applicant.Family_Status = familyStatus;
             }
         }
+
     }
 }

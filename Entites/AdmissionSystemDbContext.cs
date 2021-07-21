@@ -27,7 +27,6 @@ namespace AdmissionSystem2.Entites
         public DbSet<Fawry> Fawry { get; set; }
         public DbSet<MasterCard> MasterCard { get; set; }
         public DbSet<BankElahly> BankElahly { get; set; }
-        public DbSet<Application> Appliaction { get; set; }
         public DbSet<FamilyStatus> FamilyStatues { get; set; }
         public DbSet<AdmissionPeriod> AdmissionPeriod { get; set; }
         public DbSet<InterviewCriteria> InterviewCriteria { get; set; }
@@ -49,12 +48,7 @@ namespace AdmissionSystem2.Entites
             modelBuilder.Entity<FamilyStatus>().ToTable("FamilyStatues");
             modelBuilder.Entity<AdmissionPeriod>().ToTable("AdmissionPeriod");
             modelBuilder.Entity<InterviewCriteria>().ToTable("InterviewCriteria");
-            modelBuilder.Entity<Interview>().ToTable("Interview");
-
-            modelBuilder.Entity<Application>().ToTable("Application");
+            modelBuilder.Entity<Interview>().ToTable("Interview");     
         }
-
-
-
     }
 }
