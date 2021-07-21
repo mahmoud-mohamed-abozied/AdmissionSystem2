@@ -19,6 +19,6 @@ namespace AdmissionSystem2.Entites
 
         [ForeignKey("ApplicantId")]
         public Applicant Applicant { set; get; }
-        public int ApplicantId { set; get; }
+        public Guid ApplicantId { set; get; }
     }
 }

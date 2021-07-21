@@ -10,14 +10,14 @@ namespace AdmissionSystem2.Services
     public interface IAdmissionRepo
     {
         void AddApplicant(Applicant Applicant);
-        Applicant GetApplicant(int _ApplicantId);
-        void AddParentInfo(int _ApplicantId, ParentInfo parentInfo);
-        void AddFamilyStatus(int ApplicantId, FamilyStatus familyStatus);
-        void AddEmergencyContact(int ApplicantId, EmergencyContact EmergencyContact);
-        void AddDocument(int ApplicantId, Document Document);
-        void AddAdmissionDetails(int ApplicantId, AdmissionDetails AdmissionDetails);
-        void AddSibling(int applicantId, Sibling sibling);
-        void AddMedicalDetails(int applicantId, MedicalHistory medicalHistory);
+        Applicant GetApplicant(Guid _ApplicantId);
+        void AddParentInfo(Guid _ApplicantId, ParentInfo parentInfo);
+        void AddFamilyStatus(Guid ApplicantId, FamilyStatus familyStatus);
+        void AddEmergencyContact(Guid ApplicantId, EmergencyContact EmergencyContact);
+        void AddDocument(Guid ApplicantId, Document Document);
+        void AddAdmissionDetails(Guid ApplicantId, AdmissionDetails AdmissionDetails);
+        void AddSibling(Guid applicantId, Sibling sibling);
+        void AddMedicalDetails(Guid applicantId, MedicalHistory medicalHistory);
         void MakePayment(Payment payment);
         void UpdateApplicant(Applicant Applicant);
         void UpdateEmergencyContact(EmergencyContact EmergencyContact);
@@ -30,10 +30,10 @@ namespace AdmissionSystem2.Services
       //  void AddDocument(int ApplicantId, Document Document);
         //Application GetApplication(int ApplicantId);
         //MedicalHistory GetMedicalHistory(int applicantId);
-        ParentInfo ParentInfoExist(int ApplicantId, Guid ParentInfoId);
+        ParentInfo ParentInfoExist(Guid ApplicantId, Guid ParentInfoId);
         void DeleteDocument(Document Document);
         void UpdateAdmissionDetails(AdmissionDetails admissionDetails);
-        bool ApplicantExist(int _ApplicantId);
+        bool ApplicantExist(Guid _ApplicantId);
         bool Save();
 
 

@@ -23,7 +23,7 @@ namespace AdmissionSystem2.Services
         {
             _AdmissionSystemDbContext.Applicant.Add(Applicant);
         }
-        public Applicant GetApplicant(int _ApplicantId)
+        public Applicant GetApplicant(Guid _ApplicantId)
         {
             var Applicant = _AdmissionSystemDbContext.Applicant.FirstOrDefault(a => a.ApplicantId == _ApplicantId);
             return Applicant;
@@ -31,7 +31,7 @@ namespace AdmissionSystem2.Services
         }
 
 
-        public void AddParentInfo(int _ApplicantId, ParentInfo parentInfo)
+        public void AddParentInfo(Guid _ApplicantId, ParentInfo parentInfo)
         {
             var Applicant = GetApplicant(_ApplicantId);
             if (Applicant != null)
@@ -73,12 +73,12 @@ namespace AdmissionSystem2.Services
             _AdmissionSystemDbContext.Update(EmergencyContact);
         }
         
-        public bool ApplicantExist(int _ApplicantId)
+        public bool ApplicantExist(Guid _ApplicantId)
         {
             var Applicant = _AdmissionSystemDbContext.Applicant.Any(a => a.ApplicantId == _ApplicantId);
             return Applicant;
         }
-        public void AddEmergencyContact(int ApplicantId, EmergencyContact EmergencyContact)
+        public void AddEmergencyContact(Guid ApplicantId, EmergencyContact EmergencyContact)
         {
             var Applicant = GetApplicant(ApplicantId);
             if (Applicant != null)
@@ -86,7 +86,7 @@ namespace AdmissionSystem2.Services
                 Applicant.EmergencyContact.Add(EmergencyContact);
             }
         }
-        public void AddAdmissionDetails(int ApplicantId, AdmissionDetails AdmissionDetails)
+        public void AddAdmissionDetails(Guid ApplicantId, AdmissionDetails AdmissionDetails)
         {
             var Applicant = GetApplicant(ApplicantId);
             if (Applicant != null)
@@ -94,7 +94,7 @@ namespace AdmissionSystem2.Services
                 Applicant.AdmissionDetails = AdmissionDetails;
             }
         }
-        public void AddDocument(int ApplicantId, Document Document)
+        public void AddDocument(Guid ApplicantId, Document Document)
         {
             var Applicant = GetApplicant(ApplicantId);
             if (Applicant != null)
@@ -103,7 +103,7 @@ namespace AdmissionSystem2.Services
             }
         }
 
-        public void AddSibling(int applicantId, Sibling sibling)
+        public void AddSibling(Guid applicantId, Sibling sibling)
         {
             var Applicant = GetApplicant(applicantId);
             if (Applicant != null)
@@ -113,7 +113,7 @@ namespace AdmissionSystem2.Services
 
         }
 
-        public void AddMedicalDetails(int applicantId, MedicalHistory medicalHistory)
+        public void AddMedicalDetails(Guid applicantId, MedicalHistory medicalHistory)
         {
             var Applicant = GetApplicant(applicantId);
             if (Applicant != null)
@@ -138,7 +138,7 @@ namespace AdmissionSystem2.Services
         {
             return (_AdmissionSystemDbContext.SaveChanges() >= 0);
         }
-        public AdmissionDetails GetAdmissionDetails(int applicantId, Guid AdmissionDetailsId)
+        public AdmissionDetails GetAdmissionDetails(Guid applicantId, Guid AdmissionDetailsId)
         {
             return _AdmissionSystemDbContext.AdmissionDetails.Where(a => a.ApplicantId == applicantId && a.Id == AdmissionDetailsId).FirstOrDefault();
         }
@@ -166,7 +166,7 @@ namespace AdmissionSystem2.Services
             _AdmissionSystemDbContext.AdmissionDetails.Update(admissionDetails);
             //throw new NotImplementedException();
         }
-        public ParentInfo ParentInfoExist(int ApplicantId, Guid ParentInfoId)
+        public ParentInfo ParentInfoExist(Guid ApplicantId, Guid ParentInfoId)
         {
             return _AdmissionSystemDbContext.ParentInfo.FirstOrDefault(a => a.ApplicantId == ApplicantId && a.Id == ParentInfoId);
         }
@@ -182,7 +182,7 @@ namespace AdmissionSystem2.Services
         }
         
 
-    public void AddFamilyStatus(int ApplicantId, FamilyStatus familyStatus)
+    public void AddFamilyStatus(Guid ApplicantId, FamilyStatus familyStatus)
         {
             var applicant = GetApplicant(ApplicantId);
             if (applicant != null)

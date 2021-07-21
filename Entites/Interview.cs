@@ -15,7 +15,7 @@ namespace AdmissionSystem2.Entites
         public string InterviewerName { get; set; }
         public string InterviewDate { get; set; }
         public string InterviewTime { get; set; }
-        public int ApplicantId { get; set; }
+        public Guid ApplicantId { get; set; }
         public string InterviewType { get; set; }
         public string AcadmicYear { get; set; }
         public string ApplicantEmail { get; set;}

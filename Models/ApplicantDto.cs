@@ -7,7 +7,7 @@ namespace AdmissionSystem2.Models
 {
     public class ApplicantDto
     {
-        public int ID { get; set; }
+        public Guid ID { get; set; }
         public String FirstName { set; get; }
         public String SecondName { set; get; }
         public String LastName { set; get; }
@@ -19,7 +19,8 @@ namespace AdmissionSystem2.Models
         public String Gender { set; get; }
         public String SpokenLanguage { set; get; }
         public String Status { set; get; }
-        public string AdmissionDate { get; set; }
+        public DateTime AdmissionDate { get; set; }
+        public string Email { get; set; }
 
     }
 }

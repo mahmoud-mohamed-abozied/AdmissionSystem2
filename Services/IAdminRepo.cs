@@ -13,21 +13,21 @@ namespace AdmissionSystem2.Services
 
     public interface IAdminRepo
     {
-        IEnumerable<Document> GetDocuments(int ApplicantId);
+        IEnumerable<Document> GetDocuments(Guid ApplicantId);
         //  Application GetApplication(int ApplicantId);
         int GetApplicantsCount();
-        Applicant GetApplicant(int ApplicantId);
-        Document GetDocument(int ApplicantId, int DocumentId);
-        EmergencyContact GetEmergencyContact(int ApplicantId, Guid Id);
-        ParentInfo GetParentInfos(int ApplicantId, string Gender);
-        IEnumerable<EmergencyContact> GetEmergencyContacts(int ApplicantId);
-        AdmissionDetails GetAdmissionDetails(int ApplicantId);
-        MedicalHistory GetMedicalHistory(int applicantId);
-        Sibling GetSibling(int applicantId, Guid siblingId);
-        AdmissionDetails GetAdmissionDetails(int applicantId, Guid AdmissionDetailsId);
-        IEnumerable<Sibling> GetSiblings(int applicantId);
-        IEnumerable<ParentInfo> GetParentsInfos(int ApplicantId);
-        ParentInfo ParentInfoExist(int ApplicantId, Guid ParentInfoId);
+        Applicant GetApplicant(Guid ApplicantId);
+        Document GetDocument(Guid ApplicantId, int DocumentId);
+        EmergencyContact GetEmergencyContact(Guid ApplicantId, Guid Id);
+        ParentInfo GetParentInfos(Guid ApplicantId, string Gender);
+        IEnumerable<EmergencyContact> GetEmergencyContacts(Guid ApplicantId);
+        AdmissionDetails GetAdmissionDetails(Guid ApplicantId);
+        MedicalHistory GetMedicalHistory(Guid applicantId);
+        Sibling GetSibling(Guid applicantId, Guid siblingId);
+        AdmissionDetails GetAdmissionDetails(Guid applicantId, Guid AdmissionDetailsId);
+        IEnumerable<Sibling> GetSiblings(Guid applicantId);
+        IEnumerable<ParentInfo> GetParentsInfos(Guid ApplicantId);
+        ParentInfo ParentInfoExist(Guid ApplicantId, Guid ParentInfoId);
         AdmissionPeriod GetAdmissionPeriod();
         string GetPeriodLeft();
         void AddInterviewDatesForApplicant(InterviewCriteriaForCreation InterviewCriteriaForCreation);
