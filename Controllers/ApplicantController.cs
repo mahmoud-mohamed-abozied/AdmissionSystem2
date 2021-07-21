@@ -1,12 +1,10 @@
 ﻿using AdmissionSystem2.Entites;
-using AdmissionSystem2.Helpers;
 using AdmissionSystem2.Models;
 using AdmissionSystem2.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -22,21 +20,17 @@ namespace AdmissionSystem2.Controllers
     [Route("api/applicant")]
     public class ApplicantController : Controller
     {
-        
+
         private IAdmissionRepo _AdmissionRepo;
         private IAdminRepo _AdminRepo;
         private readonly IMapper _Mapper;
-        private readonly IHttpContextAccessor _Accessor;
-        private readonly LinkGenerator _Generator;
-        public ApplicantController(IAdmissionRepo AdmissionRepo,IAdminRepo AdminRepo ,IMapper Mapper, IHttpContextAccessor Accessor, LinkGenerator Generator)
+        public ApplicantController(IAdmissionRepo AdmissionRepo, IAdminRepo AdminRepo, IMapper Mapper)
         {
             _AdmissionRepo = AdmissionRepo;
             _AdminRepo = AdminRepo;
             _Mapper = Mapper;
-            _Accessor = Accessor;
-            _Generator = Generator;
-    }
-        
+        }
+
 
         [HttpGet("Test")]
         public IActionResult Test()
@@ -53,10 +47,10 @@ namespace AdmissionSystem2.Controllers
         [HttpPost()]
         public IActionResult AddApplicant([FromBody] ApplicantForCreation ApplicantForCreation)
         {
-          /*  if (ApplicantForCreation == null)
-            {
-                return BadRequest();
-            }*/
+            /*  if (ApplicantForCreation == null)
+              {
+                  return BadRequest();
+              }*/
             var final = _Mapper.Map<Applicant>(ApplicantForCreation);
             _AdmissionRepo.AddApplicant(final);
             _AdmissionRepo.Save();
@@ -67,7 +61,7 @@ namespace AdmissionSystem2.Controllers
         [HttpPost("{ApplicantId}/ParentInfo")]
         public IActionResult AddParentInfo(Guid ApplicantId, [FromBody] ParentInfoForCreation ParentInfoForCreation)
         {
-           
+
             if (ParentInfoForCreation == null)
             {
                 return BadRequest();
@@ -111,8 +105,8 @@ namespace AdmissionSystem2.Controllers
                 return NotFound();
             }
             var FamilyStatus = _Mapper.Map<FamilyStatus>(familyStatusForCreation);
-            _AdmissionRepo.AddFamilyStatus(ApplicantId,FamilyStatus );
-           if(!_AdmissionRepo.Save())
+            _AdmissionRepo.AddFamilyStatus(ApplicantId, FamilyStatus);
+            if (!_AdmissionRepo.Save())
             {
                 throw new Exception("failed to add Family Status ");
             }
@@ -232,8 +226,8 @@ namespace AdmissionSystem2.Controllers
                     auth_token = marchentData.token,
                     delivery_needed = "false",
                     merchant_id = marchentData.profile.user.id,      // merchant_id obtained from step 1
-                       amount_cents = "100",               // The price of the order in cents.
-                       currency = "EGP"
+                    amount_cents = "100",               // The price of the order in cents.
+                    currency = "EGP"
                 }
                 );
             var reqContent2 = new StringContent(OrderRegistration, Encoding.UTF8, "application/json");
@@ -255,11 +249,11 @@ namespace AdmissionSystem2.Controllers
                 new
                 {
                     auth_token = marchentData.token, // auth token obtained from step1
-                       delivery_needed = "false",
+                    delivery_needed = "false",
                     order_id = orderData.id,
                     expiration = 3600000000,
                     integration_id = 267725,      // card integration_id will be provided upon signing up,
-                       billing_data = new
+                    billing_data = new
                     {
                         apartment = "2",
                         email = "Mahmoud@gmail.com",
@@ -276,8 +270,8 @@ namespace AdmissionSystem2.Controllers
                         state = "Utah"
                     },
                     merchant_id = marchentData.profile.user.id,      // merchant_id obtained from step 1
-                       amount_cents = 20000,     //The price should be paid through this payment channel with this payment key token.
-                       currency = "EGP"
+                    amount_cents = 20000,     //The price should be paid through this payment channel with this payment key token.
+                    currency = "EGP"
 
                 }
                 );
@@ -327,20 +321,15 @@ namespace AdmissionSystem2.Controllers
                     merchant_id = marchentData.profile.user.id,      // merchant_id obtained from step 1
                     amount_cents = 20000,        //The price should be paid through this payment channel with this payment key token.
                     currency = "EGP"
-
                 }
                 );
                 var reqResult4 = new StringContent(GetKey, Encoding.UTF8, "application/json");
                 url = "https://accept.paymob.com/api/acceptance/payment_keys";
-
                 client = new HttpClient();
                 response = await client.PostAsync(url, reqResult4);
-
                 string lastOrderResult = response.Content.ReadAsStringAsync().Result;
                 Console.WriteLine(lastOrderResult);
-
                 dynamic results3 = JObject.Parse(lastOrderResult);
-
                 var GetBillReference = JsonConvert.SerializeObject(
                 new
                 {
@@ -354,13 +343,10 @@ namespace AdmissionSystem2.Controllers
                 );
                 var reqContent = new StringContent(GetKey, Encoding.UTF8, "application/json");
                 url = "https://accept.paymob.com/api/acceptance/payments/pay";
-
                 client = new HttpClient();
                 response = await client.PostAsync(url, lastOrderData);
-
                 string lastOrderResult = response.Content.ReadAsStringAsync().Result;
                 Console.WriteLine(lastOrderResult);
-
                 dynamic results3 = JObject.Parse(lastOrderResult);
             }
             */
@@ -389,53 +375,14 @@ namespace AdmissionSystem2.Controllers
                 throw new Exception("failed to add a add Admission Details");
             }
             return Ok();
+
+
+
         }
 
 
         [HttpPost("{ApplicantId}/Document")]
         public IActionResult AddDocument(Guid ApplicantID, [FromForm] DocumentForCreation DocumentForCreation)
-        {
-            if (DocumentForCreation == null)
-            {
-                return BadRequest();
-            }
-            if (_AdmissionRepo.GetApplicant(ApplicantID) == null)
-            {
-                return NotFound();
-            }
-        //    var DocumentToSave = _Mapper.Map<Document>(DocumentForCreation);
-           
-
-            var file = DocumentForCreation.Copy;
-            Document DocumentToSave = new Document();
-            if (file.Length > 0)
-            {
-                using var ms = new MemoryStream();
-                file.CopyTo(ms);
-                DocumentToSave.Copy= ms.ToArray();
-              /*  if (fileBytes.Length != 0) {
-                    // fileBytes.CopyTo(DocumentToSave.Copy, 1);
-                    Buffer.BlockCopy(fileBytes, 0, DocumentToSave.Copy, 0, fileBytes.Length);
-
-                }*/
-            }
-
-            DocumentToSave.ApplicantId = ApplicantID;
-            DocumentToSave.DocumentName = DocumentForCreation.DocumentName;
-            DocumentToSave.DocumentType = DocumentForCreation.DocumentType;
-            _AdmissionRepo.AddDocument(DocumentToSave);
-            if (!_AdmissionRepo.Save())
-            {
-                throw new Exception("Failed To Add Document");
-            }
-
-
-            return Ok();
-
-                  }
-
-        [HttpPost("{ApplicantId}/Document/{Id}")]
-        public IActionResult UpdateDocument(Guid ApplicantID,int Id ,[FromForm] DocumentForCreation DocumentForCreation)
         {
             if (DocumentForCreation == null)
             {
@@ -458,7 +405,47 @@ namespace AdmissionSystem2.Controllers
                 /*  if (fileBytes.Length != 0) {
                       // fileBytes.CopyTo(DocumentToSave.Copy, 1);
                       Buffer.BlockCopy(fileBytes, 0, DocumentToSave.Copy, 0, fileBytes.Length);
+                  }*/
+            }
 
+            DocumentToSave.ApplicantId = ApplicantID;
+            DocumentToSave.DocumentName = DocumentForCreation.DocumentName;
+            DocumentToSave.DocumentType = DocumentForCreation.DocumentType;
+            _AdmissionRepo.AddDocument(DocumentToSave);
+            if (!_AdmissionRepo.Save())
+            {
+                throw new Exception("Failed To Add Document");
+            }
+
+
+            return Ok();
+
+        }
+
+        [HttpPost("{ApplicantId}/Document/{Id}")]
+        public IActionResult UpdateDocument(Guid ApplicantID, int Id, [FromForm] DocumentForCreation DocumentForCreation)
+        {
+            if (DocumentForCreation == null)
+            {
+                return BadRequest();
+            }
+            if (_AdmissionRepo.GetApplicant(ApplicantID) == null)
+            {
+                return NotFound();
+            }
+            //    var DocumentToSave = _Mapper.Map<Document>(DocumentForCreation);
+
+
+            var file = DocumentForCreation.Copy;
+            Document DocumentToSave = new Document();
+            if (file.Length > 0)
+            {
+                using var ms = new MemoryStream();
+                file.CopyTo(ms);
+                DocumentToSave.Copy = ms.ToArray();
+                /*  if (fileBytes.Length != 0) {
+                      // fileBytes.CopyTo(DocumentToSave.Copy, 1);
+                      Buffer.BlockCopy(fileBytes, 0, DocumentToSave.Copy, 0, fileBytes.Length);
                   }*/
             }
 
@@ -474,263 +461,133 @@ namespace AdmissionSystem2.Controllers
 
 
             return Ok();
+
         }
 
-            /*
-             [HttpPut("ApplicantId/Document/Id")]
-               public IActionResult UpdateDocument(int ApplicantID,int Id, [FromForm] JsonPatchDocument<DocumentForUpdate> patchDoc)
+        /*
+         [HttpPut("ApplicantId/Document/Id")]
+           public IActionResult UpdateDocument(int ApplicantID,int Id, [FromForm] JsonPatchDocument<DocumentForUpdate> patchDoc)
+           {
+               if (patchDoc == null)
                {
-                   if (patchDoc == null)
-                   {
-                       return BadRequest();
-                   }
-                   if (_AdmissionRepo.GetApplicant(ApplicantID) == null)
-                   {
-                       return NotFound();
-
-                   }
-                   var DocumentFromRepo = _AdmissionRepo.GetDocument(ApplicantID, Id);
+                   return BadRequest();
+               }
+               if (_AdmissionRepo.GetApplicant(ApplicantID) == null)
+               {
+                   return NotFound();
+               }
+               var DocumentFromRepo = _AdmissionRepo.GetDocument(ApplicantID, Id);
+            if (DocumentFromRepo == null)
+            {
+                return NotFound();
+            }
+               patchDoc.ApplyTo(DocumentToPatch, ModelState);
+                if (!ModelState.IsValid)
+                {
+                return new UnprocessableEntityObjectResult(ModelState);
+                }
+                DocumentFromRepo.DocumentName = DocumentToPatch.DocumentName;
+                DocumentFromRepo.DocumentType = DocumentToPatch.DocumentType; 
+                DocumentFromRepo.Copy = DocumentToPatch.Copy.
+        }
+        */
+        /*    [HttpGet("{applicantId}/Document/{id}")]
+            public IActionResult GetDocument(int applicantId, int id)
+            {
+                var DocumentFromRepo = _AdminRepo.GetDocument(applicantId, id);
                 if (DocumentFromRepo == null)
                 {
                     return NotFound();
                 }
-                   patchDoc.ApplyTo(DocumentToPatch, ModelState);
-                    if (!ModelState.IsValid)
-                    {
-                    return new UnprocessableEntityObjectResult(ModelState);
-
-                    }
-                    DocumentFromRepo.DocumentName = DocumentToPatch.DocumentName;
-                    DocumentFromRepo.DocumentType = DocumentToPatch.DocumentType; 
-                    DocumentFromRepo.Copy = DocumentToPatch.Copy.
-
+                string imageBase64Data = Convert.ToBase64String(DocumentFromRepo.Copy);
+                string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+                return Ok(imageDataURL);
+            }
+            [HttpGet("{ApplicantId}")]
+            public IActionResult GetApplicant(int applicantId)
+            {
+                var Applicant = _AdmissionRepo.GetApplicant(applicantId);
+                if (Applicant == null)
+                {
+                    return NotFound();
+                }
+                var ApplicantToRetrive = _Mapper.Map<ApplicantDto>(Applicant);
+                return Ok(ApplicantToRetrive);
+            }
+            [HttpGet("{ApplicantId}/EmergencyContacts")]
+            public IActionResult GetEmergencyContacts(int ApplicantId)
+            {
+                var EmergencyContacts = _AdminRepo.GetEmergencyContacts(ApplicantId);
+                if (EmergencyContacts == null)
+                {
+                    return NotFound();
+                }
+                var EmergencyContactsToRetrive = _Mapper.Map<IEnumerable<EmergencyContactDto>>(EmergencyContacts);
+                return Ok(EmergencyContactsToRetrive);
+            }
+            [HttpGet("{ApplicantId}/AdmissionDetails")]
+            public IActionResult GetAdmissionDetails(int ApplicantId)
+            {
+                var AdmissionDetails = _AdminRepo.GetAdmissionDetails(ApplicantId);
+                if (AdmissionDetails == null)
+                {
+                    return NotFound();
+                }
+                var AdmissionDetailsToReturn = _Mapper.Map<AdmissionDetailsDto>(AdmissionDetails);
+                return Ok(AdmissionDetailsToReturn);
+            }
+            [HttpGet("{applicantId}/Medical")]
+            public IActionResult GetMedicalDetails(int applicantId)
+            {
+                var MedicalDetailsFromRepo = _AdmissionRepo.GetMedicalHistory(applicantId);
+                if (MedicalDetailsFromRepo == null)
+                {
+                    return NotFound();
+                }
+                var MedicalDetails = _Mapper.Map<MedicalHistoryDto>(MedicalDetailsFromRepo);
+                return Ok(MedicalDetails);
             }
 
-            */
-            /*    [HttpGet("{applicantId}/Document/{id}")]
-                public IActionResult GetDocument(int applicantId, int id)
-                {
-                    var DocumentFromRepo = _AdminRepo.GetDocument(applicantId, id);
-                    if (DocumentFromRepo == null)
-                    {
-                        return NotFound();
-                    }
-
-
-                    string imageBase64Data = Convert.ToBase64String(DocumentFromRepo.Copy);
-                    string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
-                    return Ok(imageDataURL);
-
-                }
-
-
-
-                [HttpGet("{ApplicantId}")]
-                public IActionResult GetApplicant(int applicantId)
-                {
-                    var Applicant = _AdmissionRepo.GetApplicant(applicantId);
-                    if (Applicant == null)
-                    {
-                        return NotFound();
-                    }
-                    var ApplicantToRetrive = _Mapper.Map<ApplicantDto>(Applicant);
-                    return Ok(ApplicantToRetrive);
-
-
-                }
-
-
-                [HttpGet("{ApplicantId}/EmergencyContacts")]
-                public IActionResult GetEmergencyContacts(int ApplicantId)
-                {
-                    var EmergencyContacts = _AdmissionRepo.GetEmergencyContacts(ApplicantId);
-                    if (EmergencyContacts == null)
-                    {
-                        return NotFound();
-                    }
-                    var EmergencyContactsToRetrive = _Mapper.Map<IEnumerable<EmergencyContactDto>>(EmergencyContacts);
-                    return Ok(EmergencyContactsToRetrive);
-
-                 }
-
-
-                [HttpGet("{ApplicantId}/AdmissionDetails")]
-                public IActionResult GetAdmissionDetails(int ApplicantId)
-                {
-                    var AdmissionDetails = _AdmissionRepo.GetAdmissionDetails(ApplicantId);
-                    if (AdmissionDetails == null)
-                    {
-                        return NotFound();
-                    }
-                    var AdmissionDetailsToReturn = _Mapper.Map<AdmissionDetailsDto>(AdmissionDetails);
-                    return Ok(AdmissionDetailsToReturn);
-                }
-
-
-               /* [HttpGet("{applicantId}/Medical")]
-                public IActionResult GetMedicalDetails(int applicantId)
-                {
-                    var MedicalDetailsFromRepo = _AdmissionRepo.GetMedicalHistory(applicantId);
-                    if (MedicalDetailsFromRepo == null)
-                    {
-                        return NotFound();
-                    }
-
-                     var MedicalDetails = _Mapper.Map<MedicalHistoryDto>(MedicalDetailsFromRepo);
-
-
-                     return Ok(MedicalDetails);
-
-                }
-
-
-
-
-                [HttpGet("{applicantId}/Siblings/{id}", Name = "getSibling")]
-                public IActionResult GetSibling(int applicantId, Guid id)
-                {
-                    if (_AdmissionRepo.GetApplicant(applicantId) == null)
-                    {
-                        return NotFound();
-                    }
-
-                    var SiblingFromRepo = _AdminRepo.GetSibling(applicantId, id);
-                    if (SiblingFromRepo == null)
-                    {
-                        return NotFound();
-                    }
-
-                    var Sibling = _Mapper.Map<SiblingDto>(SiblingFromRepo);
-
-
-                    return Ok(Sibling);
-
-                }
-
-
-                [HttpGet("{applicantId}/Siblings")]
-                public IActionResult GetSiblings(int applicantId)
-                {
-                    if (_AdmissionRepo.GetApplicant(applicantId) == null)
-                    {
-                        return NotFound();
-                    }
-
-                    var SiblingsFromRepo = _AdminRepo.GetSiblings(applicantId);
-                    if (SiblingsFromRepo == null)
-                    {
-                        return NotFound();
-                    }
-
-                    var Siblings = _Mapper.Map<IEnumerable<SiblingDto>>(SiblingsFromRepo);
-
-
-                    return Ok(Siblings);
-
-                }
-               [HttpGet("{ApplicantId}/GetApplication")]
-                public IActionResult GetApplication(int ApplicantId)
-                {
-                    if (_AdmissionRepo.GetApplicant(ApplicantId) == null)
-                    {
-                        return NotFound();
-                    }
-                    Application  ApplicationToReturn = _AdmissionRepo.GetApplication(ApplicantId);
-                    return Ok (ApplicationToReturn);
-                }
-               */
-
-        [HttpGet("AdmissionApplicants", Name = "GetApplicants")]
-        public IActionResult GetApplicants(ResourceParameters resourceParameters)
-        {
-            var Applicants = _AdmissionRepo.GetApplicants(resourceParameters);
-           
-            var previousPageLink = Applicants.HasPrevious ?
-                    CreateResourceUri(resourceParameters,
-                    ResourceUriType.PreviousPage) : null;
-
-            var nextPageLink = Applicants.HasNext ?
-                CreateResourceUri(resourceParameters,
-                ResourceUriType.NextPage) : null;
-
-            var paginationMetadata = new
+            [HttpGet("{applicantId}/Siblings/{id}", Name = "getSibling")]
+            public IActionResult GetSibling(int applicantId, Guid id)
             {
-                previousPageLink = previousPageLink,
-                nextPageLink = nextPageLink,
-                totalCount = Applicants.TotalCount,
-                pageSize = Applicants.PageSize,
-                currentPage = Applicants.CurrentPage,
-                totalPages = Applicants.TotalPages
-            };
-
-            Response.Headers.Add("X-Pagination",
-                Newtonsoft.Json.JsonConvert.SerializeObject(paginationMetadata));
-
-            var ApplicantToRetrive = _Mapper.Map<IEnumerable<ApplicantDto>>(Applicants);
-            return Ok(ApplicantToRetrive);
-
-
-        }
-
-        private string CreateResourceUri(
-            ResourceParameters resourceParameters,
-            ResourceUriType type)
-        {
-            switch (type)
-            {
-                case ResourceUriType.PreviousPage:
-                    return _Generator.GetUriByAction(_Accessor.HttpContext,
-                        action: "GetApplicants",
-                            values: new {
-                                orderBy = resourceParameters.OrderBy,
-                                searchQuery = resourceParameters.SearchQuery,
-                                //Name = resourceParameters.Name,
-                                pageNumber = resourceParameters.PageNumber - 1,
-                                pageSize = resourceParameters.PageSize
-                            });
-
-                /*  return _urlHelper.Link("GetApplicants",
-                    new
-                    {
-                        //fields = resourceParameters.Fields,
-                        orderBy = resourceParameters.OrderBy,
-                        searchQuery = resourceParameters.SearchQuery,
-                        Name = resourceParameters.Name,
-                        pageNumber = resourceParameters.PageNumber - 1,
-                        pageSize = resourceParameters.PageSize
-                    });*/
-                case ResourceUriType.NextPage:
-                  return _Generator.GetUriByAction(_Accessor.HttpContext,
-                        action: "GetApplicants",
-                           values: new {
-                              orderBy = resourceParameters.OrderBy,
-                              searchQuery = resourceParameters.SearchQuery,
-                              //Name = resourceParameters.Name,
-                              pageNumber = resourceParameters.PageNumber + 1,
-                              pageSize = resourceParameters.PageSize
-                          });
-                case ResourceUriType.Current:
-                default:
-                    return _Generator.GetUriByAction(_Accessor.HttpContext,
-                        action: "GetApplicants",
-                             values: new
-                             {
-                                 orderBy = resourceParameters.OrderBy,
-                                 searchQuery = resourceParameters.SearchQuery,
-                                 //Name = resourceParameters.Name,
-                                 pageNumber = resourceParameters.PageNumber,
-                                 pageSize = resourceParameters.PageSize
-                             });
+                if (_AdmissionRepo.GetApplicant(applicantId) == null)
+                {
+                    return NotFound();
+                }
+                var SiblingFromRepo = _AdminRepo.GetSibling(applicantId, id);
+                if (SiblingFromRepo == null)
+                {
+                    return NotFound();
+                }
+                var Sibling = _Mapper.Map<SiblingDto>(SiblingFromRepo);
+                return Ok(Sibling);
             }
-        }
-
-
-
-
-
-
-
-
+            [HttpGet("{applicantId}/Siblings")]
+            public IActionResult GetSiblings(int applicantId)
+            {
+                if (_AdmissionRepo.GetApplicant(applicantId) == null)
+                {
+                    return NotFound();
+                }
+                var SiblingsFromRepo = _AdminRepo.GetSiblings(applicantId);
+                if (SiblingsFromRepo == null)
+                {
+                    return NotFound();
+                }
+                var Siblings = _Mapper.Map<IEnumerable<SiblingDto>>(SiblingsFromRepo);
+                return Ok(Siblings);
+            }
+           [HttpGet("{ApplicantId}/GetApplication")]
+            public IActionResult GetApplication(int ApplicantId)
+            {
+                if (_AdmissionRepo.GetApplicant(ApplicantId) == null)
+                {
+                    return NotFound();
+                }
+                Application  ApplicationToReturn = _AdmissionRepo.GetApplication(ApplicantId);
+                return Ok (ApplicationToReturn);
+            }*/
 
 
         [HttpDelete("{applicantId}/siblings/{id}")]
@@ -790,48 +647,40 @@ namespace AdmissionSystem2.Controllers
 
 
 
-       /* [HttpPatch("{applicantId}/medical/{id}")]
-        public IActionResult PartiallyUpdateMedicalHistory(int applicantId, Guid id,
-           [FromBody] JsonPatchDocument<MedicalHistoryForUpdate> patchDoc)
-        {
-            if (patchDoc == null)
-            {
-                return BadRequest();
-            }
-
-            if (_AdmissionRepo.GetApplicant(applicantId) == null)
-            {
-                return NotFound();
-            }
-
-            var MedicalHistoryFromRepo = _AdminRepo.GetMedicalHistory(applicantId);
-            if (MedicalHistoryFromRepo == null)
-            {
-                return NotFound();
-            }
-
-            var medicalHistoryToPatch = _Mapper.Map<MedicalHistoryForUpdate>(MedicalHistoryFromRepo);
-            patchDoc.ApplyTo(medicalHistoryToPatch, ModelState);
-
-
-            //add validation
-            //ModelState, any errors in the patch document will make modelState invalid
-            if (!ModelState.IsValid)
-            {
-                return new UnprocessableEntityObjectResult(ModelState);
-            }
-
-            _Mapper.Map(medicalHistoryToPatch, MedicalHistoryFromRepo);
-
-            _AdmissionRepo.UpdateMedicalDetails(MedicalHistoryFromRepo);
-            if (!_AdmissionRepo.Save())
-            {
-                throw new Exception("failed to update a Medical Details");
-            }
-
-            return NoContent();
-        }
-       */
+        /* [HttpPatch("{applicantId}/medical/{id}")]
+         public IActionResult PartiallyUpdateMedicalHistory(int applicantId, Guid id,
+            [FromBody] JsonPatchDocument<MedicalHistoryForUpdate> patchDoc)
+         {
+             if (patchDoc == null)
+             {
+                 return BadRequest();
+             }
+             if (_AdmissionRepo.GetApplicant(applicantId) == null)
+             {
+                 return NotFound();
+             }
+             var MedicalHistoryFromRepo = _AdminRepo.GetMedicalHistory(applicantId);
+             if (MedicalHistoryFromRepo == null)
+             {
+                 return NotFound();
+             }
+             var medicalHistoryToPatch = _Mapper.Map<MedicalHistoryForUpdate>(MedicalHistoryFromRepo);
+             patchDoc.ApplyTo(medicalHistoryToPatch, ModelState);
+             //add validation
+             //ModelState, any errors in the patch document will make modelState invalid
+             if (!ModelState.IsValid)
+             {
+                 return new UnprocessableEntityObjectResult(ModelState);
+             }
+             _Mapper.Map(medicalHistoryToPatch, MedicalHistoryFromRepo);
+             _AdmissionRepo.UpdateMedicalDetails(MedicalHistoryFromRepo);
+             if (!_AdmissionRepo.Save())
+             {
+                 throw new Exception("failed to update a Medical Details");
+             }
+             return NoContent();
+         }
+        */
 
 
         [HttpPatch("{ApplicantId}/ParentInfo/{Id}")]
@@ -990,48 +839,41 @@ namespace AdmissionSystem2.Controllers
 
             return NoContent();
         }
-       /* [HttpPost("{ApplicantId}/Document/{Id}")]
-        public IActionResult UpdateDocument(int ApplicantID, int Id, [FromForm] DocumentForCreation DocumentForCreation)
-        {
-            if (DocumentForCreation == null)
-            {
-                return BadRequest();
-            }
-            if (_AdmissionRepo.GetApplicant(ApplicantID) == null)
-            {
-                return NotFound();
-            }
-            //    var DocumentToSave = _Mapper.Map<Document>(DocumentForCreation);
-
-
-            var file = DocumentForCreation.Copy;
-            Document DocumentToSave = new Document();
-            if (file.Length > 0)
-            {
-                using var ms = new MemoryStream();
-                file.CopyTo(ms);
-                DocumentToSave.Copy = ms.ToArray();
-                /*  if (fileBytes.Length != 0) {
-                      // fileBytes.CopyTo(DocumentToSave.Copy, 1);
-                      Buffer.BlockCopy(fileBytes, 0, DocumentToSave.Copy, 0, fileBytes.Length);
-
-                  }
-            }
-
-            DocumentToSave.ApplicantId = ApplicantID;
-            DocumentToSave.DocumentName = DocumentForCreation.DocumentName;
-            DocumentToSave.DocumentType = DocumentForCreation.DocumentType;
-            _AdmissionRepo.AddDocument(DocumentToSave);
-            _AdmissionRepo.DeleteDocument(_AdminRepo.GetDocument(ApplicantID, Id));
-            if (!_AdmissionRepo.Save())
-            {
-                throw new Exception("Failed To Add Document");
-            }
-
-
-            return Ok();
-
-        }*/
+        /* [HttpPost("{ApplicantId}/Document/{Id}")]
+         public IActionResult UpdateDocument(int ApplicantID, int Id, [FromForm] DocumentForCreation DocumentForCreation)
+         {
+             if (DocumentForCreation == null)
+             {
+                 return BadRequest();
+             }
+             if (_AdmissionRepo.GetApplicant(ApplicantID) == null)
+             {
+                 return NotFound();
+             }
+             //    var DocumentToSave = _Mapper.Map<Document>(DocumentForCreation);
+             var file = DocumentForCreation.Copy;
+             Document DocumentToSave = new Document();
+             if (file.Length > 0)
+             {
+                 using var ms = new MemoryStream();
+                 file.CopyTo(ms);
+                 DocumentToSave.Copy = ms.ToArray();
+                 /*  if (fileBytes.Length != 0) {
+                       // fileBytes.CopyTo(DocumentToSave.Copy, 1);
+                       Buffer.BlockCopy(fileBytes, 0, DocumentToSave.Copy, 0, fileBytes.Length);
+                   }
+             }
+             DocumentToSave.ApplicantId = ApplicantID;
+             DocumentToSave.DocumentName = DocumentForCreation.DocumentName;
+             DocumentToSave.DocumentType = DocumentForCreation.DocumentType;
+             _AdmissionRepo.AddDocument(DocumentToSave);
+             _AdmissionRepo.DeleteDocument(_AdminRepo.GetDocument(ApplicantID, Id));
+             if (!_AdmissionRepo.Save())
+             {
+                 throw new Exception("Failed To Add Document");
+             }
+             return Ok();
+         }*/
 
 
     }

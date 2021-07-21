@@ -15,7 +15,7 @@ namespace AdmissionSystem2.Entites
         public string Relationship { set; get; }
         public string SiblingName { set; get; }
         public int Age { set; get; }
-        public string SchoolBranch { set; get; }
+        public string SchoolName { set; get; }
 
         [ForeignKey("ApplicantId")]
         public Applicant Applicant { set; get; }
