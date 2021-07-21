@@ -38,6 +38,8 @@ namespace AdmissionSystem2.Services
         void DeleteSibling(Sibling sibling);
         bool CheakAdmissionPeriod();
         bool AddAdmissionPeriod(AdmissionPeriod AdmissionPeriod);
+        Guid GetCurrentId();
+        bool ClearAdmissionPeriod();
         bool Save();
 
     }

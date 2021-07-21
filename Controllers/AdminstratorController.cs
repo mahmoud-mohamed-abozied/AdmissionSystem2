@@ -135,6 +135,37 @@ namespace AdmissionSystem2.Controllers
                 return BadRequest();
             }
         }
+        [HttpGet("CurrentId")]
+        public IActionResult GetCurrentId()
+        {
+            var ID = _AdmissionRepo.GetCurrentId();
+            return Ok(ID);
+        }
+        [HttpGet("CheakAdmissionPeriod")]
+        public IActionResult CheakAdmissionPeriod()
+        {
+            if (!_AdmissionRepo.CheakAdmissionPeriod())
+            {
+                return Ok(false);
+            }
+            if (_AdmissionRepo.ClearAdmissionPeriod())
+            {
+                _AdmissionRepo.Save();
+                return Ok(false);
+
+            }
+            
+            return Ok(true);
+        }
+        [HttpGet("CheakInterviewCriteria")]
+        public IActionResult CheakInterviewCriteria()
+        {
+            if (_AdmissionRepo.CheakInterviewCriteria())
+            {
+                return Ok(true);
+            }
+            return Ok(false);
+        }
 
         [HttpGet("PeriodLeft")]
         public IActionResult GetPeriodLeft()

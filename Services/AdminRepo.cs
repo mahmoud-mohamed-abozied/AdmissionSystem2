@@ -223,6 +223,17 @@ namespace AdmissionSystem2.Services
         {
             return _AdmissionSystemDbContext.AdmissionPeriod.Any();
         }
+        public bool ClearAdmissionPeriod()
+        {
+            var CurrentDate= DateTime.Now.ToString("yyyy-MM-dd");
+            AdmissionPeriod AdmissionPeriod = _AdmissionSystemDbContext.AdmissionPeriod.First();
+            if (AdmissionPeriod.EndDate.Equals(CurrentDate))
+            {
+                _AdmissionSystemDbContext.AdmissionPeriod.Remove(AdmissionPeriod);
+                return true;    
+            }
+            return false;
+        }
         public bool AddAdmissionPeriod(AdmissionPeriod AdmissionPeriod)
         {
             if (!CheakAdmissionPeriod())
@@ -252,10 +263,17 @@ namespace AdmissionSystem2.Services
             var AdmissionPeriod = GetAdmissionPeriod();
             string[] Admission_Date = AdmissionPeriod.EndDate.Split('-');
             string Admission_Time = AdmissionPeriod.EndTime.Substring(0, 2);
+            string AdmissionMinutes= AdmissionPeriod.EndTime.Substring(3);
             string h = AdmissionPeriod.EndTime.Substring(2);
             int Days = Int16.Parse(Admission_Date[2]) + Int16.Parse(period[0]);
             int Hours = Int16.Parse(period[1]) + Int16.Parse(Admission_Time);
             int Month = Int16.Parse(Admission_Date[1]);
+            int Min = Int16.Parse(AdmissionMinutes);
+            if (((Hours * 60) + Min) > (24 * 60))
+            {
+                Days += 1;
+                Hours = 0;
+            }
             if (Hours > 24)
             {
                 Days += 1;
@@ -290,9 +308,20 @@ namespace AdmissionSystem2.Services
             {
                 Admission_Time = Hours.ToString();
             }
+            string Minutes = Min.ToString();
+            if (Min < 10) {
+                Minutes = "0" + Min.ToString();
+            }
+            else {
+                Minutes = Min.ToString();
+            }
             AdmissionPeriod.EndDate = Admission_Date[0] + "-" + Admission_Date[1] + "-" + Admission_Date[2];
-            AdmissionPeriod.EndTime = Admission_Time + h;
+            AdmissionPeriod.EndTime = Admission_Time +":"+Minutes;
             _AdmissionSystemDbContext.AdmissionPeriod.Update(AdmissionPeriod);
+        }
+        public Guid GetCurrentId()
+        {
+            return _AdmissionSystemDbContext.Applicant.OrderBy(a=>a.ApplicantId).Last().ApplicantId;
         }
         public bool Save()
         {
