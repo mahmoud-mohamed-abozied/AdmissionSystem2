@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace AdmissionSystem2.Migrations
 {
-    public partial class LastUpdate : Migration
+    public partial class AddDatabase : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -39,7 +39,7 @@ namespace AdmissionSystem2.Migrations
                     Gender = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SpokenLanguage = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AdmissionDate = table.Column<DateTime>(type: "Date", nullable: false),
+                    AdmissionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -109,7 +109,51 @@ namespace AdmissionSystem2.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "FamilyStatues",
+                name: "Document",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DocumentType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DocumentName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Copy = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
+                    ApplicantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Document", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Document_Applicant_ApplicantId",
+                        column: x => x.ApplicantId,
+                        principalTable: "Applicant",
+                        principalColumn: "ApplicantId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EmergencyContact",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Relationship = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MobileNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    HomeNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ApplicantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmergencyContact", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EmergencyContact_Applicant_ApplicantId",
+                        column: x => x.ApplicantId,
+                        principalTable: "Applicant",
+                        principalColumn: "ApplicantId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FamilyStatus",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -121,9 +165,9 @@ namespace AdmissionSystem2.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FamilyStatues", x => x.Id);
+                    table.PrimaryKey("PK_FamilyStatus", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_FamilyStatues_Applicant_ApplicantId",
+                        name: "FK_FamilyStatus_Applicant_ApplicantId",
                         column: x => x.ApplicantId,
                         principalTable: "Applicant",
                         principalColumn: "ApplicantId",
@@ -154,6 +198,38 @@ namespace AdmissionSystem2.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ParentInfo",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecondName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PlaceOfBirth = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateOfBirth = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Nationality = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Relegion = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Mobile = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Occupation = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CompanyName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IdentificationType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IdentificationNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ApplicantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ParentInfo", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ParentInfo_Applicant_ApplicantId",
+                        column: x => x.ApplicantId,
+                        principalTable: "Applicant",
+                        principalColumn: "ApplicantId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Payment",
                 columns: table => new
                 {
@@ -169,6 +245,28 @@ namespace AdmissionSystem2.Migrations
                     table.PrimaryKey("PK_Payment", x => x.PaymentId);
                     table.ForeignKey(
                         name: "FK_Payment_Applicant_ApplicantId",
+                        column: x => x.ApplicantId,
+                        principalTable: "Applicant",
+                        principalColumn: "ApplicantId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Sibling",
+                columns: table => new
+                {
+                    SibilingId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Relationship = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SiblingName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Age = table.Column<int>(type: "int", nullable: false),
+                    SchoolName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ApplicantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Sibling", x => x.SibilingId);
+                    table.ForeignKey(
+                        name: "FK_Sibling_Applicant_ApplicantId",
                         column: x => x.ApplicantId,
                         principalTable: "Applicant",
                         principalColumn: "ApplicantId",
@@ -192,48 +290,6 @@ namespace AdmissionSystem2.Migrations
                         column: x => x.Id,
                         principalTable: "AdmissionDetails",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Application",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    AdmissionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AdmissionDetailsId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    MedicalHistoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    PaymentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ApplicantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Application", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Application_AdmissionDetails_AdmissionDetailsId",
-                        column: x => x.AdmissionDetailsId,
-                        principalTable: "AdmissionDetails",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Application_Applicant_ApplicantId",
-                        column: x => x.ApplicantId,
-                        principalTable: "Applicant",
-                        principalColumn: "ApplicantId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Application_MedicalHistory_MedicalHistoryId",
-                        column: x => x.MedicalHistoryId,
-                        principalTable: "MedicalHistory",
-                        principalColumn: "MedicalHistoryId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Application_Payment_PaymentId",
-                        column: x => x.PaymentId,
-                        principalTable: "Payment",
-                        principalColumn: "PaymentId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -293,132 +349,6 @@ namespace AdmissionSystem2.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Document",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DocumentType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DocumentName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Copy = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
-                    ApplicantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ApplicationId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Document", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Document_Applicant_ApplicantId",
-                        column: x => x.ApplicantId,
-                        principalTable: "Applicant",
-                        principalColumn: "ApplicantId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Document_Application_ApplicationId",
-                        column: x => x.ApplicationId,
-                        principalTable: "Application",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "EmergencyContact",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Relationship = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    MobileNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    HomeNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ApplicantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ApplicationId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_EmergencyContact", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_EmergencyContact_Applicant_ApplicantId",
-                        column: x => x.ApplicantId,
-                        principalTable: "Applicant",
-                        principalColumn: "ApplicantId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_EmergencyContact_Application_ApplicationId",
-                        column: x => x.ApplicationId,
-                        principalTable: "Application",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ParentInfo",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SecondName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PlaceOfBirth = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DateOfBirth = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Nationality = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Relegion = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Mobile = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Occupation = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CompanyName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IdentificationType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IdentificationNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ApplicantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ApplicationId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ParentInfo", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ParentInfo_Applicant_ApplicantId",
-                        column: x => x.ApplicantId,
-                        principalTable: "Applicant",
-                        principalColumn: "ApplicantId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ParentInfo_Application_ApplicationId",
-                        column: x => x.ApplicationId,
-                        principalTable: "Application",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Sibling",
-                columns: table => new
-                {
-                    SibilingId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Relationship = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SiblingName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Age = table.Column<int>(type: "int", nullable: false),
-                    SchoolBranch = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ApplicantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ApplicationId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Sibling", x => x.SibilingId);
-                    table.ForeignKey(
-                        name: "FK_Sibling_Applicant_ApplicantId",
-                        column: x => x.ApplicantId,
-                        principalTable: "Applicant",
-                        principalColumn: "ApplicantId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Sibling_Application_ApplicationId",
-                        column: x => x.ApplicationId,
-                        principalTable: "Application",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_AdmissionDetails_ApplicantId",
                 table: "AdmissionDetails",
@@ -426,34 +356,9 @@ namespace AdmissionSystem2.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Application_AdmissionDetailsId",
-                table: "Application",
-                column: "AdmissionDetailsId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Application_ApplicantId",
-                table: "Application",
-                column: "ApplicantId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Application_MedicalHistoryId",
-                table: "Application",
-                column: "MedicalHistoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Application_PaymentId",
-                table: "Application",
-                column: "PaymentId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Document_ApplicantId",
                 table: "Document",
                 column: "ApplicantId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Document_ApplicationId",
-                table: "Document",
-                column: "ApplicationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EmergencyContact_ApplicantId",
@@ -461,13 +366,8 @@ namespace AdmissionSystem2.Migrations
                 column: "ApplicantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_EmergencyContact_ApplicationId",
-                table: "EmergencyContact",
-                column: "ApplicationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FamilyStatues_ApplicantId",
-                table: "FamilyStatues",
+                name: "IX_FamilyStatus_ApplicantId",
+                table: "FamilyStatus",
                 column: "ApplicantId",
                 unique: true);
 
@@ -483,11 +383,6 @@ namespace AdmissionSystem2.Migrations
                 column: "ApplicantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ParentInfo_ApplicationId",
-                table: "ParentInfo",
-                column: "ApplicationId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Payment_ApplicantId",
                 table: "Payment",
                 column: "ApplicantId",
@@ -497,11 +392,6 @@ namespace AdmissionSystem2.Migrations
                 name: "IX_Sibling_ApplicantId",
                 table: "Sibling",
                 column: "ApplicantId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Sibling_ApplicationId",
-                table: "Sibling",
-                column: "ApplicationId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -519,7 +409,7 @@ namespace AdmissionSystem2.Migrations
                 name: "EmergencyContact");
 
             migrationBuilder.DropTable(
-                name: "FamilyStatues");
+                name: "FamilyStatus");
 
             migrationBuilder.DropTable(
                 name: "Fawry");
@@ -534,6 +424,9 @@ namespace AdmissionSystem2.Migrations
                 name: "MasterCard");
 
             migrationBuilder.DropTable(
+                name: "MedicalHistory");
+
+            migrationBuilder.DropTable(
                 name: "ParentInfo");
 
             migrationBuilder.DropTable(
@@ -543,16 +436,10 @@ namespace AdmissionSystem2.Migrations
                 name: "TransferredStudent");
 
             migrationBuilder.DropTable(
-                name: "Application");
+                name: "Payment");
 
             migrationBuilder.DropTable(
                 name: "AdmissionDetails");
-
-            migrationBuilder.DropTable(
-                name: "MedicalHistory");
-
-            migrationBuilder.DropTable(
-                name: "Payment");
 
             migrationBuilder.DropTable(
                 name: "Applicant");

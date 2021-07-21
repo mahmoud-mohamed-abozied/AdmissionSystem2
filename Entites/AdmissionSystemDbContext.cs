@@ -12,7 +12,7 @@ namespace AdmissionSystem2.Entites
     {
         public AdmissionSystemDbContext(DbContextOptions<AdmissionSystemDbContext> options) : base(options)
         {
-            Database.EnsureCreated();
+            Database.Migrate();
 
         }
         public DbSet<Applicant> Applicant { get; set; }
@@ -27,13 +27,13 @@ namespace AdmissionSystem2.Entites
         public DbSet<Fawry> Fawry { get; set; }
         public DbSet<MasterCard> MasterCard { get; set; }
         public DbSet<BankElahly> BankElahly { get; set; }
-        public DbSet<FamilyStatus> FamilyStatues { get; set; }
         public DbSet<AdmissionPeriod> AdmissionPeriod { get; set; }
         public DbSet<InterviewCriteria> InterviewCriteria { get; set; }
         public DbSet<Interview> Interview { get; set; }
+        public DbSet<FamilyStatus> FamilyStatus { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Applicant>().ToTable("Applicant") ;
+            modelBuilder.Entity<Applicant>().ToTable("Applicant");
             modelBuilder.Entity<ParentInfo>().ToTable("ParentInfo");
             modelBuilder.Entity<EmergencyContact>().ToTable("EmergencyContact");
             modelBuilder.Entity<AdmissionDetails>().ToTable("AdmissionDetails");
@@ -45,10 +45,15 @@ namespace AdmissionSystem2.Entites
             modelBuilder.Entity<Fawry>().ToTable("Fawry");
             modelBuilder.Entity<MasterCard>().ToTable("MasterCard");
             modelBuilder.Entity<BankElahly>().ToTable("BankElahly");
-            modelBuilder.Entity<FamilyStatus>().ToTable("FamilyStatues");
             modelBuilder.Entity<AdmissionPeriod>().ToTable("AdmissionPeriod");
             modelBuilder.Entity<InterviewCriteria>().ToTable("InterviewCriteria");
-            modelBuilder.Entity<Interview>().ToTable("Interview");     
+            modelBuilder.Entity<Interview>().ToTable("Interview");
+            modelBuilder.Entity<FamilyStatus>().ToTable("FamilyStatus");
+
+
         }
+
+
+
     }
 }

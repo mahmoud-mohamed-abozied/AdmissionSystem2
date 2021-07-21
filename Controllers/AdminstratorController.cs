@@ -18,7 +18,7 @@ namespace AdmissionSystem2.Controllers
 
         private IAdminRepo _AdmissionRepo;
         private readonly IMapper _Mapper;
-        public AdminstratorController (IAdminRepo AdmissionRepo,IMapper Mapper)
+        public AdminstratorController(IAdminRepo AdmissionRepo, IMapper Mapper)
         {
             _AdmissionRepo = AdmissionRepo;
             _Mapper = Mapper;
@@ -58,7 +58,6 @@ namespace AdmissionSystem2.Controllers
             return Ok(Count);
         }
 
-
         /*
          [HttpPut("ApplicantId/Document/Id")]
            public IActionResult UpdateDocument(int ApplicantID,int Id, [FromForm] JsonPatchDocument<DocumentForUpdate> patchDoc)
@@ -70,7 +69,6 @@ namespace AdmissionSystem2.Controllers
                if (_AdmissionRepo.GetApplicant(ApplicantID) == null)
                {
                    return NotFound();
-
                }
                var DocumentFromRepo = _AdmissionRepo.GetDocument(ApplicantID, Id);
             if (DocumentFromRepo == null)
@@ -81,14 +79,11 @@ namespace AdmissionSystem2.Controllers
                 if (!ModelState.IsValid)
                 {
                 return new UnprocessableEntityObjectResult(ModelState);
-
                 }
                 DocumentFromRepo.DocumentName = DocumentToPatch.DocumentName;
                 DocumentFromRepo.DocumentType = DocumentToPatch.DocumentType; 
                 DocumentFromRepo.Copy = DocumentToPatch.Copy.
-
         }
-
         */
         [HttpGet("{applicantId}/Document/{id}")]
         public IActionResult GetDocument(Guid applicantId, int id)
@@ -121,7 +116,32 @@ namespace AdmissionSystem2.Controllers
 
         }
 
+        [HttpPost("AdmissionPeriod")]
+        public IActionResult AddAdmissionPeriod([FromBody] AdmissionPeriodForCreation AdmissionPeriodForCreation)
+        {
+            if (AdmissionPeriodForCreation == null)
+            {
+                return BadRequest();
+            }
+            var AdmissionPeriodToAdd = _Mapper.Map<AdmissionPeriod>(AdmissionPeriodForCreation);
+            if (!_AdmissionRepo.AddAdmissionPeriod(AdmissionPeriodToAdd))
+            {
+                _AdmissionRepo.Save();
+                return Ok();
 
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpGet("PeriodLeft")]
+        public IActionResult GetPeriodLeft()
+        {
+            var periodLeft = _AdmissionRepo.GetPeriodLeft();
+            return Ok(periodLeft);
+        }
         [HttpGet("{ApplicantId}/EmergencyContacts")]
         public IActionResult GetEmergencyContacts(Guid ApplicantId)
         {
@@ -148,6 +168,17 @@ namespace AdmissionSystem2.Controllers
             return Ok(AdmissionDetailsToReturn);
         }
 
+        [HttpPost("AdmissionPeriodExtension")]
+        public IActionResult ExtendAdmissionPeriod([FromBody] string Period)
+        {
+            if (Period == null)
+            {
+                return BadRequest();
+            }
+            _AdmissionRepo.ExtendAdmissionPeriod(Period);
+            _AdmissionRepo.Save();
+            return Ok();
+        }
 
         [HttpGet("{applicantId}/Medical")]
         public IActionResult GetMedicalDetails(Guid applicantId)
@@ -209,9 +240,8 @@ namespace AdmissionSystem2.Controllers
 
         }
 
-        
         [HttpPost("InterviewCriteria")]
-        public IActionResult SetInterviewCriteria([FromBody]InterviewCriteriaForCreation InterviewCriteriaForCreation)
+        public IActionResult SetInterviewCriteria([FromBody] InterviewCriteriaForCreation InterviewCriteriaForCreation)
         {
             if (InterviewCriteriaForCreation == null)
             {
@@ -235,19 +265,17 @@ namespace AdmissionSystem2.Controllers
             _AdmissionRepo.AddInterviewDatesForApplicant(InterviewCriteriaForCreation);
             return Ok("Successful Add For Interview Criteria");
         }
-     /*   [HttpGet("{ApplicantId}/GetApplication")]
-
-        [HttpGet("{ApplicantId}/GetApplication")]
-        public IActionResult GetApplication(int ApplicantId)
-        {
-            if (_AdmissionRepo.GetApplicant(ApplicantId) == null)
-            {
-                return NotFound();
-            }
-            Applicant ApplicationToReturn = _AdmissionRepo.GetApplication(ApplicantId);
-            return Ok(ApplicationToReturn);
-        }
-
+        /*   [HttpGet("{ApplicantId}/GetApplication")]
+           public IActionResult GetApplication(int ApplicantId)
+           {
+               if (_AdmissionRepo.GetApplicant(ApplicantId) == null)
+               {
+                   return NotFound();
+               }
+               Application ApplicationToReturn = _AdmissionRepo.GetApplication(ApplicantId);
+               return Ok(ApplicationToReturn);
+           }
+        */
 
         [HttpDelete("{applicantId}/siblings/{id}")]
         public IActionResult DeleteSibling(Guid applicantId, Guid id)
@@ -273,7 +301,7 @@ namespace AdmissionSystem2.Controllers
             return NoContent();
 
         }
-*/
-        
+
+
     }
 }

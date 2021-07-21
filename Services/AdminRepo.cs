@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace AdmissionSystem2.Services
 {
@@ -21,6 +20,7 @@ namespace AdmissionSystem2.Services
             _AdmissionSystemDbContext = admissionSystemDbContext;
             _Mapper = Mapper;
         }
+
         public int GetApplicantsCount()
         {
             return _AdmissionSystemDbContext.Applicant.Count();
@@ -48,7 +48,7 @@ namespace AdmissionSystem2.Services
             string EndHours = InterviewCriteriaForCreation.EndTime.Substring(0, 2);
             int HoursInDay = Int16.Parse(EndHours) - Int16.Parse(StartHours);
             int Month = ((Int16.Parse(EndDate[1])) - (Int16.Parse(StartDate[1]))) * 30;
-            int Slots = (HoursInDay * 60*InterviewCriteriaForCreation.NumberOfInterviewers) / (InterviewCriteriaForCreation.InterviewDuration + InterviewCriteriaForCreation.BreakTime);
+            int Slots = (HoursInDay * 60 * InterviewCriteriaForCreation.NumberOfInterviewers) / (InterviewCriteriaForCreation.InterviewDuration + InterviewCriteriaForCreation.BreakTime);
             int AllSlots = (Slots) * ((Month) + (Int16.Parse(EndDate[2]) - Int16.Parse(StartDate[2])));
             if (AllSlots < ApplicantCount)
             {
@@ -61,19 +61,20 @@ namespace AdmissionSystem2.Services
         {
             int ApplicantsCount = _AdmissionSystemDbContext.Applicant.Count();
             string[] EndDate = InterviewCriteriaForCreation.EndDate.Split("-");
-            string IntialStartDate= InterviewCriteriaForCreation.StartDate;
-            int Duration = InterviewCriteriaForCreation.InterviewDuration+InterviewCriteriaForCreation.BreakTime;
+            string IntialStartDate = InterviewCriteriaForCreation.StartDate;
+            int Duration = InterviewCriteriaForCreation.InterviewDuration + InterviewCriteriaForCreation.BreakTime;
             string IntialStartTime = InterviewCriteriaForCreation.StartTime;
             string[] StartHours = InterviewCriteriaForCreation.StartTime.Split(":");
             string[] EndHours = InterviewCriteriaForCreation.EndTime.Split(":");
-            Double EndMinutesInDay = (Double.Parse(EndHours[0]) * 60) + Double.Parse(EndHours[1])-Duration;
-            Double StartMinutesInDay= Double.Parse(StartHours[0]) * 60 + Double.Parse(StartHours[1]);
-            
-            int EndMonth= Int16.Parse(EndDate[1]);
-            int EndDay=Int16.Parse(EndDate[2]);
+            Double EndMinutesInDay = (Double.Parse(EndHours[0]) * 60) + Double.Parse(EndHours[1]) - Duration;
+            Double StartMinutesInDay = Double.Parse(StartHours[0]) * 60 + Double.Parse(StartHours[1]);
+
+            int EndMonth = Int16.Parse(EndDate[1]);
+            int EndDay = Int16.Parse(EndDate[2]);
             int i = 0;
-            while (i < ApplicantsCount) { 
-               // int ApplicantCount = i+1;
+            while (i < ApplicantsCount)
+            {
+                // int ApplicantCount = i+1;
                 for (int y = 0; y < InterviewCriteriaForCreation.NumberOfInterviewers; y++)
                 {
                     if ((i + y) < ApplicantsCount)
@@ -94,23 +95,24 @@ namespace AdmissionSystem2.Services
                         break;
                     }
                 }
-                i=i+ InterviewCriteriaForCreation.NumberOfInterviewers;
+                i = i + InterviewCriteriaForCreation.NumberOfInterviewers;
 
 
-                string[] CurrStartHours = new string[2]; 
-                   CurrStartHours[0]= IntialStartTime.Substring(0,2).ToString();
+                string[] CurrStartHours = new string[2];
+                CurrStartHours[0] = IntialStartTime.Substring(0, 2).ToString();
                 CurrStartHours[1] = IntialStartTime.Substring(3).ToString();
-                int NextStartTimeInMinutes = ((Int16.Parse(CurrStartHours[0])) *60) + Int16.Parse(CurrStartHours[1]) + Duration ; 
+                int NextStartTimeInMinutes = ((Int16.Parse(CurrStartHours[0])) * 60) + Int16.Parse(CurrStartHours[1]) + Duration;
                 if (NextStartTimeInMinutes > EndMinutesInDay)
                 {
                     if ((StartMinutesInDay % 60) < 10)
                     {
                         IntialStartTime = (StartMinutesInDay / 60).ToString() + ":" + "0" + (StartMinutesInDay % 60).ToString();
                     }
-                    else {
-                        IntialStartTime = (StartMinutesInDay / 60).ToString() + ":" +  (StartMinutesInDay % 60).ToString();
+                    else
+                    {
+                        IntialStartTime = (StartMinutesInDay / 60).ToString() + ":" + (StartMinutesInDay % 60).ToString();
                     }
-                    
+
                     string[] StartDate = IntialStartDate.Split("-");
                     int StartMonth = Int16.Parse(StartDate[1]);
                     int StartDay = Int16.Parse(StartDate[2]);
@@ -133,7 +135,7 @@ namespace AdmissionSystem2.Services
                 {
                     if ((NextStartTimeInMinutes % 60) < 10)
                     {
-                        IntialStartTime = (NextStartTimeInMinutes / 60).ToString() + ":" + "0" + (NextStartTimeInMinutes %  60).ToString();
+                        IntialStartTime = (NextStartTimeInMinutes / 60).ToString() + ":" + "0" + (NextStartTimeInMinutes % 60).ToString();
                     }
                     else
                     {
@@ -141,7 +143,7 @@ namespace AdmissionSystem2.Services
                     }
                 }
             }
-            
+
 
         }
         public void AddInterviewCritera(InterviewCriteria interviewCriteria)
@@ -205,40 +207,98 @@ namespace AdmissionSystem2.Services
         {
             _AdmissionSystemDbContext.Sibling.Remove(sibling);
         }
-        public Applicant GetApplication(int ApplicantId)
+        /*  public Application GetApplication(int ApplicantId)
+          {
+              Application Application = new Application();
+              Application.Applicant = _AdmissionSystemDbContext.Applicant.FirstOrDefault(a => a.ApplicantId == ApplicantId);
+              Application.AdmissionDetails = _AdmissionSystemDbContext.AdmissionDetails.FirstOrDefault(a => a.ApplicantId == ApplicantId);
+              Application.EmergencyContact = GetEmergencyContacts(ApplicantId);
+              Application.Sibling = GetSiblings(ApplicantId);
+              Application.MedicalHistory = _Mapper.Map<MedicalHistoryDto>(GetMedicalHistory(ApplicantId));
+              Application.ParentInfo = GetParentsInfos(ApplicantId);
+              ///   Application.Documents = GetDocuments(ApplicantId);
+              return Application;
+          }*/
+        public bool CheakAdmissionPeriod()
         {
-            Applicant Applicant = _AdmissionSystemDbContext.Applicant
-                .Include(a => a.ParentInfo)
-                .Include(a => a.AdmissionDetails)
-                .Include(a => a.EmergencyContact)
-                .Include(a => a.Sibling)
-                .Include(a => a.MedicalHistory)
-                .Include(a => a.Documents)
-                .Include(a => a.Payment)
-                .FirstOrDefault(a => a.ApplicantId == ApplicantId);
-            /*Application Application = new Application();
-            Application.Applicant = _AdmissionSystemDbContext.Applicant.FirstOrDefault(a => a.ApplicantId == ApplicantId);
-            Application.AdmissionDetails = _AdmissionSystemDbContext.AdmissionDetails.FirstOrDefault(a => a.ApplicantId == ApplicantId);
-            Application.EmergencyContact = GetEmergencyContacts(ApplicantId);
-            Application.Sibling = GetSiblings(ApplicantId);
-            Application.MedicalHistory = _Mapper.Map<MedicalHistoryDto>(GetMedicalHistory(ApplicantId));
-            Application.ParentInfo = GetParentsInfos(ApplicantId);*/
-            ///   Application.Documents = GetDocuments(ApplicantId);
-            return Applicant;
-
+            return _AdmissionSystemDbContext.AdmissionPeriod.Any();
         }
-
-        /*public IEnumerable<Application> GetApplications(ResourceParameters resourceParameters)
+        public bool AddAdmissionPeriod(AdmissionPeriod AdmissionPeriod)
         {
-            return _AdmissionSystemDbContext.Appliaction
-                .Skip(resourceParameters.PageSize * (resourceParameters.PageNumber - 1))
-                .Take(resourceParameters.PageSize)
-                .ToList();
+            if (!CheakAdmissionPeriod())
+            {
+                _AdmissionSystemDbContext.AdmissionPeriod.Add(AdmissionPeriod);
+                return false;
+            }
+            return CheakAdmissionPeriod();
         }
-        */
+        public AdmissionPeriod GetAdmissionPeriod()
+        {
+            return _AdmissionSystemDbContext.AdmissionPeriod.FirstOrDefault();
+        }
+        public string GetPeriodLeft()
+        {
+            DateTime startTime = DateTime.Now;
+            string Date = GetAdmissionPeriod().EndDate + " " + GetAdmissionPeriod().EndTime;
+            DateTime oDate = DateTime.ParseExact(Date, "yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture);
+            TimeSpan span = oDate.Subtract(startTime);
+            String yourString = string.Format("{0} days, {1} hours",
+                span.Days, span.Hours);
+            return yourString;
+        }
+        public void ExtendAdmissionPeriod(string ExtraPeriod)
+        {
+            string[] period = ExtraPeriod.Split('/');
+            var AdmissionPeriod = GetAdmissionPeriod();
+            string[] Admission_Date = AdmissionPeriod.EndDate.Split('-');
+            string Admission_Time = AdmissionPeriod.EndTime.Substring(0, 2);
+            string h = AdmissionPeriod.EndTime.Substring(2);
+            int Days = Int16.Parse(Admission_Date[2]) + Int16.Parse(period[0]);
+            int Hours = Int16.Parse(period[1]) + Int16.Parse(Admission_Time);
+            int Month = Int16.Parse(Admission_Date[1]);
+            if (Hours > 24)
+            {
+                Days += 1;
+                Hours -= 24;
+            }
+            if (Days > 30)
+            {
+                Month += 1;
+                Days -= 30;
+            }
+            if (Month < 10)
+            {
+                Admission_Date[1] = "0" + Month.ToString();
+            }
+            else
+            {
+                Admission_Date[1] = Month.ToString();
+            }
+            if (Days < 10)
+            {
+                Admission_Date[2] = "0" + Days.ToString();
+            }
+            else
+            {
+                Admission_Date[2] = Days.ToString();
+            }
+            if (Hours < 10)
+            {
+                Admission_Time = "0" + Hours.ToString();
+            }
+            else
+            {
+                Admission_Time = Hours.ToString();
+            }
+            AdmissionPeriod.EndDate = Admission_Date[0] + "-" + Admission_Date[1] + "-" + Admission_Date[2];
+            AdmissionPeriod.EndTime = Admission_Time + h;
+            _AdmissionSystemDbContext.AdmissionPeriod.Update(AdmissionPeriod);
+        }
         public bool Save()
         {
             return (_AdmissionSystemDbContext.SaveChanges() >= 0);
         }
+
+
     }
 }
