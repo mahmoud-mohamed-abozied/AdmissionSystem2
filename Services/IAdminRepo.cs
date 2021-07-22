@@ -14,7 +14,8 @@ namespace AdmissionSystem2.Services
     public interface IAdminRepo
     {
         IEnumerable<Document> GetDocuments(Guid ApplicantId);
-        //  Application GetApplication(int ApplicantId);
+        Applicant GetApplication(Guid ApplicantId);
+        PagedList<ApplicantsView> GetApplicants(ResourceParameters resourceParameters);
         int GetApplicantsCount();
         Applicant GetApplicant(Guid ApplicantId);
         Document GetDocument(Guid ApplicantId, int DocumentId);
@@ -46,6 +47,7 @@ namespace AdmissionSystem2.Services
         void AcceptApplicant(Guid ApplicantId);
 
         bool Save();
+        AdministratorOfficer Authenticate(string username, string password);
 
     }
 }
