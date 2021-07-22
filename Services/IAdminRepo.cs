@@ -40,6 +40,11 @@ namespace AdmissionSystem2.Services
         bool AddAdmissionPeriod(AdmissionPeriod AdmissionPeriod);
         Guid GetCurrentId();
         bool ClearAdmissionPeriod();
+        void AddInterviewScore(Guid ApplicantId, InterviewScore InterviewScore);
+        void SetInterviewForApplicant(Guid ApplicantId);
+        void DeclineApplicant(Guid ApplicantId, string Reason);
+        void AcceptApplicant(Guid ApplicantId);
+
         bool Save();
 
     }

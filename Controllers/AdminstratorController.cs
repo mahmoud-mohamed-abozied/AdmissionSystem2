@@ -270,7 +270,64 @@ namespace AdmissionSystem2.Controllers
             return Ok(Siblings);
 
         }
+        [HttpGet("{applicantId}/ApplicantInterviewSetting")]
+        public IActionResult SetInterviewForApplicant(Guid applicantId)
+        {
+            if (_AdmissionRepo.GetApplicant(applicantId) == null)
+            {
+                return BadRequest("No Applicant with such ID");
+            }
+            _AdmissionRepo.SetInterviewForApplicant(applicantId);
+            if (!_AdmissionRepo.Save())
+            {
+                throw new Exception("Cant Set Interview For Applicant");
+            }
+            return Ok("Set interview for applicant successfuly");
+        }
+        [HttpGet("{applicantId}/ApplicantAcception")]
+        public IActionResult AcceptApplicant(Guid applicantId)
+        {
+            if (_AdmissionRepo.GetApplicant(applicantId) == null)
+            {
+                return BadRequest("No Applicant with such ID");
+            }
+            _AdmissionRepo.AcceptApplicant(applicantId);
+            if (!_AdmissionRepo.Save())
+            {
+                throw new Exception("Failed To Accept Applicant");
+            }
+            return Ok("Accept Applicant Successfuly");
+        }
+        [HttpGet("{applicantId}/ApplicantDeclination")]
+        public IActionResult DeclineApplicant(Guid applicantId,[FromBody] string Reason)
+        {
+            if (_AdmissionRepo.GetApplicant(applicantId) == null)
+            {
+                return BadRequest("No Applicant with such ID");
+            }
+            _AdmissionRepo.DeclineApplicant(applicantId,Reason);
+            if (!_AdmissionRepo.Save())
+            {
+                throw new Exception("Failed To Accept Applicant");
+            }
+            return Ok("Decline Applicant Successfuly");
+        }
 
+        [HttpPost("{applicantId}/AddInterviewScore")]
+        public IActionResult AddInterviewScore(Guid applicantId,[FromBody] InterviewScore InterviewScore)
+        {
+            if (InterviewScore == null)
+            {
+                return BadRequest("You haven't send any Data");
+            }
+            _AdmissionRepo.AddInterviewScore(applicantId, InterviewScore);
+            if (!_AdmissionRepo.Save())
+            {
+                throw new Exception("Failed To Add Interview Score");
+            }
+            return Ok("Interview Score Added Succesfuly");
+
+        }
         [HttpPost("InterviewCriteria")]
         public IActionResult SetInterviewCriteria([FromBody] InterviewCriteriaForCreation InterviewCriteriaForCreation)
         {
