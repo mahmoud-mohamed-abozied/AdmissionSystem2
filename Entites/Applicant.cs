@@ -23,6 +23,7 @@ namespace AdmissionSystem2.Entites
         public String Gender { set; get; }
         public String SpokenLanguage { set; get; }
         public String Status { set; get; }
+        [Column(TypeName = "Date")]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy/MM/dd}")]
         public DateTime AdmissionDate { get; set; }
         public string Email { get; set; }

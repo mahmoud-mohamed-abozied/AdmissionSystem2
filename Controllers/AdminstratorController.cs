@@ -1,27 +1,46 @@
 ﻿using AdmissionSystem2.Entites;
+using AdmissionSystem2.Helpers;
 using AdmissionSystem2.Models;
 using AdmissionSystem2.Services;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace AdmissionSystem2.Controllers
 {
+    [Authorize]
     [Route("api/Admin")]
     public class AdminstratorController : Controller
     {
 
         private IAdminRepo _AdmissionRepo;
         private readonly IMapper _Mapper;
-        public AdminstratorController(IAdminRepo AdmissionRepo, IMapper Mapper)
+        private readonly IHttpContextAccessor _Accessor;
+        private readonly LinkGenerator _Generator;
+        private readonly IMailingService _mailingService;
+        private readonly JWT _JWT;
+        
+        public AdminstratorController(IAdminRepo AdmissionRepo, IMapper Mapper, IHttpContextAccessor Accessor, LinkGenerator Generator, IMailingService mailingService, IOptions <JWT> jwt)
         {
             _AdmissionRepo = AdmissionRepo;
             _Mapper = Mapper;
+            _Accessor = Accessor;
+            _Generator = Generator;
+            _mailingService = mailingService;
+            _JWT = jwt.Value;   
         }
         public IActionResult Index()
         {
@@ -58,33 +77,7 @@ namespace AdmissionSystem2.Controllers
             return Ok(Count);
         }
 
-        /*
-         [HttpPut("ApplicantId/Document/Id")]
-           public IActionResult UpdateDocument(int ApplicantID,int Id, [FromForm] JsonPatchDocument<DocumentForUpdate> patchDoc)
-           {
-               if (patchDoc == null)
-               {
-                   return BadRequest();
-               }
-               if (_AdmissionRepo.GetApplicant(ApplicantID) == null)
-               {
-                   return NotFound();
-               }
-               var DocumentFromRepo = _AdmissionRepo.GetDocument(ApplicantID, Id);
-            if (DocumentFromRepo == null)
-            {
-                return NotFound();
-            }
-               patchDoc.ApplyTo(DocumentToPatch, ModelState);
-                if (!ModelState.IsValid)
-                {
-                return new UnprocessableEntityObjectResult(ModelState);
-                }
-                DocumentFromRepo.DocumentName = DocumentToPatch.DocumentName;
-                DocumentFromRepo.DocumentType = DocumentToPatch.DocumentType; 
-                DocumentFromRepo.Copy = DocumentToPatch.Copy.
-        }
-        */
+        
         [HttpGet("{applicantId}/Document/{id}")]
         public IActionResult GetDocument(Guid applicantId, int id)
         {
@@ -301,6 +294,151 @@ namespace AdmissionSystem2.Controllers
             return NoContent();
 
         }
+        [HttpGet("{ApplicantId}/GetApplication")]
+        public IActionResult GetApplication(Guid ApplicantId)
+        {
+            if (_AdmissionRepo.GetApplicant(ApplicantId) == null)
+            {
+                return NotFound();
+            }
+            Applicant ApplicationToReturn = _AdmissionRepo.GetApplication(ApplicantId);
+            return Ok(ApplicationToReturn);
+        }
+
+
+
+        [HttpGet("AdmissionApplicants", Name = "GetApplicants")]
+        public IActionResult GetApplicants(ResourceParameters resourceParameters)
+        {
+            var Applicants = _AdmissionRepo.GetApplicants(resourceParameters);
+
+            var previousPageLink = Applicants.HasPrevious ?
+                    CreateResourceUri(resourceParameters,
+                    ResourceUriType.PreviousPage) : null;
+
+            var nextPageLink = Applicants.HasNext ?
+                CreateResourceUri(resourceParameters,
+                ResourceUriType.NextPage) : null;
+
+            var paginationMetadata = new
+            {
+                previousPageLink = previousPageLink,
+                nextPageLink = nextPageLink,
+                totalCount = Applicants.TotalCount,
+                pageSize = Applicants.PageSize,
+                currentPage = Applicants.CurrentPage,
+                totalPages = Applicants.TotalPages
+            };
+
+            Response.Headers.Add("X-Pagination",
+                Newtonsoft.Json.JsonConvert.SerializeObject(paginationMetadata));
+
+            //var ApplicantToRetrive = _Mapper.Map<IEnumerable<ApplicantDto>>(Applicants);
+            return Ok(Applicants);
+
+
+        }
+
+        private string CreateResourceUri(
+            ResourceParameters resourceParameters,
+            ResourceUriType type)
+        {
+            switch (type)
+            {
+                case ResourceUriType.PreviousPage:
+                    return _Generator.GetUriByAction(_Accessor.HttpContext,
+                        action: "GetApplicants",
+                            values: new
+                            {
+                                orderBy = resourceParameters.OrderBy,
+                                searchQuery = resourceParameters.SearchQuery,
+                                //Name = resourceParameters.Name,
+                                pageNumber = resourceParameters.PageNumber - 1,
+                                pageSize = resourceParameters.PageSize
+                            });
+
+                /*  return _urlHelper.Link("GetApplicants",
+                    new
+                    {
+                        //fields = resourceParameters.Fields,
+                        orderBy = resourceParameters.OrderBy,
+                        searchQuery = resourceParameters.SearchQuery,
+                        Name = resourceParameters.Name,
+                        pageNumber = resourceParameters.PageNumber - 1,
+                        pageSize = resourceParameters.PageSize
+                    });*/
+                case ResourceUriType.NextPage:
+                    return _Generator.GetUriByAction(_Accessor.HttpContext,
+                          action: "GetApplicants",
+                             values: new
+                             {
+                                 orderBy = resourceParameters.OrderBy,
+                                 searchQuery = resourceParameters.SearchQuery,
+                                 //Name = resourceParameters.Name,
+                                 pageNumber = resourceParameters.PageNumber + 1,
+                                 pageSize = resourceParameters.PageSize
+                             });
+                case ResourceUriType.Current:
+                default:
+                    return _Generator.GetUriByAction(_Accessor.HttpContext,
+                        action: "GetApplicants",
+                             values: new
+                             {
+                                 orderBy = resourceParameters.OrderBy,
+                                 searchQuery = resourceParameters.SearchQuery,
+                                 //Name = resourceParameters.Name,
+                                 pageNumber = resourceParameters.PageNumber,
+                                 pageSize = resourceParameters.PageSize
+                             });
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("authenticate")]
+        public IActionResult Authenticate([FromBody] UserLoginModel model) //Get Token - login
+        {
+            var admin = _AdmissionRepo.Authenticate(model.UserName, model.Password);
+
+            if (admin == null)
+                return BadRequest(new { message = "Username or password is incorrect" });
+
+            var tokenString = GenerateJwtToken(admin);
+
+            // return basic user info and authentication token
+            return Ok(new
+            {
+                Id = admin.Id,
+                Username = admin.UserName,
+                Token = tokenString
+            });
+        }
+
+        public string GenerateJwtToken(AdministratorOfficer admin)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_JWT.Key);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[] {
+                    new Claim("id", admin.Id.ToString()),
+                    new Claim("UserName", admin.UserName.ToString())
+                }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+
+        [HttpPost("Send")]
+        public async Task<IActionResult> SendEmail([FromForm] EmailDto email)
+        {
+            await _mailingService.SendEmailAsync(email.ToEmail, email.Subject, email.Body, email.Attachments);
+            return Ok();
+        }
+
+
+
 
 
     }

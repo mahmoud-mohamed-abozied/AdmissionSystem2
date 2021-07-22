@@ -48,7 +48,7 @@ namespace AdmissionSystem2.Mapping
             CreateMap<MedicalHistoryForUpdate, MedicalHistory>();
             CreateMap<MedicalHistory, MedicalHistoryDto>();
             CreateMap<InterviewCriteriaForCreation, InterviewCriteria>();
-
+            CreateMap<AdministratorOfficer, UserLoginModel>();
 
         }
     }

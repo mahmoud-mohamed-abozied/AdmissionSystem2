@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace AdmissionSystem2.Services
 {
@@ -207,18 +208,98 @@ namespace AdmissionSystem2.Services
         {
             _AdmissionSystemDbContext.Sibling.Remove(sibling);
         }
-        /*  public Application GetApplication(int ApplicantId)
-          {
-              Application Application = new Application();
-              Application.Applicant = _AdmissionSystemDbContext.Applicant.FirstOrDefault(a => a.ApplicantId == ApplicantId);
-              Application.AdmissionDetails = _AdmissionSystemDbContext.AdmissionDetails.FirstOrDefault(a => a.ApplicantId == ApplicantId);
-              Application.EmergencyContact = GetEmergencyContacts(ApplicantId);
-              Application.Sibling = GetSiblings(ApplicantId);
-              Application.MedicalHistory = _Mapper.Map<MedicalHistoryDto>(GetMedicalHistory(ApplicantId));
-              Application.ParentInfo = GetParentsInfos(ApplicantId);
-              ///   Application.Documents = GetDocuments(ApplicantId);
-              return Application;
-          }*/
+        public Applicant GetApplication(Guid ApplicantId)
+        {
+            Applicant Applicant = _AdmissionSystemDbContext.Applicant
+                .Include(a => a.ParentInfo)
+                .Include(a => a.AdmissionDetails)
+                .Include(a => a.EmergencyContact)
+                .Include(a => a.Sibling)
+                .Include(a => a.MedicalHistory)
+                .Include(a => a.Documents)
+                .Include(a => a.Payment)
+                .FirstOrDefault(a => a.ApplicantId == ApplicantId);
+            /*Application Application = new Application();
+            Application.Applicant = _AdmissionSystemDbContext.Applicant.FirstOrDefault(a => a.ApplicantId == ApplicantId);
+            Application.AdmissionDetails = _AdmissionSystemDbContext.AdmissionDetails.FirstOrDefault(a => a.ApplicantId == ApplicantId);
+            Application.EmergencyContact = GetEmergencyContacts(ApplicantId);
+            Application.Sibling = GetSiblings(ApplicantId);
+            Application.MedicalHistory = _Mapper.Map<MedicalHistoryDto>(GetMedicalHistory(ApplicantId));
+            Application.ParentInfo = GetParentsInfos(ApplicantId);*/
+            ///   Application.Documents = GetDocuments(ApplicantId);
+            return Applicant;
+
+        }
+
+         public PagedList<ApplicantsView> GetApplicants(ResourceParameters resourceParameters)
+        {
+            var collectionBeforePaging = _AdmissionSystemDbContext.Applicant
+                .Select(a => new ApplicantsView
+                {
+                    ApplicantId = a.ApplicantId,
+                    FirstName = a.FirstName,
+                    SecondName = a.SecondName,
+                    LastName = a.LastName,
+                    AdmissionDate = a.AdmissionDate,
+                    Status = a.Status
+                });
+
+            switch (resourceParameters.OrderBy)
+            {
+                case "ID":
+                    collectionBeforePaging = collectionBeforePaging.OrderBy(a => a.ApplicantId).AsQueryable();
+                    break;
+                case "ID_desc":
+                    collectionBeforePaging = collectionBeforePaging.OrderByDescending(a => a.ApplicantId).AsQueryable();
+                    break;
+                case "Name":
+                    collectionBeforePaging = collectionBeforePaging.OrderBy(a => a.FirstName).AsQueryable();
+                    break;
+                case "Name_desc":
+                    collectionBeforePaging = collectionBeforePaging.OrderByDescending(a => a.FirstName).AsQueryable();
+                    break;
+                case "Date":
+                    collectionBeforePaging = collectionBeforePaging.OrderBy(a => a.AdmissionDate).AsQueryable();
+                    break;
+                case "Date_desc":
+                    collectionBeforePaging = collectionBeforePaging.OrderByDescending(a => a.AdmissionDate).AsQueryable();
+                    break;
+                default:
+                    collectionBeforePaging = collectionBeforePaging.OrderByDescending(a => a.ApplicantId).AsQueryable();
+                    break;
+            }
+
+            if (resourceParameters.StartDate != DateTime.MinValue && resourceParameters.EndDate != DateTime.MinValue)
+            {
+                
+                collectionBeforePaging = collectionBeforePaging.
+                    Where(a => a.AdmissionDate >= resourceParameters.StartDate&& a.AdmissionDate <= resourceParameters.EndDate);
+            }
+
+            if (!String.IsNullOrEmpty(resourceParameters.Status))
+            {
+                var StatusForWherecclause = resourceParameters.Status.Trim().ToLowerInvariant();
+                collectionBeforePaging = collectionBeforePaging.Where(a => a.Status.ToLower() == StatusForWherecclause);
+            }
+
+
+            if (!String.IsNullOrEmpty(resourceParameters.SearchQuery))
+            {
+                var SearchQueryForWherecclause = resourceParameters.SearchQuery.Trim().ToLowerInvariant();
+                collectionBeforePaging = collectionBeforePaging
+                    .Where(a => a.FirstName.ToLower().Contains(SearchQueryForWherecclause)
+                    || a.SecondName.ToLower().Contains(SearchQueryForWherecclause)
+                        || a.LastName.ToLower().Contains(SearchQueryForWherecclause)
+                       || a.ApplicantId.ToString().Contains(SearchQueryForWherecclause));
+            }
+            return PagedList<ApplicantsView>.Create(collectionBeforePaging, resourceParameters.PageNumber, resourceParameters.PageSize);
+
+        }
+
+        
+    
+
+
         public bool CheakAdmissionPeriod()
         {
             return _AdmissionSystemDbContext.AdmissionPeriod.Any();
@@ -297,6 +378,44 @@ namespace AdmissionSystem2.Services
         public bool Save()
         {
             return (_AdmissionSystemDbContext.SaveChanges() >= 0);
+        }
+
+        public AdministratorOfficer Authenticate(string username, string password)
+        {
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+                return null;
+
+            var admin = _AdmissionSystemDbContext.AdministratorOfficer.SingleOrDefault(x => x.UserName == username);
+
+            // check if username exists
+            if (admin == null)
+                return null;
+
+            // check if password is correct
+            if (!VerifyPasswordHash(password, admin.PasswordHash, admin.PasswordSalt))
+                return null;
+
+            // authentication successful
+            return admin;
+        }
+     
+        private static bool VerifyPasswordHash(string password, byte[] storedHash, byte[] storedSalt)
+        {
+            if (password == null) throw new ArgumentNullException("password");
+            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentException("Value cannot be empty or whitespace only string.", "password");
+            if (storedHash.Length != 64) throw new ArgumentException("Invalid length of password hash (64 bytes expected).", "passwordHash");
+            if (storedSalt.Length != 128) throw new ArgumentException("Invalid length of password salt (128 bytes expected).", "passwordHash");
+
+            using (var hmac = new System.Security.Cryptography.HMACSHA512(storedSalt))
+            {
+                var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+                for (int i = 0; i < computedHash.Length; i++)
+                {
+                    if (computedHash[i] != storedHash[i]) return false;
+                }
+            }
+
+            return true;
         }
 
 
