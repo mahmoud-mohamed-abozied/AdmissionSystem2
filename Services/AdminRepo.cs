@@ -79,10 +79,9 @@ namespace AdmissionSystem2.Services
                 {
                     if ((i + y) < ApplicantsCount)
                     {
-                        var ApplicantList = _AdmissionSystemDbContext.Applicant.ToList();
-                        var Applicant = ApplicantList.ElementAt(i + y);
+                      //  var ApplicantList = _AdmissionSystemDbContext.Applicant.ToList();
+                       // var Applicant = ApplicantList.ElementAt(i + y);
                         Interview interview = new Interview();
-                        interview.ApplicantId = Applicant.ApplicantId;
                         interview.InterviewType = "ApplicantInterview";
                         interview.InterviewDate = IntialStartDate;
                         interview.InterviewTime = IntialStartTime;
@@ -145,6 +144,28 @@ namespace AdmissionSystem2.Services
             }
 
 
+        }
+        public void AcceptApplicant(Guid ApplicantId)
+        {
+            var Applicant = _AdmissionSystemDbContext.Applicant.FirstOrDefault(a => a.ApplicantId == ApplicantId);
+            Applicant.Status = "Accepted";
+            _AdmissionSystemDbContext.Applicant.Update(Applicant);
+        }
+        public void DeclineApplicant(Guid ApplicantId,string Reason)
+        {
+            var Applicant = _AdmissionSystemDbContext.Applicant.FirstOrDefault(a => a.ApplicantId == ApplicantId);
+            Applicant.Status = "Declined";
+            _AdmissionSystemDbContext.Applicant.Update(Applicant);
+        }
+        public void SetInterviewForApplicant(Guid ApplicantId)
+        {
+            var Interview = _AdmissionSystemDbContext.Interview.FirstOrDefault(a => a.ApplicantEmail == null);
+            var Applicant = _AdmissionSystemDbContext.Applicant.FirstOrDefault(a => a.ApplicantId == ApplicantId);
+            Interview.ApplicantId = ApplicantId;
+            Interview.ApplicantEmail = Applicant.Email;
+            _AdmissionSystemDbContext.Interview.Update(Interview);
+            Applicant.Status = "Waiting For Interview";
+            _AdmissionSystemDbContext.Applicant.Update(Applicant);
         }
         public void AddInterviewCritera(InterviewCriteria interviewCriteria)
         {
@@ -225,12 +246,12 @@ namespace AdmissionSystem2.Services
         }
         public bool ClearAdmissionPeriod()
         {
-            var CurrentDate= DateTime.Now.ToString("yyyy-MM-dd");
+            var CurrentDate = DateTime.Now.ToString("yyyy-MM-dd");
             AdmissionPeriod AdmissionPeriod = _AdmissionSystemDbContext.AdmissionPeriod.First();
             if (AdmissionPeriod.EndDate.Equals(CurrentDate))
             {
                 _AdmissionSystemDbContext.AdmissionPeriod.Remove(AdmissionPeriod);
-                return true;    
+                return true;
             }
             return false;
         }
@@ -263,7 +284,7 @@ namespace AdmissionSystem2.Services
             var AdmissionPeriod = GetAdmissionPeriod();
             string[] Admission_Date = AdmissionPeriod.EndDate.Split('-');
             string Admission_Time = AdmissionPeriod.EndTime.Substring(0, 2);
-            string AdmissionMinutes= AdmissionPeriod.EndTime.Substring(3);
+            string AdmissionMinutes = AdmissionPeriod.EndTime.Substring(3);
             string h = AdmissionPeriod.EndTime.Substring(2);
             int Days = Int16.Parse(Admission_Date[2]) + Int16.Parse(period[0]);
             int Hours = Int16.Parse(period[1]) + Int16.Parse(Admission_Time);
@@ -309,20 +330,34 @@ namespace AdmissionSystem2.Services
                 Admission_Time = Hours.ToString();
             }
             string Minutes = Min.ToString();
-            if (Min < 10) {
+            if (Min < 10)
+            {
                 Minutes = "0" + Min.ToString();
             }
-            else {
+            else
+            {
                 Minutes = Min.ToString();
             }
             AdmissionPeriod.EndDate = Admission_Date[0] + "-" + Admission_Date[1] + "-" + Admission_Date[2];
-            AdmissionPeriod.EndTime = Admission_Time +":"+Minutes;
+            AdmissionPeriod.EndTime = Admission_Time + ":" + Minutes;
             _AdmissionSystemDbContext.AdmissionPeriod.Update(AdmissionPeriod);
         }
         public Guid GetCurrentId()
         {
-            return _AdmissionSystemDbContext.Applicant.OrderBy(a=>a.ApplicantId).Last().ApplicantId;
+            return _AdmissionSystemDbContext.Applicant.OrderBy(a => a.ApplicantId).Last().ApplicantId;
         }
+        public void AddInterviewScore(Guid ApplicantId, InterviewScore InterviewScore)
+        {
+            var Interview = _AdmissionSystemDbContext.Interview.FirstOrDefault(a => a.ApplicantId == ApplicantId);
+            Interview.Score = InterviewScore.Score;
+            Interview.ScoreGrade = InterviewScore.ScoreGrade;
+            Interview.InterviewerName = InterviewScore.InterviewerName;
+            _AdmissionSystemDbContext.Interview.Update(Interview);
+
+        }
+
+
+
         public bool Save()
         {
             return (_AdmissionSystemDbContext.SaveChanges() >= 0);

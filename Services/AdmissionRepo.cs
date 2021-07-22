@@ -21,6 +21,7 @@ namespace AdmissionSystem2.Services
 
         public void AddApplicant(Applicant Applicant)
         {
+             Applicant.Status = "Applied Sucessfuly";
             _AdmissionSystemDbContext.Applicant.Add(Applicant);
         }
         public Applicant GetApplicant(Guid _ApplicantId)
