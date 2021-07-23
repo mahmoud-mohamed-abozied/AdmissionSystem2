@@ -47,11 +47,16 @@ namespace AdmissionSystem2.Controllers
         [HttpPost()]
         public IActionResult AddApplicant([FromBody] ApplicantForCreation ApplicantForCreation)
         {
-            /*  if (ApplicantForCreation == null)
+            if (ApplicantForCreation == null)
               {
                   return BadRequest();
-              }*/
+              }
             var final = _Mapper.Map<Applicant>(ApplicantForCreation);
+
+            var date = DateTime.Today.ToString("yyyy/MM/dd");
+            final.AdmissionDate = Convert.ToDateTime(date).Date;
+            final.Status = "Applied Sucessfuly";
+
             _AdmissionRepo.AddApplicant(final);
             _AdmissionRepo.Save();
 
@@ -91,6 +96,30 @@ namespace AdmissionSystem2.Controllers
             var EmergencyContact = _Mapper.Map<EmergencyContact>(EmergencyContactForCreation);
             _AdmissionRepo.AddEmergencyContact(ApplicantId, EmergencyContact);
             _AdmissionRepo.Save();
+            return Ok();
+        }
+
+        [HttpPost("{ApplicantId}/EmergencyContacts")]
+        public IActionResult AddEmergencyContacts(Guid ApplicantId, [FromBody] IEnumerable<EmergencyContactForCreation> EmergencyContactForCreation)
+        {
+            if (EmergencyContactForCreation == null)
+            {
+                return BadRequest();
+            }
+            if (_AdminRepo.GetApplicant(ApplicantId) == null)
+            {
+                return NotFound();
+            }
+            var EmergencyContactEntities = _Mapper.Map< IEnumerable<EmergencyContact>>(EmergencyContactForCreation);
+            foreach (var EmergencyContact in EmergencyContactEntities)
+            {
+                _AdmissionRepo.AddEmergencyContact(ApplicantId, EmergencyContact);
+            }
+            if (!_AdmissionRepo.Save())
+            {
+                throw new Exception("failed to add Emergency Contact ");
+            }
+            
             return Ok();
         }
         [HttpPost("{ApplicantId}/FamilyStatus")]
@@ -756,6 +785,7 @@ namespace AdmissionSystem2.Controllers
 
         }
 
+
         [HttpPatch("{applicantId}/siblings/{id}")]
         public IActionResult PartiallyUpdateSibling(Guid applicantId, Guid id,
            [FromBody] JsonPatchDocument<SiblingForUpdate> patchDoc)
@@ -798,7 +828,7 @@ namespace AdmissionSystem2.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{applicantId}/medical/{id}")]
+        [HttpPatch("{applicantId}/AdmissionDetails/{id}")]
         public IActionResult PartiallyUpdateAdmissionDetails(Guid applicantId, Guid id,
            [FromBody] JsonPatchDocument<AdmissionDetailsForUpdate> patchDoc)
         {
@@ -839,6 +869,11 @@ namespace AdmissionSystem2.Controllers
 
             return NoContent();
         }
+
+
+
+
+
         /* [HttpPost("{ApplicantId}/Document/{Id}")]
          public IActionResult UpdateDocument(int ApplicantID, int Id, [FromForm] DocumentForCreation DocumentForCreation)
          {

@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace AdmissionSystem2.Controllers
 {
-    [Authorize]
+    
     [Route("api/Admin")]
     public class AdminstratorController : Controller
     {
@@ -92,6 +92,31 @@ namespace AdmissionSystem2.Controllers
             string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
             return Ok(imageDataURL);
 
+        }
+        [HttpGet("{applicantId}/Documents")]
+        public IActionResult GetDocuments(Guid applicantId)
+        {
+            var DocumentFromRepo = _AdmissionRepo.GetDocuments(applicantId);
+            if (DocumentFromRepo == null)
+            {
+                return NotFound();
+            }
+           
+            var Doc = new List<DocumentDto>();
+            foreach (var file in DocumentFromRepo)
+            {
+                string imageBase64Data = Convert.ToBase64String(file.Copy);
+                string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+                Doc.Add(new DocumentDto()
+                {
+                    Id = file.Id,
+                    DocumentType = file.DocumentType,
+                    DocumentName = file.DocumentName,
+                    Copy = imageDataURL
+                });
+                
+            }
+            return Ok(Doc);
         }
 
 
@@ -389,7 +414,7 @@ namespace AdmissionSystem2.Controllers
             {
                 return NotFound();
             }
-            Applicant ApplicationToReturn = _AdmissionRepo.GetApplication(ApplicantId);
+            Application ApplicationToReturn = _AdmissionRepo.GetApplication(ApplicantId);
             return Ok(ApplicationToReturn);
         }
 
@@ -524,10 +549,6 @@ namespace AdmissionSystem2.Controllers
             await _mailingService.SendEmailAsync(email.ToEmail, email.Subject, email.Body, email.Attachments);
             return Ok();
         }
-
-
-
-
 
     }
 }

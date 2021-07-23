@@ -229,9 +229,9 @@ namespace AdmissionSystem2.Services
         {
             _AdmissionSystemDbContext.Sibling.Remove(sibling);
         }
-        public Applicant GetApplication(Guid ApplicantId)
+        public Application GetApplication(Guid ApplicantId)
         {
-            Applicant Applicant = _AdmissionSystemDbContext.Applicant
+            /*Applicant Applicant = _AdmissionSystemDbContext.Applicant
                 .Include(a => a.ParentInfo)
                 .Include(a => a.AdmissionDetails)
                 .Include(a => a.EmergencyContact)
@@ -239,16 +239,21 @@ namespace AdmissionSystem2.Services
                 .Include(a => a.MedicalHistory)
                 .Include(a => a.Documents)
                 .Include(a => a.Payment)
-                .FirstOrDefault(a => a.ApplicantId == ApplicantId);
-            /*Application Application = new Application();
-            Application.Applicant = _AdmissionSystemDbContext.Applicant.FirstOrDefault(a => a.ApplicantId == ApplicantId);
-            Application.AdmissionDetails = _AdmissionSystemDbContext.AdmissionDetails.FirstOrDefault(a => a.ApplicantId == ApplicantId);
-            Application.EmergencyContact = GetEmergencyContacts(ApplicantId);
-            Application.Sibling = GetSiblings(ApplicantId);
+                .FirstOrDefault(a => a.ApplicantId == ApplicantId);*/
+            Application Application = new Application();
+            Application.Applicant = _Mapper.Map<ApplicantDto>(_AdmissionSystemDbContext.Applicant.FirstOrDefault(a => a.ApplicantId == ApplicantId));
+            //Application.Applicant = _AdmissionSystemDbContext.Applicant.FirstOrDefault(a => a.ApplicantId == ApplicantId);
+            Application.AdmissionDetails = _Mapper.Map<AdmissionDetailsDto>(GetAdmissionDetails(ApplicantId));
+         
+            Application.EmergencyContact = _Mapper.Map<IEnumerable<EmergencyContactDto>>(GetEmergencyContacts(ApplicantId));
+            
+            Application.Sibling = _Mapper.Map<IEnumerable<SiblingDto>>(GetSiblings(ApplicantId));
+            
             Application.MedicalHistory = _Mapper.Map<MedicalHistoryDto>(GetMedicalHistory(ApplicantId));
-            Application.ParentInfo = GetParentsInfos(ApplicantId);*/
-            ///   Application.Documents = GetDocuments(ApplicantId);
-            return Applicant;
+            Application.ParentInfo = _Mapper.Map<IEnumerable<ParentInfoDto>>(GetParentsInfos(ApplicantId));
+            
+            //  Application.Documents = GetDocuments(ApplicantId);
+            return Application;
 
         }
 
