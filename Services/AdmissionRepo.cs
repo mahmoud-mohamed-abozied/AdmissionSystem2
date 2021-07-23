@@ -21,8 +21,7 @@ namespace AdmissionSystem2.Services
 
         public void AddApplicant(Applicant Applicant)
         {
-             Applicant.Status = "Applied Sucessfuly";
-            _AdmissionSystemDbContext.Applicant.Add(Applicant);
+             _AdmissionSystemDbContext.Applicant.Add(Applicant);
         }
         public Applicant GetApplicant(Guid _ApplicantId)
         {
@@ -40,21 +39,6 @@ namespace AdmissionSystem2.Services
                 Applicant.ParentInfo.Add(parentInfo);
             }
         }
-
-        /* public Application GetApplication(int ApplicantId)
-         {
-             Application Application = new Application();
-             Application.Applicant= _AdmissionSystemDbContext.Applicant.FirstOrDefault(a => a.ApplicantId == ApplicantId);
-             Application.AdmissionDetails = GetAdmissionDetails(ApplicantId);
-             Application.EmergencyContact = GetEmergencyContacts(ApplicantId);
-             Application.Sibling = GetSiblings(ApplicantId);
-             Application.MedicalHistory = GetMedicalHistory(ApplicantId);
-             Application.ParentInfo = GetParentsInfos(ApplicantId);
-             Application.Documents = GetDocuments(ApplicantId);
-             return Application;
-         }*/
-
-
 
         public void DeleteDocument(Document Document)
         {

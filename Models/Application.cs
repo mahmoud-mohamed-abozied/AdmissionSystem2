@@ -8,14 +8,14 @@ namespace AdmissionSystem2.Models
 {
     public class Application
     {
-        public  Applicant Applicant { get; set; }
-        public IEnumerable<ParentInfo> ParentInfo { set; get; } = new List<ParentInfo>();
-        public IEnumerable<EmergencyContact> EmergencyContact { set; get; } = new List<EmergencyContact>();
+        public ApplicantDto Applicant { get; set; }
+        public IEnumerable<ParentInfoDto> ParentInfo { set; get; } = new List<ParentInfoDto>();
+        public IEnumerable<EmergencyContactDto> EmergencyContact { set; get; } = new List<EmergencyContactDto>();
         public IEnumerable<Document> Documents { set; get; } = new List<Document>();
-        public AdmissionDetails AdmissionDetails { set; get; }
-        public IEnumerable<Sibling> Sibling { set; get; }
-            = new List<Sibling>();
+        public AdmissionDetailsDto AdmissionDetails { set; get; }
+        public IEnumerable<SiblingDto> Sibling { set; get; }
+            = new List<SiblingDto>();
         public MedicalHistoryDto MedicalHistory { set; get; }
-        public Payment Payment { set; get; }
+        //public Payment Payment { set; get; }
     }
 }

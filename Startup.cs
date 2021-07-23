@@ -34,7 +34,11 @@ namespace AdmissionSystem2
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews().AddNewtonsoftJson();
+            services.AddControllersWithViews().AddNewtonsoftJson(x =>
+            {
+                x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                x.SerializerSettings.DateFormatString = "yyyy/MM/dd";
+             });
             //  Auto Mapper Configurations
             var mappingConfig = new MapperConfiguration(mc => {
                 mc.AddProfile(new MappingProfile());
