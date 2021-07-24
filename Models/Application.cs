@@ -11,11 +11,12 @@ namespace AdmissionSystem2.Models
         public ApplicantDto Applicant { get; set; }
         public IEnumerable<ParentInfoDto> ParentInfo { set; get; } = new List<ParentInfoDto>();
         public IEnumerable<EmergencyContactDto> EmergencyContact { set; get; } = new List<EmergencyContactDto>();
-        public IEnumerable<Document> Documents { set; get; } = new List<Document>();
+        public IEnumerable<DocumentDto> Documents { set; get; } = new List<DocumentDto>();
         public AdmissionDetailsDto AdmissionDetails { set; get; }
         public IEnumerable<SiblingDto> Sibling { set; get; }
             = new List<SiblingDto>();
         public MedicalHistoryDto MedicalHistory { set; get; }
+        public FamilyStatusDto FamilyStatus { set; get; }
         //public Payment Payment { set; get; }
     }
 }

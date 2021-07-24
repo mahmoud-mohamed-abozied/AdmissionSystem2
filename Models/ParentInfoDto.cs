@@ -7,6 +7,7 @@ namespace AdmissionSystem2.Models
 {
     public class ParentInfoDto
     {
+        public Guid Id { get; set; }
         public String FirstName { set; get; }
         public String SecondName { set; get; }
         public String LastName { set; get; }

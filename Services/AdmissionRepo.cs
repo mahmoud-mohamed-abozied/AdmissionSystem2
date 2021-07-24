@@ -11,16 +11,24 @@ namespace AdmissionSystem2.Services
     public class AdmissionRepo : IAdmissionRepo
     {
         private AdmissionSystemDbContext _AdmissionSystemDbContext;
+        private IMailingService _MailingService;
         private IMapper _Mapper;
+        private readonly Random _random = new Random();
 
-        public AdmissionRepo(AdmissionSystemDbContext admissionSystemDbContext, IMapper Mapper)
+        public AdmissionRepo(AdmissionSystemDbContext admissionSystemDbContext,IMailingService MailingService ,IMapper Mapper)
         {
             _AdmissionSystemDbContext = admissionSystemDbContext;
+            _MailingService = MailingService;
             _Mapper = Mapper;
         }
 
         public void AddApplicant(Applicant Applicant)
         {
+            Applicant.Status = "New";
+            Applicant.UserName=Applicant.FirstName+ _random.Next(1000);
+            Applicant.Password = _random.Next(100000000).ToString();
+            _MailingService.SendEmailAsync(Applicant.Email, "Admission For Penselvania School", "You Have Applied to Peselvania school succesfuly, Here we attached Username and password in case you wanted to edit your application              ,UserName:"+Applicant.UserName+"" +
+                "Password : "+Applicant.Password+"    Please keep them and dont lose your Information");
              _AdmissionSystemDbContext.Applicant.Add(Applicant);
         }
         public Applicant GetApplicant(Guid _ApplicantId)

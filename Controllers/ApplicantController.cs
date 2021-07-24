@@ -1,17 +1,23 @@
 ﻿using AdmissionSystem2.Entites;
+using AdmissionSystem2.Helpers;
 using AdmissionSystem2.Models;
 using AdmissionSystem2.Services;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,11 +30,13 @@ namespace AdmissionSystem2.Controllers
         private IAdmissionRepo _AdmissionRepo;
         private IAdminRepo _AdminRepo;
         private readonly IMapper _Mapper;
-        public ApplicantController(IAdmissionRepo AdmissionRepo, IAdminRepo AdminRepo, IMapper Mapper)
+        private readonly JWT _JWT;
+        public ApplicantController(IAdmissionRepo AdmissionRepo, IAdminRepo AdminRepo, IMapper Mapper, IOptions<JWT> jwt)
         {
             _AdmissionRepo = AdmissionRepo;
             _AdminRepo = AdminRepo;
             _Mapper = Mapper;
+            _JWT = jwt.Value;
         }
 
 
@@ -55,7 +63,7 @@ namespace AdmissionSystem2.Controllers
 
             var date = DateTime.Today.ToString("yyyy/MM/dd");
             final.AdmissionDate = Convert.ToDateTime(date).Date;
-            final.Status = "Applied Sucessfuly";
+            //final.Status = "Applied Sucessfuly";
 
             _AdmissionRepo.AddApplicant(final);
             _AdmissionRepo.Save();
@@ -64,7 +72,7 @@ namespace AdmissionSystem2.Controllers
         }
 
         [HttpPost("{ApplicantId}/ParentInfo")]
-        public IActionResult AddParentInfo(Guid ApplicantId, [FromBody] ParentInfoForCreation ParentInfoForCreation)
+        public IActionResult AddParentInfo(Guid ApplicantId, [FromBody]IEnumerable< ParentInfoForCreation> ParentInfoForCreation)
         {
 
             if (ParentInfoForCreation == null)
@@ -75,8 +83,11 @@ namespace AdmissionSystem2.Controllers
             {
                 return NotFound();
             }
-            var ParentInfo = _Mapper.Map<ParentInfo>(ParentInfoForCreation);
-            _AdmissionRepo.AddParentInfo(ApplicantId, ParentInfo);
+            var ParentInfo = _Mapper.Map<IEnumerable< ParentInfo>>(ParentInfoForCreation);
+            foreach (var Parent in ParentInfo)
+            {
+                _AdmissionRepo.AddParentInfo(ApplicantId, Parent);
+            }
             _AdmissionRepo.Save();
             return Ok();
 
@@ -165,7 +176,7 @@ namespace AdmissionSystem2.Controllers
             }
 
             var siblingToReturn = _Mapper.Map<SiblingDto>(siblingEntity);
-            return CreatedAtRoute("getSibling", new { applicantId = applicantId, id = siblingToReturn.SibilingId }, siblingToReturn);
+            return Ok();
 
         }
 
@@ -220,11 +231,11 @@ namespace AdmissionSystem2.Controllers
             }
 
             var MedicalHistoryToReturn = _Mapper.Map<MedicalHistoryDto>(MedicalEntity);
-            return CreatedAtRoute("getMedicalHistory", new { applicantId = applicantId, id = MedicalHistoryToReturn.MedicalHistoryId }, MedicalHistoryToReturn);
+            return Ok();
         }
 
 
-        [HttpPost("Payment")]
+        [HttpGet("Payment")]
         public async Task<IActionResult> MakePaymentAsync()
         {
 
@@ -451,8 +462,8 @@ namespace AdmissionSystem2.Controllers
 
         }
 
-        [HttpPost("{ApplicantId}/Document/{Id}")]
-        public IActionResult UpdateDocument(Guid ApplicantID, int Id, [FromForm] DocumentForCreation DocumentForCreation)
+        [HttpPost("{ApplicantId}/UpdateDocument")]
+        public IActionResult UpdateDocument(Guid ApplicantID, [FromForm] DocumentForCreation DocumentForCreation)
         {
             if (DocumentForCreation == null)
             {
@@ -482,7 +493,7 @@ namespace AdmissionSystem2.Controllers
             DocumentToSave.DocumentName = DocumentForCreation.DocumentName;
             DocumentToSave.DocumentType = DocumentForCreation.DocumentType;
             _AdmissionRepo.AddDocument(DocumentToSave);
-            _AdmissionRepo.DeleteDocument(_AdminRepo.GetDocument(ApplicantID, Id));
+            _AdmissionRepo.DeleteDocument(_AdminRepo.GetDocument(ApplicantID,DocumentForCreation.DocumentName));
             if (!_AdmissionRepo.Save())
             {
                 throw new Exception("Failed To Add Document");
@@ -492,131 +503,6 @@ namespace AdmissionSystem2.Controllers
             return Ok();
 
         }
-
-        /*
-         [HttpPut("ApplicantId/Document/Id")]
-           public IActionResult UpdateDocument(int ApplicantID,int Id, [FromForm] JsonPatchDocument<DocumentForUpdate> patchDoc)
-           {
-               if (patchDoc == null)
-               {
-                   return BadRequest();
-               }
-               if (_AdmissionRepo.GetApplicant(ApplicantID) == null)
-               {
-                   return NotFound();
-               }
-               var DocumentFromRepo = _AdmissionRepo.GetDocument(ApplicantID, Id);
-            if (DocumentFromRepo == null)
-            {
-                return NotFound();
-            }
-               patchDoc.ApplyTo(DocumentToPatch, ModelState);
-                if (!ModelState.IsValid)
-                {
-                return new UnprocessableEntityObjectResult(ModelState);
-                }
-                DocumentFromRepo.DocumentName = DocumentToPatch.DocumentName;
-                DocumentFromRepo.DocumentType = DocumentToPatch.DocumentType; 
-                DocumentFromRepo.Copy = DocumentToPatch.Copy.
-        }
-        */
-        /*    [HttpGet("{applicantId}/Document/{id}")]
-            public IActionResult GetDocument(int applicantId, int id)
-            {
-                var DocumentFromRepo = _AdminRepo.GetDocument(applicantId, id);
-                if (DocumentFromRepo == null)
-                {
-                    return NotFound();
-                }
-                string imageBase64Data = Convert.ToBase64String(DocumentFromRepo.Copy);
-                string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
-                return Ok(imageDataURL);
-            }
-            [HttpGet("{ApplicantId}")]
-            public IActionResult GetApplicant(int applicantId)
-            {
-                var Applicant = _AdmissionRepo.GetApplicant(applicantId);
-                if (Applicant == null)
-                {
-                    return NotFound();
-                }
-                var ApplicantToRetrive = _Mapper.Map<ApplicantDto>(Applicant);
-                return Ok(ApplicantToRetrive);
-            }
-            [HttpGet("{ApplicantId}/EmergencyContacts")]
-            public IActionResult GetEmergencyContacts(int ApplicantId)
-            {
-                var EmergencyContacts = _AdminRepo.GetEmergencyContacts(ApplicantId);
-                if (EmergencyContacts == null)
-                {
-                    return NotFound();
-                }
-                var EmergencyContactsToRetrive = _Mapper.Map<IEnumerable<EmergencyContactDto>>(EmergencyContacts);
-                return Ok(EmergencyContactsToRetrive);
-            }
-            [HttpGet("{ApplicantId}/AdmissionDetails")]
-            public IActionResult GetAdmissionDetails(int ApplicantId)
-            {
-                var AdmissionDetails = _AdminRepo.GetAdmissionDetails(ApplicantId);
-                if (AdmissionDetails == null)
-                {
-                    return NotFound();
-                }
-                var AdmissionDetailsToReturn = _Mapper.Map<AdmissionDetailsDto>(AdmissionDetails);
-                return Ok(AdmissionDetailsToReturn);
-            }
-            [HttpGet("{applicantId}/Medical")]
-            public IActionResult GetMedicalDetails(int applicantId)
-            {
-                var MedicalDetailsFromRepo = _AdmissionRepo.GetMedicalHistory(applicantId);
-                if (MedicalDetailsFromRepo == null)
-                {
-                    return NotFound();
-                }
-                var MedicalDetails = _Mapper.Map<MedicalHistoryDto>(MedicalDetailsFromRepo);
-                return Ok(MedicalDetails);
-            }
-
-            [HttpGet("{applicantId}/Siblings/{id}", Name = "getSibling")]
-            public IActionResult GetSibling(int applicantId, Guid id)
-            {
-                if (_AdmissionRepo.GetApplicant(applicantId) == null)
-                {
-                    return NotFound();
-                }
-                var SiblingFromRepo = _AdminRepo.GetSibling(applicantId, id);
-                if (SiblingFromRepo == null)
-                {
-                    return NotFound();
-                }
-                var Sibling = _Mapper.Map<SiblingDto>(SiblingFromRepo);
-                return Ok(Sibling);
-            }
-            [HttpGet("{applicantId}/Siblings")]
-            public IActionResult GetSiblings(int applicantId)
-            {
-                if (_AdmissionRepo.GetApplicant(applicantId) == null)
-                {
-                    return NotFound();
-                }
-                var SiblingsFromRepo = _AdminRepo.GetSiblings(applicantId);
-                if (SiblingsFromRepo == null)
-                {
-                    return NotFound();
-                }
-                var Siblings = _Mapper.Map<IEnumerable<SiblingDto>>(SiblingsFromRepo);
-                return Ok(Siblings);
-            }
-           [HttpGet("{ApplicantId}/GetApplication")]
-            public IActionResult GetApplication(int ApplicantId)
-            {
-                if (_AdmissionRepo.GetApplicant(ApplicantId) == null)
-                {
-                    return NotFound();
-                }
-                Application  ApplicationToReturn = _AdmissionRepo.GetApplication(ApplicantId);
-                return Ok (ApplicationToReturn);
-            }*/
 
 
         [HttpDelete("{applicantId}/siblings/{id}")]
@@ -676,8 +562,8 @@ namespace AdmissionSystem2.Controllers
 
 
 
-        /* [HttpPatch("{applicantId}/medical/{id}")]
-         public IActionResult PartiallyUpdateMedicalHistory(int applicantId, Guid id,
+         [HttpPatch("{applicantId}/Medical")]
+         public IActionResult PartiallyUpdateMedicalHistory(Guid applicantId,
             [FromBody] JsonPatchDocument<MedicalHistoryForUpdate> patchDoc)
          {
              if (patchDoc == null)
@@ -709,7 +595,7 @@ namespace AdmissionSystem2.Controllers
              }
              return NoContent();
          }
-        */
+        
 
 
         [HttpPatch("{ApplicantId}/ParentInfo/{Id}")]
@@ -828,8 +714,8 @@ namespace AdmissionSystem2.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{applicantId}/AdmissionDetails/{id}")]
-        public IActionResult PartiallyUpdateAdmissionDetails(Guid applicantId, Guid id,
+        [HttpPatch("{applicantId}/AdmissionDetails")]
+        public IActionResult PartiallyUpdateAdmissionDetails(Guid applicantId,
            [FromBody] JsonPatchDocument<AdmissionDetailsForUpdate> patchDoc)
         {
             if (patchDoc == null)
@@ -842,7 +728,7 @@ namespace AdmissionSystem2.Controllers
                 return NotFound();
             }
 
-            var AdmissionDetailsFromRepo = _AdminRepo.GetAdmissionDetails(applicantId, id);
+            var AdmissionDetailsFromRepo = _AdminRepo.GetAdmissionDetails(applicantId);
             if (AdmissionDetailsFromRepo == null)
             {
                 return NotFound();
@@ -910,6 +796,54 @@ namespace AdmissionSystem2.Controllers
              return Ok();
          }*/
 
+        
 
+     /*   [AllowAnonymous]
+        [HttpPost("authenticate")]
+        public IActionResult Authenticate([FromBody] UserLoginModel model) //Get Token - login
+        {
+            var Applicant = _AdmissionRepo.Authenticate(model.UserName, model.Password);
+
+            if (Applicant == null)
+                return BadRequest(new { message = "Username or password is incorrect" });
+
+            var tokenString = GenerateJwtToken(Applicant);
+
+            // return basic user info and authentication token
+            return Ok(new
+            {
+                Id = Applicant.Id,
+                Username = Applicant.UserName,
+                Token = tokenString
+            });
+        }
+     */
+        public string GenerateJwtToken(AdministratorOfficer admin)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_JWT.Key);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[] {
+                    new Claim("id", admin.Id.ToString()),
+                    new Claim("UserName", admin.UserName.ToString())
+                }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+
+        [HttpGet("DecodeJwt")]
+        public IActionResult DecodeJwt([FromBody] string jwtEncodedString)
+        {
+            var token = jwtEncodedString;
+            var handler = new JwtSecurityTokenHandler();
+            var jwtSecurityToken = handler.ReadJwtToken(token);
+            return Ok(jwtSecurityToken.Claims);
+
+            //return Ok(jwtSecurityToken.Claims.First(claim => claim.Type == "UserName").Value);
+        }
     }
 }

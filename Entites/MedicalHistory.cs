@@ -11,12 +11,12 @@ namespace AdmissionSystem2.Entites
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid MedicalHistoryId { set; get; }
-        public bool Glass { set; get; }
-        public bool Hearing { set; get; }
+        public Guid Id { set; get; }
+        public string Glass { set; get; }
+        public string Hearing { set; get; }
         public string MedicalConditions { set; get; }
         public string PhysiologicalConditions { set; get; }
-        public bool PhysiologicalNeed { set; get; }
+        public string PhysiologicalNeed { set; get; }
 
         [ForeignKey("ApplicantId")]
         public Applicant Applicant { set; get; }
