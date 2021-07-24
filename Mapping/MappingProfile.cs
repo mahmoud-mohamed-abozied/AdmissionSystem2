@@ -49,7 +49,8 @@ namespace AdmissionSystem2.Mapping
             CreateMap<MedicalHistory, MedicalHistoryDto>();
             CreateMap<InterviewCriteriaForCreation, InterviewCriteria>();
             CreateMap<AdministratorOfficer, UserLoginModel>();
-
+            CreateMap<DocumentDto, Document>().ReverseMap();
+            CreateMap<FamilyStatusDto, FamilyStatus>().ReverseMap();
         }
     }
 }

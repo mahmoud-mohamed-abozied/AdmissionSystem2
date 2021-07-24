@@ -12,6 +12,8 @@ namespace AdmissionSystem2.Entites
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid ApplicantId { set; get; }
+        public string UserName { set; get; }
+        public string Password { set; get; }
         public String FirstName { set; get; }
         public String SecondName { set; get; }
         public String LastName { set; get; }

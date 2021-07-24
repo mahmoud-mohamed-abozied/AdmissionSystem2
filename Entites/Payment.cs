@@ -11,7 +11,7 @@ namespace AdmissionSystem2.Entites
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid PaymentId { set; get; }
+        public Guid Id { set; get; }
         public int SchoolId { set; get; }
         public DateTime Date { set; get; }
         public float Amount { set; get; }

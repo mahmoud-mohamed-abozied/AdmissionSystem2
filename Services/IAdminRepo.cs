@@ -18,7 +18,8 @@ namespace AdmissionSystem2.Services
         PagedList<ApplicantsView> GetApplicants(ResourceParameters resourceParameters);
         int GetApplicantsCount();
         Applicant GetApplicant(Guid ApplicantId);
-        Document GetDocument(Guid ApplicantId, int DocumentId);
+        public PagedList<AppliantsForInterview> GetApplicantsForInterview(ResourceParameters resourceParameters);
+        Document GetDocument(Guid ApplicantId, string DocumentName);
         EmergencyContact GetEmergencyContact(Guid ApplicantId, Guid Id);
         ParentInfo GetParentInfos(Guid ApplicantId, string Gender);
         IEnumerable<EmergencyContact> GetEmergencyContacts(Guid ApplicantId);

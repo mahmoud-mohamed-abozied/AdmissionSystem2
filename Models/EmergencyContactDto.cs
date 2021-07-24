@@ -7,6 +7,7 @@ namespace AdmissionSystem2.Models
 {
     public class EmergencyContactDto
     {
+        public Guid Id { get; set; }
         public string Relationship { get; set; }
         public string FullName { get; set; }
         public string MobileNumber { get; set; }

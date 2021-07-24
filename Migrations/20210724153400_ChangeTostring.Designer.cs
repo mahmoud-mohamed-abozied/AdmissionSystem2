@@ -4,14 +4,16 @@ using AdmissionSystem2.Entites;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AdmissionSystem2.Migrations
 {
     [DbContext(typeof(AdmissionSystemDbContext))]
-    partial class AdmissionSystemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210724153400_ChangeTostring")]
+    partial class ChangeTostring
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -307,7 +309,7 @@ namespace AdmissionSystem2.Migrations
 
             modelBuilder.Entity("AdmissionSystem2.Entites.MedicalHistory", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("MedicalHistoryId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -329,7 +331,7 @@ namespace AdmissionSystem2.Migrations
                     b.Property<string>("PhysiologicalNeed")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("MedicalHistoryId");
 
                     b.HasIndex("ApplicantId")
                         .IsUnique();
@@ -397,7 +399,7 @@ namespace AdmissionSystem2.Migrations
 
             modelBuilder.Entity("AdmissionSystem2.Entites.Payment", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("PaymentId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -416,7 +418,7 @@ namespace AdmissionSystem2.Migrations
                     b.Property<int>("SchoolId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("PaymentId");
 
                     b.HasIndex("ApplicantId")
                         .IsUnique();
@@ -426,7 +428,7 @@ namespace AdmissionSystem2.Migrations
 
             modelBuilder.Entity("AdmissionSystem2.Entites.Sibling", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("SibilingId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -445,7 +447,7 @@ namespace AdmissionSystem2.Migrations
                     b.Property<string>("SiblingName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("SibilingId");
 
                     b.HasIndex("ApplicantId");
 
@@ -607,7 +609,7 @@ namespace AdmissionSystem2.Migrations
                 {
                     b.HasOne("AdmissionSystem2.Entites.Payment", null)
                         .WithOne()
-                        .HasForeignKey("AdmissionSystem2.Entites.BankElahly", "Id")
+                        .HasForeignKey("AdmissionSystem2.Entites.BankElahly", "PaymentId")
                         .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
                 });
@@ -616,7 +618,7 @@ namespace AdmissionSystem2.Migrations
                 {
                     b.HasOne("AdmissionSystem2.Entites.Payment", null)
                         .WithOne()
-                        .HasForeignKey("AdmissionSystem2.Entites.Fawry", "Id")
+                        .HasForeignKey("AdmissionSystem2.Entites.Fawry", "PaymentId")
                         .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
                 });
@@ -625,7 +627,7 @@ namespace AdmissionSystem2.Migrations
                 {
                     b.HasOne("AdmissionSystem2.Entites.Payment", null)
                         .WithOne()
-                        .HasForeignKey("AdmissionSystem2.Entites.MasterCard", "Id")
+                        .HasForeignKey("AdmissionSystem2.Entites.MasterCard", "PaymentId")
                         .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
                 });

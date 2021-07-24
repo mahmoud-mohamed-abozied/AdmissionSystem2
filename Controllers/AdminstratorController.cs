@@ -78,10 +78,10 @@ namespace AdmissionSystem2.Controllers
         }
 
 
-        [HttpGet("{applicantId}/Document/{id}")]
-        public IActionResult GetDocument(Guid applicantId, int id)
+        [HttpGet("{applicantId}/Document/{DocumentName}")]
+        public IActionResult GetDocument(Guid applicantId, String DocumentName)
         {
-            var DocumentFromRepo = _AdmissionRepo.GetDocument(applicantId, id);
+            var DocumentFromRepo = _AdmissionRepo.GetDocument(applicantId,DocumentName);
             if (DocumentFromRepo == null)
             {
                 return NotFound();
@@ -416,6 +416,21 @@ namespace AdmissionSystem2.Controllers
                 return NotFound();
             }
             Application ApplicationToReturn = _AdmissionRepo.GetApplication(ApplicantId);
+            var DocumentFromRepo = _AdmissionRepo.GetDocuments(ApplicantId);
+            var Doc = new List<DocumentDto>();
+            foreach (var file in DocumentFromRepo)
+            {
+                string imageBase64Data = Convert.ToBase64String(file.Copy);
+                string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+                Doc.Add(new DocumentDto()
+                {
+                    Id = file.Id,
+                    DocumentType = file.DocumentType,
+                    DocumentName = file.DocumentName,
+                    Copy = imageDataURL
+                });
+            }
+                ApplicationToReturn.Documents = Doc;
             return Ok(ApplicationToReturn);
         }
 
@@ -544,12 +559,12 @@ namespace AdmissionSystem2.Controllers
             return tokenHandler.WriteToken(token);
         }
 
-        [HttpPost("Send")]
+      /*  [HttpPost("Send")]
         public async Task<IActionResult> SendEmail([FromForm] EmailDto email)
         {
             await _mailingService.SendEmailAsync(email.ToEmail, email.Subject, email.Body, email.Attachments);
             return Ok();
-        }
+        }*/
 
         [HttpGet("DecodeJwt")]
         public IActionResult DecodeJwt([FromBody] string jwtEncodedString)
@@ -562,20 +577,48 @@ namespace AdmissionSystem2.Controllers
             //return Ok(jwtSecurityToken.Claims.First(claim => claim.Type == "UserName").Value);
         }
 
-        [HttpPost("send")]
+        [HttpGet("ApplicantsForInterview", Name = "InterviewApplicants")]
+        public IActionResult ApplicantsForInterview(ResourceParameters resourceParameters)
+        {
+            var Applicants = _AdmissionRepo.GetApplicantsForInterview(resourceParameters);
+
+            var previousPageLink = Applicants.HasPrevious ?
+                    CreateResourceUri(resourceParameters,
+                    ResourceUriType.PreviousPage) : null;
+
+            var nextPageLink = Applicants.HasNext ?
+                CreateResourceUri(resourceParameters,
+                ResourceUriType.NextPage) : null;
+
+            var paginationMetadata = new
+            {
+                previousPageLink = previousPageLink,
+                nextPageLink = nextPageLink,
+                totalCount = Applicants.TotalCount,
+                pageSize = Applicants.PageSize,
+                currentPage = Applicants.CurrentPage,
+                totalPages = Applicants.TotalPages
+            };
+
+            Response.Headers.Add("X-Pagination",
+                Newtonsoft.Json.JsonConvert.SerializeObject(paginationMetadata));
+
+            //var ApplicantToRetrive = _Mapper.Map<IEnumerable<ApplicantDto>>(Applicants);
+            return Ok(Applicants);
+
+
+        }
+
+     /*   [HttpPost("send")]
         public async Task<IActionResult> SendMail([FromForm] EmailDto request)
         {
             try
             {
-                
-                await _mailingService.SendEmailAsync(request.ToEmail,request.Subject,request.Body);
+
+                await _mailingService.SendEmailAsync(request.ToEmail, request.Subject, request.Body);
                 return Ok();
             }
-            catch (Exception ex)
-            {
-                throw;
-            }
 
-        }
+        }*/
     }
 }

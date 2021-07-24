@@ -7,7 +7,7 @@ namespace AdmissionSystem2.Models
 {
     public class SiblingDto
     {
-        public Guid SibilingId { set; get; }
+        public Guid Id { set; get; }
         public string Relationship { set; get; }
         public string SiblingName { set; get; }
         public int Age { set; get; }

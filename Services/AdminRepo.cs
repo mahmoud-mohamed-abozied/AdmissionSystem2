@@ -14,11 +14,13 @@ namespace AdmissionSystem2.Services
     public class AdminRepo : IAdminRepo
     {
         private AdmissionSystemDbContext _AdmissionSystemDbContext;
+        private IMailingService _MailingService;
         private IMapper _Mapper;
 
-        public AdminRepo(AdmissionSystemDbContext admissionSystemDbContext, IMapper Mapper)
+        public AdminRepo(AdmissionSystemDbContext admissionSystemDbContext,IMailingService MailingService, IMapper Mapper)
         {
             _AdmissionSystemDbContext = admissionSystemDbContext;
+            _MailingService = MailingService;
             _Mapper = Mapper;
         }
 
@@ -28,7 +30,7 @@ namespace AdmissionSystem2.Services
         }
         public MedicalHistory GetMedicalHistory(Guid applicantId)
         {
-            return _AdmissionSystemDbContext.MedicalHistory.FirstOrDefault(a => a.ApplicantId == applicantId);
+            return _AdmissionSystemDbContext.MedicalHistory.Where(a => a.ApplicantId == applicantId).FirstOrDefault();
         }
         public AdmissionDetails GetAdmissionDetails(Guid applicantId, Guid AdmissionDetailsId)
         {
@@ -150,12 +152,15 @@ namespace AdmissionSystem2.Services
         {
             var Applicant = _AdmissionSystemDbContext.Applicant.FirstOrDefault(a => a.ApplicantId == ApplicantId);
             Applicant.Status = "Accepted";
+            _MailingService.SendEmailAsync(Applicant.Email, "School Acception", " Congratulations !               " +
+                "We Are Happy to Inform you that you have been accepted in peselvanya Inter National School , You have To attend to school starts from 15/8 to buy your books and Uniform");
             _AdmissionSystemDbContext.Applicant.Update(Applicant);
         }
         public void DeclineApplicant(Guid ApplicantId,string Reason)
         {
             var Applicant = _AdmissionSystemDbContext.Applicant.FirstOrDefault(a => a.ApplicantId == ApplicantId);
             Applicant.Status = "Declined";
+            _MailingService.SendEmailAsync(Applicant.Email, "School Declination", " Hi, We are sorry to inform you that you have been declined from our school for reason : " + Reason + ". So we hope you understand our reason and do the actions needed ") ; 
             _AdmissionSystemDbContext.Applicant.Update(Applicant);
         }
         public void SetInterviewForApplicant(Guid ApplicantId)
@@ -166,6 +171,7 @@ namespace AdmissionSystem2.Services
             Interview.ApplicantEmail = Applicant.Email;
             _AdmissionSystemDbContext.Interview.Update(Interview);
             Applicant.Status = "Waiting For Interview";
+            _MailingService.SendEmailAsync(Applicant.Email, "Interview Date", "Hi " + Applicant.FirstName + " We have a set an interview Date for You    Interview Date : " + Interview.InterviewDate + " , Interview Time : " + Interview.InterviewTime + "  So please try to be there at least 10 mins before your interview time");
             _AdmissionSystemDbContext.Applicant.Update(Applicant);
         }
         public void AddInterviewCritera(InterviewCriteria interviewCriteria)
@@ -179,7 +185,7 @@ namespace AdmissionSystem2.Services
         }
         public Sibling GetSibling(Guid applicantId, Guid siblingId)
         {
-            return _AdmissionSystemDbContext.Sibling.Where(a => a.ApplicantId == applicantId && a.SibilingId == siblingId).FirstOrDefault();
+            return _AdmissionSystemDbContext.Sibling.Where(a => a.ApplicantId == applicantId && a.Id == siblingId).FirstOrDefault();
         }
         public IEnumerable<Sibling> GetSiblings(Guid applicantId)
         {
@@ -189,9 +195,9 @@ namespace AdmissionSystem2.Services
         {
             return _AdmissionSystemDbContext.EmergencyContact.FirstOrDefault(a => a.ApplicantId == ApplicantId && a.Id == Id);
         }
-        public Document GetDocument(Guid ApplicantId, int DocumentId)
+        public Document GetDocument(Guid ApplicantId, string DocumentName)
         {
-            return _AdmissionSystemDbContext.Documents.FirstOrDefault(a => a.ApplicantId == ApplicantId && a.Id == DocumentId);
+            return _AdmissionSystemDbContext.Documents.FirstOrDefault(a => a.ApplicantId == ApplicantId && a.DocumentName == DocumentName);
         }
         public IEnumerable<ParentInfo> GetParentsInfos(Guid ApplicantId)
         {
@@ -244,20 +250,85 @@ namespace AdmissionSystem2.Services
             Application.Applicant = _Mapper.Map<ApplicantDto>(_AdmissionSystemDbContext.Applicant.FirstOrDefault(a => a.ApplicantId == ApplicantId));
             //Application.Applicant = _AdmissionSystemDbContext.Applicant.FirstOrDefault(a => a.ApplicantId == ApplicantId);
             Application.AdmissionDetails = _Mapper.Map<AdmissionDetailsDto>(GetAdmissionDetails(ApplicantId));
-         
             Application.EmergencyContact = _Mapper.Map<IEnumerable<EmergencyContactDto>>(GetEmergencyContacts(ApplicantId));
-            
-            Application.Sibling = _Mapper.Map<IEnumerable<SiblingDto>>(GetSiblings(ApplicantId));
-            
+            Application.Sibling = _Mapper.Map<IEnumerable<SiblingDto>>(GetSiblings(ApplicantId)); 
             Application.MedicalHistory = _Mapper.Map<MedicalHistoryDto>(GetMedicalHistory(ApplicantId));
             Application.ParentInfo = _Mapper.Map<IEnumerable<ParentInfoDto>>(GetParentsInfos(ApplicantId));
-            
-            //  Application.Documents = GetDocuments(ApplicantId);
+            Application.Documents = _Mapper.Map<IEnumerable<DocumentDto>>(GetDocuments(ApplicantId));
+            Application.FamilyStatus = _Mapper.Map<FamilyStatusDto>(_AdmissionSystemDbContext.FamilyStatus.FirstOrDefault(a => a.ApplicantId == ApplicantId));
             return Application;
 
         }
+        public string GetNameOfApplicant(Guid _ApplicantId)
+        {
+            var Applicant = _AdmissionSystemDbContext.Applicant.FirstOrDefault(a => a.ApplicantId == _ApplicantId);
+            return (Applicant.FirstName + Applicant.SecondName + Applicant.LastName);
 
-         public PagedList<ApplicantsView> GetApplicants(ResourceParameters resourceParameters)
+        }
+
+        public PagedList<AppliantsForInterview> GetApplicantsForInterview(ResourceParameters resourceParameters)
+        {
+            var collectionBeforePaging = _AdmissionSystemDbContext.Interview
+                .Select(a => new AppliantsForInterview
+                {
+                    ApplicantId = a.ApplicantId,
+                    ApplicantName = GetNameOfApplicant(a.ApplicantId),
+                    InterviewDate = DateTime.ParseExact(a.InterviewDate, "yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture),
+                   // Score = a.Score,
+                    Status = _AdmissionSystemDbContext.Applicant.FirstOrDefault(x => x.ApplicantId == a.ApplicantId).Status
+                });
+       
+            switch (resourceParameters.OrderBy)
+            {
+                case "ID":
+                    collectionBeforePaging = collectionBeforePaging.OrderBy(a => a.ApplicantId).AsQueryable();
+                    break;
+                case "ID_desc":
+                    collectionBeforePaging = collectionBeforePaging.OrderByDescending(a => a.ApplicantId).AsQueryable();
+                    break;
+                case "Name":
+                    collectionBeforePaging = collectionBeforePaging.OrderBy(a => a.ApplicantName).AsQueryable();
+                    break;
+                case "Name_desc":
+                    collectionBeforePaging = collectionBeforePaging.OrderByDescending(a => a.ApplicantName).AsQueryable();
+                    break;
+                case "Date":
+                    collectionBeforePaging = collectionBeforePaging.OrderBy(a => a.InterviewDate).AsQueryable();
+                    break;
+                case "Date_desc":
+                    collectionBeforePaging = collectionBeforePaging.OrderByDescending(a => a.InterviewDate).AsQueryable();
+                    break;
+                default:
+                    collectionBeforePaging = collectionBeforePaging.OrderByDescending(a => a.ApplicantName).AsQueryable();
+                    break;
+            }
+
+            if (resourceParameters.StartDate != DateTime.MinValue && resourceParameters.EndDate != DateTime.MinValue)
+            {
+                collectionBeforePaging = collectionBeforePaging.
+                    Where(a => a.InterviewDate >= resourceParameters.StartDate && a.InterviewDate <= resourceParameters.EndDate);
+            }
+
+            /* if (!String.IsNullOrEmpty(resourceParameters.Status))
+             {
+                 var StatusForWherecclause = resourceParameters.Status.Trim().ToLowerInvariant();
+                 collectionBeforePaging = collectionBeforePaging.Where(a => a.Status.ToLower() == StatusForWherecclause);
+             }*/
+
+
+            if (!String.IsNullOrEmpty(resourceParameters.SearchQuery))
+            {
+                var SearchQueryForWherecclause = resourceParameters.SearchQuery.Trim().ToLowerInvariant();
+                collectionBeforePaging = collectionBeforePaging
+                    .Where(a => a.ApplicantName.ToLower().Contains(SearchQueryForWherecclause)
+                       || a.ApplicantId.ToString().Contains(SearchQueryForWherecclause));
+            }
+            return PagedList<AppliantsForInterview>.Create(collectionBeforePaging, resourceParameters.PageNumber, resourceParameters.PageSize);
+
+
+        }
+
+        public PagedList<ApplicantsView> GetApplicants(ResourceParameters resourceParameters)
         {
             var collectionBeforePaging = _AdmissionSystemDbContext.Applicant
                 .Select(a => new ApplicantsView

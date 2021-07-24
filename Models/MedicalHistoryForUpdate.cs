@@ -7,10 +7,10 @@ namespace AdmissionSystem2.Models
 {
     public class MedicalHistoryForUpdate
     {
-        public bool Glass { set; get; }
-        public bool Hearing { set; get; }
+        public string Glass { set; get; }
+        public string Hearing { set; get; }
         public string MedicalConditions { set; get; }
         public string PhysiologicalConditions { set; get; }
-        public bool PhysiologicalNeed { set; get; }
+        public string PhysiologicalNeed { set; get; }
     }
 }

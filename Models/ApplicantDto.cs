@@ -7,7 +7,7 @@ namespace AdmissionSystem2.Models
 {
     public class ApplicantDto
     {
-        public Guid ID { get; set; }
+        public Guid ApplicantId { get; set; }
         public String FirstName { set; get; }
         public String SecondName { set; get; }
         public String LastName { set; get; }
