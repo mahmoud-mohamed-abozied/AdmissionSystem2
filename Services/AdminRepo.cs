@@ -461,14 +461,14 @@ namespace AdmissionSystem2.Services
                 return null;
 
             // check if password is correct
-            if (!VerifyPasswordHash(password, admin.PasswordHash, admin.PasswordSalt))
-                return null;
+           // if (!VerifyPasswordHash(password, admin.PasswordHash, admin.PasswordSalt))
+             //   return null;
 
             // authentication successful
             return admin;
         }
      
-        private static bool VerifyPasswordHash(string password, byte[] storedHash, byte[] storedSalt)
+      /*  private static bool VerifyPasswordHash(string password, byte[] storedHash, byte[] storedSalt)
         {
             if (password == null) throw new ArgumentNullException("password");
             if (string.IsNullOrWhiteSpace(password)) throw new ArgumentException("Value cannot be empty or whitespace only string.", "password");
@@ -485,7 +485,7 @@ namespace AdmissionSystem2.Services
             }
 
             return true;
-        }
+        }*/
 
 
     }

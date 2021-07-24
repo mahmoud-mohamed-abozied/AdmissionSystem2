@@ -318,7 +318,7 @@ namespace AdmissionSystem2.Controllers
             //Console.WriteLine("--------------- url ------------");
 
             //Console.WriteLine("https://accept.paymob.com/api/acceptance/iframes/241121?payment_token=" + lastOrderData.token);
-            Redirect("https://accept.paymob.com/api/acceptance/iframes/241121?payment_token=" + lastOrderData.token);
+            //Redirect("https://accept.paymob.com/api/acceptance/iframes/241121?payment_token=" + lastOrderData.token);
 
 
             /*if (method = aman)
@@ -380,9 +380,9 @@ namespace AdmissionSystem2.Controllers
             }
             */
 
+           // string paymentUrl = ;
 
-
-            return Ok();
+            return Ok("https://accept.paymob.com/api/acceptance/iframes/241121?payment_token=" + lastOrderData.token);
         }
 
 

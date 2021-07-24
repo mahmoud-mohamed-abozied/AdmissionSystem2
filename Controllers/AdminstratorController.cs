@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace AdmissionSystem2.Controllers
 {
-    
+
     [Route("api/Admin")]
     public class AdminstratorController : Controller
     {
@@ -32,15 +32,15 @@ namespace AdmissionSystem2.Controllers
         private readonly LinkGenerator _Generator;
         private readonly IMailingService _mailingService;
         private readonly JWT _JWT;
-        
-        public AdminstratorController(IAdminRepo AdmissionRepo, IMapper Mapper, IHttpContextAccessor Accessor, LinkGenerator Generator, IMailingService mailingService, IOptions <JWT> jwt)
+
+        public AdminstratorController(IAdminRepo AdmissionRepo, IMapper Mapper, IHttpContextAccessor Accessor, LinkGenerator Generator, IMailingService mailingService, IOptions<JWT> jwt)
         {
             _AdmissionRepo = AdmissionRepo;
             _Mapper = Mapper;
             _Accessor = Accessor;
             _Generator = Generator;
             _mailingService = mailingService;
-            _JWT = jwt.Value;   
+            _JWT = jwt.Value;
         }
         public IActionResult Index()
         {
@@ -77,7 +77,7 @@ namespace AdmissionSystem2.Controllers
             return Ok(Count);
         }
 
-        
+
         [HttpGet("{applicantId}/Document/{id}")]
         public IActionResult GetDocument(Guid applicantId, int id)
         {
@@ -101,7 +101,7 @@ namespace AdmissionSystem2.Controllers
             {
                 return NotFound();
             }
-           
+
             var Doc = new List<DocumentDto>();
             foreach (var file in DocumentFromRepo)
             {
@@ -114,7 +114,7 @@ namespace AdmissionSystem2.Controllers
                     DocumentName = file.DocumentName,
                     Copy = imageDataURL
                 });
-                
+
             }
             return Ok(Doc);
         }
@@ -172,7 +172,7 @@ namespace AdmissionSystem2.Controllers
                 return Ok(false);
 
             }
-            
+
             return Ok(true);
         }
         [HttpGet("CheakInterviewCriteria")]
@@ -218,12 +218,13 @@ namespace AdmissionSystem2.Controllers
         }
 
         [HttpPost("AdmissionPeriodExtension")]
-        public IActionResult ExtendAdmissionPeriod([FromBody] string Period)
+        public IActionResult ExtendAdmissionPeriod([FromBody] Extend extend)
         {
-            if (Period == null)
+            if (extend == null)
             {
                 return BadRequest();
             }
+            string Period = extend.Days + "/" + extend.Hours;
             _AdmissionRepo.ExtendAdmissionPeriod(Period);
             _AdmissionRepo.Save();
             return Ok();
@@ -317,13 +318,13 @@ namespace AdmissionSystem2.Controllers
             return Ok("Accept Applicant Successfuly");
         }
         [HttpGet("{applicantId}/ApplicantDeclination")]
-        public IActionResult DeclineApplicant(Guid applicantId,[FromBody] string Reason)
+        public IActionResult DeclineApplicant(Guid applicantId, [FromBody] string Reason)
         {
             if (_AdmissionRepo.GetApplicant(applicantId) == null)
             {
                 return BadRequest("No Applicant with such ID");
             }
-            _AdmissionRepo.DeclineApplicant(applicantId,Reason);
+            _AdmissionRepo.DeclineApplicant(applicantId, Reason);
             if (!_AdmissionRepo.Save())
             {
                 throw new Exception("Failed To Accept Applicant");
@@ -332,7 +333,7 @@ namespace AdmissionSystem2.Controllers
         }
 
         [HttpPost("{applicantId}/AddInterviewScore")]
-        public IActionResult AddInterviewScore(Guid applicantId,[FromBody] InterviewScore InterviewScore)
+        public IActionResult AddInterviewScore(Guid applicantId, [FromBody] InterviewScore InterviewScore)
         {
             if (InterviewScore == null)
             {
@@ -550,5 +551,31 @@ namespace AdmissionSystem2.Controllers
             return Ok();
         }
 
+        [HttpGet("DecodeJwt")]
+        public IActionResult DecodeJwt([FromBody] string jwtEncodedString)
+        {
+            var token = jwtEncodedString;
+            var handler = new JwtSecurityTokenHandler();
+            var jwtSecurityToken = handler.ReadJwtToken(token);
+            return Ok(jwtSecurityToken.Claims);
+
+            //return Ok(jwtSecurityToken.Claims.First(claim => claim.Type == "UserName").Value);
+        }
+
+        [HttpPost("send")]
+        public async Task<IActionResult> SendMail([FromForm] EmailDto request)
+        {
+            try
+            {
+                
+                await _mailingService.SendEmailAsync(request.ToEmail,request.Subject,request.Body);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
     }
 }
