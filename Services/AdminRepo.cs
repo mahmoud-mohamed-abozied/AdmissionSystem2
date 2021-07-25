@@ -427,6 +427,7 @@ namespace AdmissionSystem2.Services
         }
         public string GetPeriodLeft()
         {
+            
             DateTime startTime = DateTime.Now;
             string Date = GetAdmissionPeriod().EndDate + " " + GetAdmissionPeriod().EndTime;
             DateTime oDate = DateTime.ParseExact(Date, "yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture);
