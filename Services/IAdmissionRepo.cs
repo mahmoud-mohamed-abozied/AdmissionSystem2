@@ -27,6 +27,7 @@ namespace AdmissionSystem2.Services
         void DeleteSibling(Sibling sibling);
         void UpdateSibling(Sibling sibling);
         void UpdateMedicalDetails(MedicalHistory medicalHistory);
+        Applicant Authenticate(string username, string password);
 
         //Application GetApplication(int ApplicantId);
         //MedicalHistory GetMedicalHistory(int applicantId);

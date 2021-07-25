@@ -182,5 +182,24 @@ namespace AdmissionSystem2.Services
                 applicant.Family_Status = familyStatus;
             }
         }
+
+        public Applicant Authenticate(string username, string password)
+        {
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+                return null;
+            
+            var Applicant = _AdmissionSystemDbContext.Applicant.SingleOrDefault(x => x.UserName == username&&x.Password==password);
+
+            // check if username exists
+            if (Applicant == null)
+                return null;
+            
+            // check if password is correct
+            // if (!VerifyPasswordHash(password, admin.PasswordHash, admin.PasswordSalt))
+            //   return null;
+
+            // authentication successful
+            return Applicant ;
+        }
     }
 }

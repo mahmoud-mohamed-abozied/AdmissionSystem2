@@ -224,6 +224,10 @@ namespace AdmissionSystem2.Controllers
             {
                 return BadRequest();
             }
+            if (!_AdmissionRepo.CheakAdmissionPeriod())
+            {
+                return NotFound();
+            }
             string Period = extend.Days + "/" + extend.Hours;
             _AdmissionRepo.ExtendAdmissionPeriod(Period);
             _AdmissionRepo.Save();
@@ -430,7 +434,7 @@ namespace AdmissionSystem2.Controllers
                     Copy = imageDataURL
                 });
             }
-                ApplicationToReturn.Documents = Doc;
+               // ApplicationToReturn.Documents = Doc;
             return Ok(ApplicationToReturn);
         }
 
@@ -536,8 +540,8 @@ namespace AdmissionSystem2.Controllers
             // return basic user info and authentication token
             return Ok(new
             {
-                Id = admin.Id,
-                Username = admin.UserName,
+               // Id = admin.Id,
+               // Username = admin.UserName,
                 Token = tokenString
             });
         }
@@ -548,11 +552,12 @@ namespace AdmissionSystem2.Controllers
             var key = Encoding.ASCII.GetBytes(_JWT.Key);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[] {
+               /* Subject = new ClaimsIdentity(new[] {
                     new Claim("id", admin.Id.ToString()),
                     new Claim("UserName", admin.UserName.ToString())
-                }),
-                Expires = DateTime.UtcNow.AddDays(7),
+                    
+                }),*/
+                Expires = DateTime.UtcNow.AddMinutes(_JWT.DurationInMins),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -566,12 +571,12 @@ namespace AdmissionSystem2.Controllers
             return Ok();
         }*/
 
-        [HttpGet("DecodeJwt")]
-        public IActionResult DecodeJwt([FromBody] string jwtEncodedString)
+        [HttpPost("DecodeJwt")]
+        public IActionResult DecodeJwt([FromBody] Decoding jwtEncodedString)
         {
             var token = jwtEncodedString;
             var handler = new JwtSecurityTokenHandler();
-            var jwtSecurityToken = handler.ReadJwtToken(token);
+            var jwtSecurityToken = handler.ReadJwtToken(token.Token);
             return Ok(jwtSecurityToken.Claims);
 
             //return Ok(jwtSecurityToken.Claims.First(claim => claim.Type == "UserName").Value);
