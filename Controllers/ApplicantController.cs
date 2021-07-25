@@ -23,6 +23,7 @@ using System.Threading.Tasks;
 
 namespace AdmissionSystem2.Controllers
 {
+   // [Authorize]
     [Route("api/applicant")]
     public class ApplicantController : Controller
     {
@@ -450,7 +451,7 @@ namespace AdmissionSystem2.Controllers
 
             DocumentToSave.ApplicantId = ApplicantID;
             DocumentToSave.DocumentName = DocumentForCreation.DocumentName;
-            DocumentToSave.DocumentType = DocumentForCreation.DocumentType;
+            DocumentToSave.DocumentType = "Image";
             _AdmissionRepo.AddDocument(DocumentToSave);
             if (!_AdmissionRepo.Save())
             {
@@ -536,11 +537,11 @@ namespace AdmissionSystem2.Controllers
         {
             if (patchdoc == null)
             {
-                return BadRequest();
+                return BadRequest("You send trash");
             }
             if (_AdmissionRepo.GetApplicant(applicantId) == null)
             {
-                return BadRequest();
+                return BadRequest("Applicant not exist");
             }
             var ApplicantFromRepo = _AdmissionRepo.GetApplicant(applicantId);
             var ApplicantToPatch = _Mapper.Map<ApplicantForUpdate>(ApplicantFromRepo);
@@ -798,7 +799,7 @@ namespace AdmissionSystem2.Controllers
 
         
 
-     /*   [AllowAnonymous]
+       [AllowAnonymous]
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody] UserLoginModel model) //Get Token - login
         {
@@ -812,35 +813,35 @@ namespace AdmissionSystem2.Controllers
             // return basic user info and authentication token
             return Ok(new
             {
-                Id = Applicant.Id,
-                Username = Applicant.UserName,
+              //  Id = Applicant.ApplicantId,
+                //Username = Applicant.UserName,
                 Token = tokenString
             });
         }
-     */
-        public string GenerateJwtToken(AdministratorOfficer admin)
+     
+        public string GenerateJwtToken(Applicant Applicant)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_JWT.Key);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] {
-                    new Claim("id", admin.Id.ToString()),
-                    new Claim("UserName", admin.UserName.ToString())
+                    new Claim("id", Applicant.ApplicantId.ToString()),
+                    new Claim("UserName", Applicant.UserName.ToString())
                 }),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddMinutes(_JWT.DurationInMins),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
 
-        [HttpGet("DecodeJwt")]
-        public IActionResult DecodeJwt([FromBody] string jwtEncodedString)
+        [HttpPost("DecodeJwt")]
+        public IActionResult DecodeJwt([FromBody] Decoding jwtEncodedString)
         {
             var token = jwtEncodedString;
             var handler = new JwtSecurityTokenHandler();
-            var jwtSecurityToken = handler.ReadJwtToken(token);
+            var jwtSecurityToken = handler.ReadJwtToken(token.Token);
             return Ok(jwtSecurityToken.Claims);
 
             //return Ok(jwtSecurityToken.Claims.First(claim => claim.Type == "UserName").Value);
