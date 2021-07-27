@@ -32,6 +32,7 @@ namespace AdmissionSystem2.Entites
         public DbSet<Interview> Interview { get; set; }
         public DbSet<FamilyStatus> FamilyStatus { get; set; }
         public DbSet<AdministratorOfficer> AdministratorOfficer { get; set; }
+        public DbSet<DocumentCriteria> DocumentCriteria { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -52,7 +53,8 @@ namespace AdmissionSystem2.Entites
             modelBuilder.Entity<Interview>().ToTable("Interview");
             modelBuilder.Entity<FamilyStatus>().ToTable("FamilyStatus");
             modelBuilder.Entity<AdministratorOfficer>().ToTable("AdministratorOfficer");
-            
+            modelBuilder.Entity<DocumentCriteria>().ToTable("DocumentCriteria");
+
 
         }
 

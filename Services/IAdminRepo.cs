@@ -46,9 +46,12 @@ namespace AdmissionSystem2.Services
         void SetInterviewForApplicant(Guid ApplicantId);
         void DeclineApplicant(Guid ApplicantId, string Reason);
         void AcceptApplicant(Guid ApplicantId);
-
         bool Save();
         AdministratorOfficer Authenticate(string username, string password);
+        void AddDocumentCriteria(DocumentCriteria documentCriterias);
+        IEnumerable<DocumentCriteria> GetDocumentCriterias();
+        void DeleteDocumentCriteria();
+
 
     }
 }
