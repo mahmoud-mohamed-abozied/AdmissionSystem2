@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
@@ -20,13 +21,14 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace AdmissionSystem2.Controllers
 {
 
     [Route("api/Admin")]
     public class AdminstratorController : Controller
     {
-
+        private ImageConverter _ImageConverter;
         private IAdminRepo _AdmissionRepo;
         private readonly IMapper _Mapper;
         private readonly IHttpContextAccessor _Accessor;
@@ -39,6 +41,7 @@ namespace AdmissionSystem2.Controllers
         {
             _AdmissionRepo = AdmissionRepo;
             _Mapper = Mapper;
+            //_ImageConverter = ImageConverter;
             _Accessor = Accessor;
             _Generator = Generator;
             _mailingService = mailingService;
@@ -84,7 +87,7 @@ namespace AdmissionSystem2.Controllers
         [HttpGet("{applicantId}/Document/{DocumentName}")]
         public IActionResult GetDocument(Guid applicantId, String DocumentName)
         {
-            var DocumentFromRepo = _AdmissionRepo.GetDocument(applicantId,DocumentName);
+            var DocumentFromRepo = _AdmissionRepo.GetDocument(applicantId, DocumentName);
             if (DocumentFromRepo == null)
             {
                 return NotFound();
@@ -101,6 +104,11 @@ namespace AdmissionSystem2.Controllers
             //  string imageBase64Data = Convert.ToBase64String(DocumentFromRepo.Copy);
             // string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
             return Ok(Doc);
+
+            string imageBase64Data = Convert.ToBase64String(DocumentFromRepo.Copy);
+            string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+
+            return Ok(imageDataURL);
 
         }
         [HttpGet("{applicantId}/Documents")]
@@ -315,7 +323,7 @@ namespace AdmissionSystem2.Controllers
             {
                 throw new Exception("Cant Set Interview For Applicant");
             }
-            return Ok("Set interview for applicant successfuly");
+            return Ok();
         }
         [HttpGet("{applicantId}/ApplicantAcception")]
         public IActionResult AcceptApplicant(Guid applicantId)
@@ -329,21 +337,21 @@ namespace AdmissionSystem2.Controllers
             {
                 throw new Exception("Failed To Accept Applicant");
             }
-            return Ok("Accept Applicant Successfuly");
+            return Ok();
         }
-        [HttpGet("{applicantId}/ApplicantDeclination")]
-        public IActionResult DeclineApplicant(Guid applicantId, [FromBody] string Reason)
+        [HttpPost("{applicantId}/ApplicantDeclination")]
+        public IActionResult DeclineApplicant(Guid applicantId, [FromBody] Declination Reason)
         {
             if (_AdmissionRepo.GetApplicant(applicantId) == null)
             {
                 return BadRequest("No Applicant with such ID");
             }
-            _AdmissionRepo.DeclineApplicant(applicantId, Reason);
+            _AdmissionRepo.DeclineApplicant(applicantId, Reason.Reason);
             if (!_AdmissionRepo.Save())
             {
-                throw new Exception("Failed To Accept Applicant");
+                throw new Exception("Failed To Decline Applicant");
             }
-            return Ok("Decline Applicant Successfuly");
+            return Ok();
         }
 
         [HttpPost("{applicantId}/AddInterviewScore")]
@@ -358,7 +366,7 @@ namespace AdmissionSystem2.Controllers
             {
                 throw new Exception("Failed To Add Interview Score");
             }
-            return Ok("Interview Score Added Succesfuly");
+            return Ok();
 
         }
         [HttpPost("InterviewCriteria")]
@@ -444,10 +452,9 @@ namespace AdmissionSystem2.Controllers
                    // Copy = imageDataURL
                 });
             }
-               // ApplicationToReturn.Documents = Doc;
+            // ApplicationToReturn.Documents = Doc;
             return Ok(ApplicationToReturn);
         }
-
 
 
         [HttpGet("AdmissionApplicants", Name = "GetApplicants")]
@@ -550,8 +557,8 @@ namespace AdmissionSystem2.Controllers
             // return basic user info and authentication token
             return Ok(new
             {
-               // Id = admin.Id,
-               // Username = admin.UserName,
+                // Id = admin.Id,
+                // Username = admin.UserName,
                 Token = tokenString
             });
         }
@@ -562,11 +569,11 @@ namespace AdmissionSystem2.Controllers
             var key = Encoding.ASCII.GetBytes(_JWT.Key);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-               /* Subject = new ClaimsIdentity(new[] {
-                    new Claim("id", admin.Id.ToString()),
-                    new Claim("UserName", admin.UserName.ToString())
-                    
-                }),*/
+                /* Subject = new ClaimsIdentity(new[] {
+                     new Claim("id", admin.Id.ToString()),
+                     new Claim("UserName", admin.UserName.ToString())
+
+                 }),*/
                 Expires = DateTime.UtcNow.AddMinutes(_JWT.DurationInMins),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
@@ -574,12 +581,12 @@ namespace AdmissionSystem2.Controllers
             return tokenHandler.WriteToken(token);
         }
 
-      /*  [HttpPost("Send")]
-        public async Task<IActionResult> SendEmail([FromForm] EmailDto email)
-        {
-            await _mailingService.SendEmailAsync(email.ToEmail, email.Subject, email.Body, email.Attachments);
-            return Ok();
-        }*/
+        /*  [HttpPost("Send")]
+          public async Task<IActionResult> SendEmail([FromForm] EmailDto email)
+          {
+              await _mailingService.SendEmailAsync(email.ToEmail, email.Subject, email.Body, email.Attachments);
+              return Ok();
+          }*/
 
         [HttpPost("DecodeJwt")]
         public IActionResult DecodeJwt([FromBody] Decoding jwtEncodedString)
@@ -624,16 +631,62 @@ namespace AdmissionSystem2.Controllers
 
         }
 
-     /*   [HttpPost("send")]
-        public async Task<IActionResult> SendMail([FromForm] EmailDto request)
+        /*   [HttpPost("send")]
+           public async Task<IActionResult> SendMail([FromForm] EmailDto request)
+           {
+               try
+               {
+                   await _mailingService.SendEmailAsync(request.ToEmail, request.Subject, request.Body);
+                   return Ok();
+               }
+           }*/
+        [HttpPost("DocumentCriteriaAddition")]
+        public IActionResult AddDocumentCriteria([FromBody] IEnumerable<DocumentCriteriaForCreation> DocumentCriteria)
         {
-            try
+            if (DocumentCriteria == null)
             {
-
-                await _mailingService.SendEmailAsync(request.ToEmail, request.Subject, request.Body);
-                return Ok();
+                return BadRequest();
             }
+            var DocumentsToAdd = _Mapper.Map<IEnumerable<DocumentCriteria>>(DocumentCriteria);
+            foreach (var Document in DocumentsToAdd)
+            {
+                _AdmissionRepo.AddDocumentCriteria(Document);
+            }
+            if (!_AdmissionRepo.Save())
+            {
+                throw new Exception("Failed To add");
+            }
+            return Ok();
+        }
+        [HttpPost("DocumentCriteriaEditing")]
+        public IActionResult EditDocumentCriteria([FromBody] IEnumerable<DocumentCriteriaForCreation> documentCriterias)
+        {
+            if (documentCriterias == null)
+            {
+                return BadRequest();
+            }
+            _AdmissionRepo.DeleteDocumentCriteria();
+            var DocumentsToAdd = _Mapper.Map<IEnumerable<DocumentCriteria>>(documentCriterias);
+            foreach (var Document in DocumentsToAdd)
+            {
+                _AdmissionRepo.AddDocumentCriteria(Document);
+            }
+            if (!_AdmissionRepo.Save())
+            {
+                throw new Exception("Failed To add");
+            }
+            return Ok();
+        }
+        [HttpGet("DocumentCriteria")]
+        public IActionResult GetDocumentCriteria()
+        {
+            var DocumentCriteria = _AdmissionRepo.GetDocumentCriterias();
+            if (DocumentCriteria == null)
+            {
+                return NotFound();
+            }
+            return Ok(DocumentCriteria);
+        }
 
-        }*/
     }
 }

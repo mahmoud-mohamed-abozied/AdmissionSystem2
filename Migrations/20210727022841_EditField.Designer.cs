@@ -4,14 +4,16 @@ using AdmissionSystem2.Entites;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AdmissionSystem2.Migrations
 {
     [DbContext(typeof(AdmissionSystemDbContext))]
-    partial class AdmissionSystemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210727022841_EditField")]
+    partial class EditField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -156,12 +158,16 @@ namespace AdmissionSystem2.Migrations
 
             modelBuilder.Entity("AdmissionSystem2.Entites.Document", b =>
                 {
-                    b.Property<Guid>("DocumentId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<Guid>("ApplicantId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte[]>("Copy")
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("DocumentName")
                         .HasColumnType("nvarchar(max)");
@@ -169,10 +175,7 @@ namespace AdmissionSystem2.Migrations
                     b.Property<string>("DocumentType")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FilePath")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("DocumentId");
+                    b.HasKey("Id");
 
                     b.HasIndex("ApplicantId");
 
