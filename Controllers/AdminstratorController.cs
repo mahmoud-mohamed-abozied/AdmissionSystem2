@@ -93,6 +93,15 @@ namespace AdmissionSystem2.Controllers
             }
 
             var Doc = new List<DocumentDto>();
+
+            Doc.Add(new DocumentDto()
+            {
+                DocumentId = DocumentFromRepo.DocumentId,
+                DocumentType = DocumentFromRepo.DocumentType,
+                DocumentName = DocumentFromRepo.DocumentName,
+                FilePath = DocumentFromRepo.FilePath
+            });
+
                 Doc.Add(new DocumentDto()
                 {
                     Id = DocumentFromRepo.DocumentId,
@@ -100,14 +109,21 @@ namespace AdmissionSystem2.Controllers
                     DocumentName = DocumentFromRepo.DocumentName,
                     FilePath = DocumentFromRepo.FilePath
                 });
+
             //  string imageBase64Data = Convert.ToBase64String(DocumentFromRepo.Copy);
             // string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
             return Ok(Doc);
+
+
+            /* string imageBase64Data = Convert.ToBase64String(DocumentFromRepo.Copy);
+             string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+             return Ok(imageDataURL);*/
 
            /* string imageBase64Data = Convert.ToBase64String(DocumentFromRepo.Copy);
             string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
 
             return Ok(imageDataURL);*/
+
 
         }
         [HttpGet("{applicantId}/Documents")]
@@ -122,11 +138,19 @@ namespace AdmissionSystem2.Controllers
             var Doc = new List<DocumentDto>();
             foreach (var file in DocumentFromRepo)
             {
+
+                //  string imageBase64Data = Convert.ToBase64String(file.Copy);
+                // string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+                Doc.Add(new DocumentDto()
+                {
+                    DocumentId = file.DocumentId,
+
               //  string imageBase64Data = Convert.ToBase64String(file.Copy);
                // string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
                 Doc.Add(new DocumentDto()
                 {
                     Id = file.DocumentId,
+
                     DocumentType = file.DocumentType,
                     DocumentName = file.DocumentName,
                     FilePath = file.FilePath
@@ -135,6 +159,7 @@ namespace AdmissionSystem2.Controllers
             }
             return Ok(Doc);
         }
+
 
 
         [HttpGet("{ApplicantId}")]
@@ -439,18 +464,29 @@ namespace AdmissionSystem2.Controllers
             Application ApplicationToReturn = _AdmissionRepo.GetApplication(ApplicantId);
             var DocumentFromRepo = _AdmissionRepo.GetDocuments(ApplicantId);
             var Doc = new List<DocumentDto>();
-            foreach (var file in DocumentFromRepo)
+            /*foreach (var file in DocumentFromRepo)
             {
+
+                string imageBase64Data = Convert.ToBase64String(file.FilePath);
+                string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+
             //    string imageBase64Data = Convert.ToBase64String(file.Copy);
              //   string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+
                 Doc.Add(new DocumentDto()
                 {
                  //   Id = file.Id,
                     DocumentType = file.DocumentType,
                     DocumentName = file.DocumentName,
+
+                    Copy = imageDataURL
+                });}*/
+            
+
                    // Copy = imageDataURL
                 });
             }
+
             // ApplicationToReturn.Documents = Doc;
             return Ok(ApplicationToReturn);
         }

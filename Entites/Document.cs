@@ -11,6 +11,10 @@ namespace AdmissionSystem2.Entites
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+
+       
+
+
         public Guid DocumentId { get; set; }
         public string DocumentType { get; set; }
         public string DocumentName { get; set; }
