@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using System.IO;
 
 namespace AdmissionSystem2.Services
 {
@@ -18,7 +17,7 @@ namespace AdmissionSystem2.Services
         private IMailingService _MailingService;
         private IMapper _Mapper;
 
-        public AdminRepo(AdmissionSystemDbContext admissionSystemDbContext, IMailingService MailingService, IMapper Mapper)
+        public AdminRepo(AdmissionSystemDbContext admissionSystemDbContext,IMailingService MailingService, IMapper Mapper)
         {
             _AdmissionSystemDbContext = admissionSystemDbContext;
             _MailingService = MailingService;
@@ -83,8 +82,8 @@ namespace AdmissionSystem2.Services
                 {
                     if ((i + y) < ApplicantsCount)
                     {
-                        //  var ApplicantList = _AdmissionSystemDbContext.Applicant.ToList();
-                        // var Applicant = ApplicantList.ElementAt(i + y);
+                      //  var ApplicantList = _AdmissionSystemDbContext.Applicant.ToList();
+                       // var Applicant = ApplicantList.ElementAt(i + y);
                         Interview interview = new Interview();
                         interview.InterviewType = "ApplicantInterview";
                         interview.InterviewDate = IntialStartDate;
@@ -157,11 +156,11 @@ namespace AdmissionSystem2.Services
                 "We Are Happy to Inform you that you have been accepted in peselvanya Inter National School , You have To attend to school starts from 15/8 to buy your books and Uniform");
             _AdmissionSystemDbContext.Applicant.Update(Applicant);
         }
-        public void DeclineApplicant(Guid ApplicantId, string Reason)
+        public void DeclineApplicant(Guid ApplicantId,string Reason)
         {
             var Applicant = _AdmissionSystemDbContext.Applicant.FirstOrDefault(a => a.ApplicantId == ApplicantId);
             Applicant.Status = "Declined";
-            _MailingService.SendEmailAsync(Applicant.Email, "School Declination", " Hi, We are sorry to inform you that you have been declined from our school for reason : " + Reason + ". So we hope you understand our reason and do the actions needed ");
+            _MailingService.SendEmailAsync(Applicant.Email, "School Declination", " Hi, We are sorry to inform you that you have been declined from our school for reason : " + Reason + ". So we hope you understand our reason and do the actions needed ") ; 
             _AdmissionSystemDbContext.Applicant.Update(Applicant);
         }
         public void SetInterviewForApplicant(Guid ApplicantId)
@@ -199,7 +198,6 @@ namespace AdmissionSystem2.Services
         public Document GetDocument(Guid ApplicantId, string DocumentName)
         {
             return _AdmissionSystemDbContext.Documents.FirstOrDefault(a => a.ApplicantId == ApplicantId && a.DocumentName == DocumentName);
-
         }
         public IEnumerable<ParentInfo> GetParentsInfos(Guid ApplicantId)
         {
@@ -253,7 +251,7 @@ namespace AdmissionSystem2.Services
             //Application.Applicant = _AdmissionSystemDbContext.Applicant.FirstOrDefault(a => a.ApplicantId == ApplicantId);
             Application.AdmissionDetails = _Mapper.Map<AdmissionDetailsDto>(GetAdmissionDetails(ApplicantId));
             Application.EmergencyContact = _Mapper.Map<IEnumerable<EmergencyContactDto>>(GetEmergencyContacts(ApplicantId));
-            Application.Sibling = _Mapper.Map<IEnumerable<SiblingDto>>(GetSiblings(ApplicantId));
+            Application.Sibling = _Mapper.Map<IEnumerable<SiblingDto>>(GetSiblings(ApplicantId)); 
             Application.MedicalHistory = _Mapper.Map<MedicalHistoryDto>(GetMedicalHistory(ApplicantId));
             Application.ParentInfo = _Mapper.Map<IEnumerable<ParentInfoDto>>(GetParentsInfos(ApplicantId));
             Application.Documents = _Mapper.Map<IEnumerable<DocumentDto>>(GetDocuments(ApplicantId));
@@ -276,10 +274,10 @@ namespace AdmissionSystem2.Services
                     ApplicantId = a.ApplicantId,
                     ApplicantName = GetNameOfApplicant(a.ApplicantId),
                     InterviewDate = DateTime.ParseExact(a.InterviewDate, "yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture),
-                    // Score = a.Score,
-                    Status = _AdmissionSystemDbContext.Applicant.FirstOrDefault(x => x.ApplicantId == a.ApplicantId && x.Status == "Waiting For Interview").Status
+                   // Score = a.Score,
+                    Status = _AdmissionSystemDbContext.Applicant.FirstOrDefault(x => x.ApplicantId == a.ApplicantId).Status
                 });
-
+       
             switch (resourceParameters.OrderBy)
             {
                 case "ID":
@@ -370,9 +368,9 @@ namespace AdmissionSystem2.Services
 
             if (resourceParameters.StartDate != DateTime.MinValue && resourceParameters.EndDate != DateTime.MinValue)
             {
-
+                
                 collectionBeforePaging = collectionBeforePaging.
-                    Where(a => a.AdmissionDate >= resourceParameters.StartDate && a.AdmissionDate <= resourceParameters.EndDate);
+                    Where(a => a.AdmissionDate >= resourceParameters.StartDate&& a.AdmissionDate <= resourceParameters.EndDate);
             }
 
             if (!String.IsNullOrEmpty(resourceParameters.Status))
@@ -395,8 +393,8 @@ namespace AdmissionSystem2.Services
 
         }
 
-
-
+        
+    
 
 
         public bool CheakAdmissionPeriod()
@@ -429,7 +427,7 @@ namespace AdmissionSystem2.Services
         }
         public string GetPeriodLeft()
         {
-
+            
             DateTime startTime = DateTime.Now;
             string Date = GetAdmissionPeriod().EndDate + " " + GetAdmissionPeriod().EndTime;
             DateTime oDate = DateTime.ParseExact(Date, "yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture);
@@ -508,14 +506,11 @@ namespace AdmissionSystem2.Services
         }
         public void AddInterviewScore(Guid ApplicantId, InterviewScore InterviewScore)
         {
-            var Applicant = GetApplicant(ApplicantId);
             var Interview = _AdmissionSystemDbContext.Interview.FirstOrDefault(a => a.ApplicantId == ApplicantId);
             Interview.Score = InterviewScore.Score;
             Interview.ScoreGrade = InterviewScore.ScoreGrade;
             Interview.InterviewerName = InterviewScore.InterviewerName;
-            Applicant.Status = "Interview Score Setted";
             _AdmissionSystemDbContext.Interview.Update(Interview);
-            _AdmissionSystemDbContext.Applicant.Update(Applicant);
 
         }
 
@@ -538,8 +533,8 @@ namespace AdmissionSystem2.Services
                 return null;
 
             // check if password is correct
-            // if (!VerifyPasswordHash(password, admin.PasswordHash, admin.PasswordSalt))
-            //   return null;
+           // if (!VerifyPasswordHash(password, admin.PasswordHash, admin.PasswordSalt))
+             //   return null;
 
             // authentication successful
             return admin;
@@ -551,6 +546,7 @@ namespace AdmissionSystem2.Services
               if (string.IsNullOrWhiteSpace(password)) throw new ArgumentException("Value cannot be empty or whitespace only string.", "password");
               if (storedHash.Length != 64) throw new ArgumentException("Invalid length of password hash (64 bytes expected).", "passwordHash");
               if (storedSalt.Length != 128) throw new ArgumentException("Invalid length of password salt (128 bytes expected).", "passwordHash");
+
               using (var hmac = new System.Security.Cryptography.HMACSHA512(storedSalt))
               {
                   var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
@@ -559,6 +555,7 @@ namespace AdmissionSystem2.Services
                       if (computedHash[i] != storedHash[i]) return false;
                   }
               }
+
               return true;
           }*/
         public void AddDocumentCriteria(DocumentCriteria documentCriterias)
@@ -578,5 +575,7 @@ namespace AdmissionSystem2.Services
                 _AdmissionSystemDbContext.DocumentCriteria.Remove(_document);
             }
         }
+
+
     }
 }

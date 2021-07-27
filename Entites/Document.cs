@@ -10,10 +10,11 @@ namespace AdmissionSystem2.Entites
     public class Document
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid DocumentId { get; set; }
         public string DocumentType { get; set; }
         public string DocumentName { get; set; }
-        public String FilePath { get; set; }
+        public string FilePath { get; set; }
         [ForeignKey("ApplicantId")]
         public Applicant Applicant { get; set; }
         public Guid ApplicantId { get; set; }

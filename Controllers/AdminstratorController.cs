@@ -105,10 +105,10 @@ namespace AdmissionSystem2.Controllers
             // string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
             return Ok(Doc);
 
-            string imageBase64Data = Convert.ToBase64String(DocumentFromRepo.Copy);
+           /* string imageBase64Data = Convert.ToBase64String(DocumentFromRepo.Copy);
             string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
 
-            return Ok(imageDataURL);
+            return Ok(imageDataURL);*/
 
         }
         [HttpGet("{applicantId}/Documents")]

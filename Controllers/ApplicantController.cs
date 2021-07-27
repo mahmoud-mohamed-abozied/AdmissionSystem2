@@ -496,7 +496,7 @@ namespace AdmissionSystem2.Controllers
             {
                 return NotFound();
             }
-            //delete image from wwwroot/image
+            //delete image from wwwroot/Images
             var imagePath = Path.Combine(_WebHostEnvironment.WebRootPath, "Images", DocumentFromRepo.DocumentId+"_"+ DocumentFromRepo.DocumentName);
             if (System.IO.File.Exists(imagePath))
                 System.IO.File.Delete(imagePath);
