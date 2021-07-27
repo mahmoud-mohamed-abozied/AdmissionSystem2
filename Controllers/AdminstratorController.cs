@@ -105,7 +105,7 @@ namespace AdmissionSystem2.Controllers
             {
                 return NotFound();
             }
-           
+
             var Doc = new List<DocumentDto>();
             foreach (var file in DocumentFromRepo)
             {
@@ -543,8 +543,8 @@ namespace AdmissionSystem2.Controllers
             // return basic user info and authentication token
             return Ok(new
             {
-               // Id = admin.Id,
-               // Username = admin.UserName,
+                // Id = admin.Id,
+                // Username = admin.UserName,
                 Token = tokenString
             });
         }
@@ -555,11 +555,11 @@ namespace AdmissionSystem2.Controllers
             var key = Encoding.ASCII.GetBytes(_JWT.Key);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-               /* Subject = new ClaimsIdentity(new[] {
-                    new Claim("id", admin.Id.ToString()),
-                    new Claim("UserName", admin.UserName.ToString())
-                    
-                }),*/
+                /* Subject = new ClaimsIdentity(new[] {
+                     new Claim("id", admin.Id.ToString()),
+                     new Claim("UserName", admin.UserName.ToString())
+
+                 }),*/
                 Expires = DateTime.UtcNow.AddMinutes(_JWT.DurationInMins),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
@@ -567,12 +567,12 @@ namespace AdmissionSystem2.Controllers
             return tokenHandler.WriteToken(token);
         }
 
-      /*  [HttpPost("Send")]
-        public async Task<IActionResult> SendEmail([FromForm] EmailDto email)
-        {
-            await _mailingService.SendEmailAsync(email.ToEmail, email.Subject, email.Body, email.Attachments);
-            return Ok();
-        }*/
+        /*  [HttpPost("Send")]
+          public async Task<IActionResult> SendEmail([FromForm] EmailDto email)
+          {
+              await _mailingService.SendEmailAsync(email.ToEmail, email.Subject, email.Body, email.Attachments);
+              return Ok();
+          }*/
 
         [HttpPost("DecodeJwt")]
         public IActionResult DecodeJwt([FromBody] Decoding jwtEncodedString)
@@ -622,21 +622,19 @@ namespace AdmissionSystem2.Controllers
            {
                try
                {
-
                    await _mailingService.SendEmailAsync(request.ToEmail, request.Subject, request.Body);
                    return Ok();
                }
-
            }*/
-       [HttpPost("DocumentCriteriaAddition")]
-       public IActionResult AddDocumentCriteria([FromBody] IEnumerable<DocumentCriteriaForCreation> DocumentCriteria)
+        [HttpPost("DocumentCriteriaAddition")]
+        public IActionResult AddDocumentCriteria([FromBody] IEnumerable<DocumentCriteriaForCreation> DocumentCriteria)
         {
             if (DocumentCriteria == null)
             {
                 return BadRequest();
             }
-            var DocumentsToAdd = _Mapper.Map<IEnumerable< DocumentCriteria>>(DocumentCriteria);
-            foreach(var Document in DocumentsToAdd)
+            var DocumentsToAdd = _Mapper.Map<IEnumerable<DocumentCriteria>>(DocumentCriteria);
+            foreach (var Document in DocumentsToAdd)
             {
                 _AdmissionRepo.AddDocumentCriteria(Document);
             }
@@ -675,6 +673,6 @@ namespace AdmissionSystem2.Controllers
             }
             return Ok(DocumentCriteria);
         }
-  
+
     }
 }
