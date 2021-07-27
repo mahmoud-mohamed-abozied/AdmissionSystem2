@@ -12,7 +12,7 @@ namespace AdmissionSystem2.Entites
     {
         public AdmissionSystemDbContext(DbContextOptions<AdmissionSystemDbContext> options) : base(options)
         {
-            Database.Migrate();
+            Database.EnsureCreated();
 
         }
         public DbSet<Applicant> Applicant { get; set; }
