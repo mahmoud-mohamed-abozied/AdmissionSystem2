@@ -33,7 +33,7 @@ namespace AdmissionSystem2.Entites
         public DbSet<FamilyStatus> FamilyStatus { get; set; }
         public DbSet<AdministratorOfficer> AdministratorOfficer { get; set; }
         public DbSet<DocumentCriteria> DocumentCriteria { get; set; }
-        
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Applicant>().ToTable("Applicant");
