@@ -96,7 +96,7 @@ namespace AdmissionSystem2.Controllers
 
             Doc.Add(new DocumentDto()
             {
-                DocumentId = DocumentFromRepo.DocumentId,
+                Id = DocumentFromRepo.Id,
                 DocumentType = DocumentFromRepo.DocumentType,
                 DocumentName = DocumentFromRepo.DocumentName,
                 FilePath = DocumentFromRepo.FilePath
@@ -104,7 +104,7 @@ namespace AdmissionSystem2.Controllers
 
                 Doc.Add(new DocumentDto()
                 {
-                    Id = DocumentFromRepo.DocumentId,
+                    Id = DocumentFromRepo.Id,
                     DocumentType = DocumentFromRepo.DocumentType,
                     DocumentName = DocumentFromRepo.DocumentName,
                     FilePath = DocumentFromRepo.FilePath
@@ -143,14 +143,7 @@ namespace AdmissionSystem2.Controllers
                 // string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
                 Doc.Add(new DocumentDto()
                 {
-                    DocumentId = file.DocumentId,
-
-              //  string imageBase64Data = Convert.ToBase64String(file.Copy);
-               // string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
-                Doc.Add(new DocumentDto()
-                {
-                    Id = file.DocumentId,
-
+                    Id = file.Id,
                     DocumentType = file.DocumentType,
                     DocumentName = file.DocumentName,
                     FilePath = file.FilePath
@@ -481,11 +474,6 @@ namespace AdmissionSystem2.Controllers
 
                     Copy = imageDataURL
                 });}*/
-            
-
-                   // Copy = imageDataURL
-                });
-            }
 
             // ApplicationToReturn.Documents = Doc;
             return Ok(ApplicationToReturn);

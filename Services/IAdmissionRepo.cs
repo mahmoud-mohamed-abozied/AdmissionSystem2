@@ -18,7 +18,7 @@ namespace AdmissionSystem2.Services
         void AddAdmissionDetails(Guid ApplicantId, AdmissionDetails AdmissionDetails);
         void AddSibling(Guid applicantId, Sibling sibling);
         void AddMedicalDetails(Guid applicantId, MedicalHistory medicalHistory);
-        void MakePayment(Payment payment);
+        void AddPayment(Payment payment);
         void UpdateApplicant(Applicant Applicant);
         void UpdateEmergencyContact(EmergencyContact EmergencyContact);
         void AddDocument(Document Document);

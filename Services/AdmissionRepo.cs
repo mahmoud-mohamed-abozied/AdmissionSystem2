@@ -117,9 +117,9 @@ namespace AdmissionSystem2.Services
 
 
 
-        public void MakePayment(Payment payment)
+        public void AddPayment(Payment payment)
         {
-            throw new NotImplementedException();
+            _AdmissionSystemDbContext.Payment.Add(payment);
         }
         public void UpdateApplicant(Applicant Applicant)
         {
