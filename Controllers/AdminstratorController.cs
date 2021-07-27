@@ -27,7 +27,6 @@ namespace AdmissionSystem2.Controllers
     [Route("api/Admin")]
     public class AdminstratorController : Controller
     {
-        private ImageConverter _ImageConverter;
         private IAdminRepo _AdmissionRepo;
         private readonly IMapper _Mapper;
         private readonly IHttpContextAccessor _Accessor;
