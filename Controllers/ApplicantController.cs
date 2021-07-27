@@ -4,6 +4,7 @@ using AdmissionSystem2.Models;
 using AdmissionSystem2.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -32,12 +33,14 @@ namespace AdmissionSystem2.Controllers
         private IAdminRepo _AdminRepo;
         private readonly IMapper _Mapper;
         private readonly JWT _JWT;
-        public ApplicantController(IAdmissionRepo AdmissionRepo, IAdminRepo AdminRepo, IMapper Mapper, IOptions<JWT> jwt)
+        private readonly IWebHostEnvironment _WebHostEnvironment;
+        public ApplicantController(IAdmissionRepo AdmissionRepo, IAdminRepo AdminRepo, IMapper Mapper, IOptions<JWT> jwt, IWebHostEnvironment WebHostEnvironment)
         {
             _AdmissionRepo = AdmissionRepo;
             _AdminRepo = AdminRepo;
             _Mapper = Mapper;
             _JWT = jwt.Value;
+            _WebHostEnvironment = WebHostEnvironment;
         }
 
 
@@ -435,73 +438,77 @@ namespace AdmissionSystem2.Controllers
             }
             //    var DocumentToSave = _Mapper.Map<Document>(DocumentForCreation);
 
-
-            var file = DocumentForCreation.Copy;
-            Document DocumentToSave = new Document();
-            if (file.Length > 0)
+            if (DocumentForCreation.Copy.Length > 0)
             {
-                using var ms = new MemoryStream();
-                file.CopyTo(ms);
-                DocumentToSave.Copy = ms.ToArray();
-                /*  if (fileBytes.Length != 0) {
-                      // fileBytes.CopyTo(DocumentToSave.Copy, 1);
-                      Buffer.BlockCopy(fileBytes, 0, DocumentToSave.Copy, 0, fileBytes.Length);
-                  }*/
-            }
+                string uploadsFolder = Path.Combine(_WebHostEnvironment.WebRootPath, "Images");
+                string extension = Path.GetExtension(DocumentForCreation.Copy.FileName);
+                Guid Id = Guid.NewGuid();
+                string uniqueFileName = Id.ToString() + "_" + DocumentForCreation.DocumentName + extension;
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    DocumentForCreation.Copy.CopyTo(fileStream);
+                }
+                string pathtodb = Path.Combine("Images", uniqueFileName);
 
-            DocumentToSave.ApplicantId = ApplicantID;
-            DocumentToSave.DocumentName = DocumentForCreation.DocumentName;
-            DocumentToSave.DocumentType = "Image";
-            _AdmissionRepo.AddDocument(DocumentToSave);
-            if (!_AdmissionRepo.Save())
+                var DocumentToSave = new Document();
+                DocumentToSave.DocumentId = Id;
+                DocumentToSave.ApplicantId = ApplicantID;
+                DocumentToSave.DocumentName = DocumentForCreation.DocumentName;
+                DocumentToSave.DocumentType = "Image";
+                DocumentToSave.FilePath = pathtodb;
+                _AdmissionRepo.AddDocument(DocumentToSave);
+                if (!_AdmissionRepo.Save())
+                {
+                    throw new Exception("Failed To Add Document");
+                }
+            }
+            else
             {
-                throw new Exception("Failed To Add Document");
+                return BadRequest();
             }
-
 
             return Ok();
 
         }
 
         [HttpPost("{ApplicantId}/UpdateDocument")]
-        public IActionResult UpdateDocument(Guid ApplicantID, [FromForm] DocumentForCreation DocumentForCreation)
+        public IActionResult UpdateDocument(Guid ApplicantID, [FromForm] IEnumerable<DocumentForCreation> DocumentForCreation)
         {
-            if (DocumentForCreation == null)
+            foreach (var doc in DocumentForCreation)
             {
-                return BadRequest();
+                AddDocument(ApplicantID, doc);
+                DeleteDocument(ApplicantID, doc.DocumentName);
             }
-            if (_AdmissionRepo.GetApplicant(ApplicantID) == null)
+            return NoContent();
+        }
+
+        [HttpDelete("{applicantId}/Document/{id}")]
+        public IActionResult DeleteDocument(Guid applicantId, String DocumentName)
+        {
+            if (_AdmissionRepo.GetApplicant(applicantId) == null)
             {
                 return NotFound();
             }
-            //    var DocumentToSave = _Mapper.Map<Document>(DocumentForCreation);
 
-
-            var file = DocumentForCreation.Copy;
-            Document DocumentToSave = new Document();
-            if (file.Length > 0)
+            var DocumentFromRepo = _AdminRepo.GetDocument(applicantId, DocumentName);
+            if (DocumentFromRepo == null)
             {
-                using var ms = new MemoryStream();
-                file.CopyTo(ms);
-                DocumentToSave.Copy = ms.ToArray();
-                /*  if (fileBytes.Length != 0) {
-                      // fileBytes.CopyTo(DocumentToSave.Copy, 1);
-                      Buffer.BlockCopy(fileBytes, 0, DocumentToSave.Copy, 0, fileBytes.Length);
-                  }*/
+                return NotFound();
             }
+            //delete image from wwwroot/image
+            var imagePath = Path.Combine(_WebHostEnvironment.WebRootPath, "Images", DocumentFromRepo.DocumentId+"_"+ DocumentFromRepo.DocumentName);
+            if (System.IO.File.Exists(imagePath))
+                System.IO.File.Delete(imagePath);
 
-            DocumentToSave.ApplicantId = ApplicantID;
-            DocumentToSave.DocumentName = DocumentForCreation.DocumentName;
-            DocumentToSave.DocumentType = DocumentForCreation.DocumentType;
-            _AdmissionRepo.AddDocument(DocumentToSave);
-            _AdmissionRepo.DeleteDocument(_AdminRepo.GetDocument(ApplicantID,DocumentForCreation.DocumentName));
+            _AdmissionRepo.DeleteDocument(DocumentFromRepo);
+
             if (!_AdmissionRepo.Save())
             {
-                throw new Exception("Failed To Add Document");
+                throw new Exception("failed to delete a Document");
             }
 
-
-            return Ok();
+            return NoContent();
 
         }
 
