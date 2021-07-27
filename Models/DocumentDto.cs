@@ -7,6 +7,7 @@ namespace AdmissionSystem2.Models
 {
     public class DocumentDto
     {
+
         public Guid DocumentId { get; set; }
         public string DocumentType { get; set; }
         public string DocumentName { get; set; }
