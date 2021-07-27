@@ -4,6 +4,7 @@ using AdmissionSystem2.Models;
 using AdmissionSystem2.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -32,8 +33,9 @@ namespace AdmissionSystem2.Controllers
         private readonly LinkGenerator _Generator;
         private readonly IMailingService _mailingService;
         private readonly JWT _JWT;
+        private readonly IWebHostEnvironment _WebHostEnvironment;
 
-        public AdminstratorController(IAdminRepo AdmissionRepo, IMapper Mapper, IHttpContextAccessor Accessor, LinkGenerator Generator, IMailingService mailingService, IOptions<JWT> jwt)
+        public AdminstratorController(IAdminRepo AdmissionRepo, IMapper Mapper, IHttpContextAccessor Accessor, LinkGenerator Generator, IMailingService mailingService, IOptions<JWT> jwt, IWebHostEnvironment WebHostEnvironment)
         {
             _AdmissionRepo = AdmissionRepo;
             _Mapper = Mapper;
@@ -41,6 +43,7 @@ namespace AdmissionSystem2.Controllers
             _Generator = Generator;
             _mailingService = mailingService;
             _JWT = jwt.Value;
+            _WebHostEnvironment = WebHostEnvironment;
         }
         public IActionResult Index()
         {
@@ -87,10 +90,17 @@ namespace AdmissionSystem2.Controllers
                 return NotFound();
             }
 
-
-            string imageBase64Data = Convert.ToBase64String(DocumentFromRepo.Copy);
-            string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
-            return Ok(imageDataURL);
+            var Doc = new List<DocumentDto>();
+                Doc.Add(new DocumentDto()
+                {
+                    Id = DocumentFromRepo.DocumentId,
+                    DocumentType = DocumentFromRepo.DocumentType,
+                    DocumentName = DocumentFromRepo.DocumentName,
+                    FilePath = DocumentFromRepo.FilePath
+                });
+            //  string imageBase64Data = Convert.ToBase64String(DocumentFromRepo.Copy);
+            // string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+            return Ok(Doc);
 
         }
         [HttpGet("{applicantId}/Documents")]
@@ -105,14 +115,14 @@ namespace AdmissionSystem2.Controllers
             var Doc = new List<DocumentDto>();
             foreach (var file in DocumentFromRepo)
             {
-                string imageBase64Data = Convert.ToBase64String(file.Copy);
-                string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+              //  string imageBase64Data = Convert.ToBase64String(file.Copy);
+               // string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
                 Doc.Add(new DocumentDto()
                 {
-                    Id = file.Id,
+                    Id = file.DocumentId,
                     DocumentType = file.DocumentType,
                     DocumentName = file.DocumentName,
-                    Copy = imageDataURL
+                    FilePath = file.FilePath
                 });
 
             }
@@ -424,14 +434,14 @@ namespace AdmissionSystem2.Controllers
             var Doc = new List<DocumentDto>();
             foreach (var file in DocumentFromRepo)
             {
-                string imageBase64Data = Convert.ToBase64String(file.Copy);
-                string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+            //    string imageBase64Data = Convert.ToBase64String(file.Copy);
+             //   string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
                 Doc.Add(new DocumentDto()
                 {
-                    Id = file.Id,
+                 //   Id = file.Id,
                     DocumentType = file.DocumentType,
                     DocumentName = file.DocumentName,
-                    Copy = imageDataURL
+                   // Copy = imageDataURL
                 });
             }
                // ApplicationToReturn.Documents = Doc;
