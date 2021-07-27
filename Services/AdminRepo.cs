@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using System.IO;
 
 namespace AdmissionSystem2.Services
 {
@@ -198,6 +199,7 @@ namespace AdmissionSystem2.Services
         public Document GetDocument(Guid ApplicantId, string DocumentName)
         {
             return _AdmissionSystemDbContext.Documents.FirstOrDefault(a => a.ApplicantId == ApplicantId && a.DocumentName == DocumentName);
+           
         }
         public IEnumerable<ParentInfo> GetParentsInfos(Guid ApplicantId)
         {
@@ -275,7 +277,7 @@ namespace AdmissionSystem2.Services
                     ApplicantName = GetNameOfApplicant(a.ApplicantId),
                     InterviewDate = DateTime.ParseExact(a.InterviewDate, "yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture),
                    // Score = a.Score,
-                    Status = _AdmissionSystemDbContext.Applicant.FirstOrDefault(x => x.ApplicantId == a.ApplicantId).Status
+                    Status = _AdmissionSystemDbContext.Applicant.FirstOrDefault(x => x.ApplicantId == a.ApplicantId&& x.Status=="Waiting For Interview").Status
                 });
        
             switch (resourceParameters.OrderBy)
@@ -506,11 +508,14 @@ namespace AdmissionSystem2.Services
         }
         public void AddInterviewScore(Guid ApplicantId, InterviewScore InterviewScore)
         {
+            var Applicant = GetApplicant(ApplicantId);
             var Interview = _AdmissionSystemDbContext.Interview.FirstOrDefault(a => a.ApplicantId == ApplicantId);
             Interview.Score = InterviewScore.Score;
             Interview.ScoreGrade = InterviewScore.ScoreGrade;
             Interview.InterviewerName = InterviewScore.InterviewerName;
+            Applicant.Status = "Interview Score Setted";
             _AdmissionSystemDbContext.Interview.Update(Interview);
+            _AdmissionSystemDbContext.Applicant.Update(Applicant);
 
         }
 
@@ -558,7 +563,22 @@ namespace AdmissionSystem2.Services
 
             return true;
         }*/
+        public void AddDocumentCriteria(DocumentCriteria documentCriterias)
+        {
+            _AdmissionSystemDbContext.DocumentCriteria.Add(documentCriterias);
 
-
+        }
+        public IEnumerable<DocumentCriteria> GetDocumentCriterias()
+        {
+            return _AdmissionSystemDbContext.DocumentCriteria.ToList();
+        }
+        public void DeleteDocumentCriteria()
+        {
+            var Criteria = GetDocumentCriterias();
+            foreach(var _document in Criteria)
+            {
+                _AdmissionSystemDbContext.DocumentCriteria.Remove(_document);
+            }
+        }
     }
 }

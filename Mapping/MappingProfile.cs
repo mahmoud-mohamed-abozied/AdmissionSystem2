@@ -51,6 +51,7 @@ namespace AdmissionSystem2.Mapping
             CreateMap<AdministratorOfficer, UserLoginModel>();
             CreateMap<DocumentDto, Document>().ReverseMap();
             CreateMap<FamilyStatusDto, FamilyStatus>().ReverseMap();
+            CreateMap<DocumentCriteria, DocumentCriteriaForCreation>().ReverseMap();
         }
     }
 }
