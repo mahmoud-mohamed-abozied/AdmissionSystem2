@@ -147,18 +147,11 @@ namespace AdmissionSystem2.Controllers
             var Doc = new List<DocumentDto>();
             foreach (var file in DocumentFromRepo)
             {
-                //  string imageBase64Data = Convert.ToBase64String(file.Copy);
-                // string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+                 string imageBase64Data = Convert.ToBase64String(file.Copy);
+                 string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
                 Doc.Add(new DocumentDto()
                 {
                     DocumentId = file.DocumentId,
-
-              //  string imageBase64Data = Convert.ToBase64String(file.Copy);
-               // string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
-                Doc.Add(new DocumentDto()
-                {
-                    Id = file.DocumentId,
-
                     DocumentType = file.DocumentType,
                     DocumentName = file.DocumentName,
                     Copy = imageDataURL
@@ -491,8 +484,8 @@ namespace AdmissionSystem2.Controllers
             
 
                    // Copy = imageDataURL
-                });
-            }
+                
+            
 
             // ApplicationToReturn.Documents = Doc;
             return Ok(ApplicationToReturn);

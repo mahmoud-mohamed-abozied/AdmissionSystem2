@@ -35,9 +35,7 @@ namespace AdmissionSystem2.Controllers
         private readonly JWT _JWT;
 
         private IWebHostEnvironment _WebHostEnvironment;
-        public ApplicantController(IAdmissionRepo AdmissionRepo, IWebHostEnvironment WebHostEnvironment,IAdminRepo AdminRepo, IMapper Mapper, IOptions<JWT> jwt)
-
-        private readonly IWebHostEnvironment _WebHostEnvironment;
+       
         public ApplicantController(IAdmissionRepo AdmissionRepo, IAdminRepo AdminRepo, IMapper Mapper, IOptions<JWT> jwt, IWebHostEnvironment WebHostEnvironment)
 
         {
@@ -599,7 +597,7 @@ namespace AdmissionSystem2.Controllers
         }
 
 
-        [HttpDelete("{applicantId}/Document/{id}")]
+      /*  [HttpDelete("{applicantId}/Document/{id}")]
         public IActionResult DeleteDocument(Guid applicantId, String DocumentName)
         {
             if (_AdmissionRepo.GetApplicant(applicantId) == null)
@@ -632,7 +630,7 @@ namespace AdmissionSystem2.Controllers
 
         }
 
-
+        */
         [HttpDelete("{applicantId}/siblings/{id}")]
         public IActionResult DeleteSibling(Guid applicantId, Guid id)
         {
