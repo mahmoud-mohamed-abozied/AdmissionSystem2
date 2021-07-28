@@ -129,7 +129,35 @@ namespace AdmissionSystem2.Controllers
             }
 
 
+
             string imageBase64Data = Convert.ToBase64String(DocumentFromRepo.Copy);
+
+            Doc.Add(new DocumentDto()
+            {
+                Id = DocumentFromRepo.Id,
+                DocumentType = DocumentFromRepo.DocumentType,
+                DocumentName = DocumentFromRepo.DocumentName,
+                FilePath = DocumentFromRepo.FilePath
+            });
+
+                Doc.Add(new DocumentDto()
+                {
+                    Id = DocumentFromRepo.Id,
+                    DocumentType = DocumentFromRepo.DocumentType,
+                    DocumentName = DocumentFromRepo.DocumentName,
+                    FilePath = DocumentFromRepo.FilePath
+                });
+
+            //  string imageBase64Data = Convert.ToBase64String(DocumentFromRepo.Copy);
+            // string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+            return Ok(Doc);
+
+
+            /* string imageBase64Data = Convert.ToBase64String(DocumentFromRepo.Copy);
+             string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+             return Ok(imageDataURL);*/
+
+           /* string imageBase64Data = Convert.ToBase64String(DocumentFromRepo.Copy);
             string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
 
             return Ok(imageDataURL);
@@ -151,7 +179,11 @@ namespace AdmissionSystem2.Controllers
                  string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
                 Doc.Add(new DocumentDto()
                 {
+
                     DocumentId = file.DocumentId,
+
+                    Id = file.Id,
+
                     DocumentType = file.DocumentType,
                     DocumentName = file.DocumentName,
                     Copy = imageDataURL
@@ -481,11 +513,13 @@ namespace AdmissionSystem2.Controllers
 
                     Copy = imageDataURL
                 });}*/
+
             
 
                    // Copy = imageDataURL
                 
-            
+
+
 
             // ApplicationToReturn.Documents = Doc;
             return Ok(ApplicationToReturn);

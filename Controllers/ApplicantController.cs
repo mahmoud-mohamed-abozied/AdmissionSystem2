@@ -1,4 +1,4 @@
-﻿using AdmissionSystem2.Entites;
+using AdmissionSystem2.Entites;
 using AdmissionSystem2.Helpers;
 using AdmissionSystem2.Models;
 using AdmissionSystem2.Services;
@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 
 namespace AdmissionSystem2.Controllers
 {
-   // [Authorize]
+    // [Authorize]
     [Route("api/applicant")]
     public class ApplicantController : Controller
     {
@@ -34,8 +34,12 @@ namespace AdmissionSystem2.Controllers
         private readonly IMapper _Mapper;
         private readonly JWT _JWT;
 
+
         private IWebHostEnvironment _WebHostEnvironment;
        
+
+        private readonly IWebHostEnvironment _WebHostEnvironment;
+
         public ApplicantController(IAdmissionRepo AdmissionRepo, IAdminRepo AdminRepo, IMapper Mapper, IOptions<JWT> jwt, IWebHostEnvironment WebHostEnvironment)
 
         {
@@ -63,9 +67,9 @@ namespace AdmissionSystem2.Controllers
         public IActionResult AddApplicant([FromBody] ApplicantForCreation ApplicantForCreation)
         {
             if (ApplicantForCreation == null)
-              {
-                  return BadRequest();
-              }
+            {
+                return BadRequest();
+            }
             var final = _Mapper.Map<Applicant>(ApplicantForCreation);
 
             var date = DateTime.Today.ToString("yyyy/MM/dd");
@@ -78,7 +82,7 @@ namespace AdmissionSystem2.Controllers
         }
 
         [HttpPost("{ApplicantId}/ParentInfo")]
-        public IActionResult AddParentInfo(Guid ApplicantId, [FromBody]IEnumerable< ParentInfoForCreation> ParentInfoForCreation)
+        public IActionResult AddParentInfo(Guid ApplicantId, [FromBody] IEnumerable<ParentInfoForCreation> ParentInfoForCreation)
         {
 
             if (ParentInfoForCreation == null)
@@ -89,7 +93,7 @@ namespace AdmissionSystem2.Controllers
             {
                 return NotFound();
             }
-            var ParentInfo = _Mapper.Map<IEnumerable< ParentInfo>>(ParentInfoForCreation);
+            var ParentInfo = _Mapper.Map<IEnumerable<ParentInfo>>(ParentInfoForCreation);
             foreach (var Parent in ParentInfo)
             {
                 _AdmissionRepo.AddParentInfo(ApplicantId, Parent);
@@ -127,7 +131,7 @@ namespace AdmissionSystem2.Controllers
             {
                 return NotFound();
             }
-            var EmergencyContactEntities = _Mapper.Map< IEnumerable<EmergencyContact>>(EmergencyContactForCreation);
+            var EmergencyContactEntities = _Mapper.Map<IEnumerable<EmergencyContact>>(EmergencyContactForCreation);
             foreach (var EmergencyContact in EmergencyContactEntities)
             {
                 _AdmissionRepo.AddEmergencyContact(ApplicantId, EmergencyContact);
@@ -136,7 +140,7 @@ namespace AdmissionSystem2.Controllers
             {
                 throw new Exception("failed to add Emergency Contact ");
             }
-            
+
             return Ok();
         }
         [HttpPost("{ApplicantId}/FamilyStatus")]
@@ -268,10 +272,41 @@ namespace AdmissionSystem2.Controllers
             }
         }
 
-
-        [HttpGet("Payment")]
-        public async Task<IActionResult> MakePaymentAsync()
+        [HttpGet("ProcessingPayment")]
+        public async Task<IActionResult> ProcessingPaymentAsync([FromBody] dynamic response)
         {
+            if (response == null)
+            {
+                return BadRequest();
+            }
+
+            if (response.obj.success == "true")
+            {
+                Payment payment = new Payment()
+                {
+                    //Id = response.obj.id,
+                    SchoolId = response.obj.order.merchant.id,
+                    Date = response.obj.order.created_at,
+                    Amount = response.obj.amount_cents / 100,
+                    PaymentMethod = response.obj.source_data.type,
+                    // ApplicantId = 
+
+                };
+                _AdmissionRepo.AddPayment(payment);
+                return Ok(payment);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+
+
+        [HttpGet("{applicantId}/Payment")]
+        public async Task<IActionResult> MakePaymentAsync(Guid applicantId)
+        {
+
 
             var Auth = JsonConvert.SerializeObject(
                 new
@@ -288,10 +323,7 @@ namespace AdmissionSystem2.Controllers
 
             string AuthResult = response.Content.ReadAsStringAsync().Result;
 
-            //Console.WriteLine(AuthResult);
-
             dynamic marchentData = JObject.Parse(AuthResult);
-            //Console.WriteLine(marchentData.token);
 
             //==========================
             var OrderRegistration = JsonConvert.SerializeObject(
@@ -300,7 +332,7 @@ namespace AdmissionSystem2.Controllers
                     auth_token = marchentData.token,
                     delivery_needed = "false",
                     merchant_id = marchentData.profile.user.id,      // merchant_id obtained from step 1
-                    amount_cents = "100",               // The price of the order in cents.
+                    amount_cents = "20000",               // The price of the order in cents.
                     currency = "EGP"
                 }
                 );
@@ -315,117 +347,116 @@ namespace AdmissionSystem2.Controllers
 
 
             dynamic orderData = JObject.Parse(OrderResult);
-            //Console.WriteLine(orderData.token);
+
 
             //====================================================
-            // if(method == visa ){
-            var GetKey = JsonConvert.SerializeObject(
-                new
-                {
-                    auth_token = marchentData.token, // auth token obtained from step1
-                    delivery_needed = "false",
-                    order_id = orderData.id,
-                    expiration = 3600000000,
-                    integration_id = 267725,      // card integration_id will be provided upon signing up,
-                    billing_data = new
-                    {
-                        apartment = "2",
-                        email = "Mahmoud@gmail.com",
-                        floor = "8",
-                        first_name = "Mahmoud",
-                        street = "haram",
-                        building = "8028",
-                        phone_number = "+86(8)9135210487",
-                        shipping_method = "PKG",
-                        postal_code = "01898",
-                        city = "Jaskolskiburgh",
-                        country = "CR",
-                        last_name = "Ali",
-                        state = "Utah"
-                    },
-                    merchant_id = marchentData.profile.user.id,      // merchant_id obtained from step 1
-                    amount_cents = 20000,     //The price should be paid through this payment channel with this payment key token.
-                    currency = "EGP"
+            // if(method == card ){
+              var GetKey = JsonConvert.SerializeObject(
+                  new
+                  {
+                      auth_token = marchentData.token, // auth token obtained from step1
+                      delivery_needed = "false",
+                      order_id = orderData.id,
+                      expiration = 3600000000,
+                      integration_id = 267725,      // card integration_id will be provided upon signing up,
+                      billing_data = new
+                      {
+                          apartment = "2",
+                          email = "Mahmoud@gmail",
+                          floor = "8",
+                          first_name = "Mahmoud",
+                          street = "haram",
+                          building = "8028",
+                          phone_number = "+86(8)9135210487",
+                          shipping_method = "PKG",
+                          postal_code = "01898",
+                          city = "Jaskolskiburgh",
+                          country = "CR",
+                          last_name = "Ali",
+                          state = "Utah"
+                      },
+                      merchant_id = marchentData.profile.user.id,      // merchant_id obtained from step 1
+                      amount_cents = 20000,     //The price should be paid through this payment channel with this payment key token.
+                      currency = "EGP"
 
-                }
-                );
-            var reqContent3 = new StringContent(GetKey, Encoding.UTF8, "application/json");
-            url = "https://accept.paymob.com/api/acceptance/payment_keys";
+                  }
+                  );
+              var reqContent3 = new StringContent(GetKey, Encoding.UTF8, "application/json");
+              url = "https://accept.paymob.com/api/acceptance/payment_keys";
 
-            client = new HttpClient();
-            response = await client.PostAsync(url, reqContent3);
+              client = new HttpClient();
+              response = await client.PostAsync(url, reqContent3);
 
-            string lastOrderResult = response.Content.ReadAsStringAsync().Result;
-            //Console.WriteLine(lastOrderResult);
+              string lastOrderResult = response.Content.ReadAsStringAsync().Result;
 
-            dynamic lastOrderData = JObject.Parse(lastOrderResult);
-            //Console.WriteLine(lastOrderData.token);
-            //Console.WriteLine("--------------- url ------------");
+              dynamic lastOrderData = JObject.Parse(lastOrderResult);
 
-            //Console.WriteLine("https://accept.paymob.com/api/acceptance/iframes/241121?payment_token=" + lastOrderData.token);
+            //}
             //Redirect("https://accept.paymob.com/api/acceptance/iframes/241121?payment_token=" + lastOrderData.token);
 
 
-            /*if (method = aman)
+            ///if (method = aman)
+            //{
+          /*  var GetKioskKey = JsonConvert.SerializeObject(
+            new
             {
-                var GetKioskKey = JsonConvert.SerializeObject(
-                new
-                {
-                    auth_token = marchentData.token, // auth token obtained from step1
+                auth_token = marchentData.token, // auth token obtained from step1
                     delivery_needed = "false",
-                    order_id = orderData.id,
-                    expiration = 3600000000,
-                    integration_id = 270214,    // card integration_id will be provided upon signing up,
+                order_id = orderData.id,
+                expiration = 3600000000,
+                integration_id = 270214,    // card integration_id will be provided upon signing up,
                     billing_data = new
-                    {
-                        apartment = "2",
-                        email = "Mahmoud@gmail.com",
-                        floor = "8",
-                        first_name = "Mahmoud",
-                        street = "haram",
-                        building = "8028",
-                        phone_number = "+86(8)9135210487",
-                        shipping_method = "PKG",
-                        postal_code = "01898",
-                        city = "Jaskolskiburgh",
-                        country = "CR",
-                        last_name = "Ali",
-                        state = "Utah"
-                    },
-                    merchant_id = marchentData.profile.user.id,      // merchant_id obtained from step 1
+                {
+                    apartment = "2",
+                    email = "Mahmoud@gmail.com",
+                    floor = "8",
+                    first_name = "Mahmoud",
+                    street = "haram",
+                    building = "8028",
+                    phone_number = "+86(8)9135210487",
+                    shipping_method = "PKG",
+                    postal_code = "01898",
+                    city = "Jaskolskiburgh",
+                    country = "CR",
+                    last_name = "Ali",
+                    state = "Utah"
+                },
+                merchant_id = marchentData.profile.user.id,      // merchant_id obtained from step 1
                     amount_cents = 20000,        //The price should be paid through this payment channel with this payment key token.
                     currency = "EGP"
-                }
-                );
-                var reqResult4 = new StringContent(GetKey, Encoding.UTF8, "application/json");
-                url = "https://accept.paymob.com/api/acceptance/payment_keys";
-                client = new HttpClient();
-                response = await client.PostAsync(url, reqResult4);
-                string lastOrderResult = response.Content.ReadAsStringAsync().Result;
-                Console.WriteLine(lastOrderResult);
-                dynamic results3 = JObject.Parse(lastOrderResult);
-                var GetBillReference = JsonConvert.SerializeObject(
-                new
-                {
-                    source = new
-                    {
-                        identifier = "AGGREGATOR",
-                        subtype = "AGGREGATOR"
-                    },
-                    payment_token = results3.token
-                }
-                );
-                var reqContent = new StringContent(GetKey, Encoding.UTF8, "application/json");
-                url = "https://accept.paymob.com/api/acceptance/payments/pay";
-                client = new HttpClient();
-                response = await client.PostAsync(url, lastOrderData);
-                string lastOrderResult = response.Content.ReadAsStringAsync().Result;
-                Console.WriteLine(lastOrderResult);
-                dynamic results3 = JObject.Parse(lastOrderResult);
             }
-            */
+            );
+            var reqResult4 = new StringContent(GetKey, Encoding.UTF8, "application/json");
+            url = "https://accept.paymob.com/api/acceptance/payment_keys";
+            client = new HttpClient();
+            response = await client.PostAsync(url, reqResult4);
+            string lastOrderResult = response.Content.ReadAsStringAsync().Result;
+            Console.WriteLine(lastOrderResult);
+            dynamic results3 = JObject.Parse(lastOrderResult);
+            //=============================================================
+            var GetBillReference = JsonConvert.SerializeObject(
+            new
+            {
+                source = new
+                {
+                    identifier = "AGGREGATOR",
+                    subtype = "AGGREGATOR"
+                },
+                payment_token = results3.token
+            }
+            );
+            var reqContent = new StringContent(GetKey, Encoding.UTF8, "application/json");
+            url = "https://accept.paymob.com/api/acceptance/payments/pay";
+            client = new HttpClient();
+            response = await client.PostAsync(url, lastOrderData);
+            string lastOrderResult1 = response.Content.ReadAsStringAsync().Result;
+            //Console.WriteLine(lastOrderResult);
+            dynamic results4 = JObject.Parse(lastOrderResult1);
+           // Redirect("https://accept.paymob.com/api/acceptance/iframes/241121?payment_token=" + results3.token);
 
-           // string paymentUrl = ;
+
+            // string paymentUrl = ;
+            return Ok("https://accept.paymob.com/api/acceptance/iframes/241121?payment_token=" + results4.token);*/
 
             return Ok("https://accept.paymob.com/api/acceptance/iframes/241121?payment_token=" + lastOrderData.token);
         }
@@ -531,6 +562,7 @@ namespace AdmissionSystem2.Controllers
             Document DocumentToSave = new Document();
             if (file.Length > 0)
             {
+
                 using var ms = new MemoryStream();
                 file.CopyTo(ms);
                 DocumentToSave.Copy = ms.ToArray();
@@ -538,6 +570,30 @@ namespace AdmissionSystem2.Controllers
                       // fileBytes.CopyTo(DocumentToSave.Copy, 1);
                       Buffer.BlockCopy(fileBytes, 0, DocumentToSave.Copy, 0, fileBytes.Length);
                   }*/
+
+                string uploadsFolder = Path.Combine(_WebHostEnvironment.WebRootPath, "Images");
+                string extension = Path.GetExtension(DocumentForCreation.Copy.FileName);
+                Guid Id = Guid.NewGuid();
+                string uniqueFileName = Id.ToString() + "_" + DocumentForCreation.DocumentName + extension;
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    DocumentForCreation.Copy.CopyTo(fileStream);
+                }
+                string pathtodb = Path.Combine("Images", uniqueFileName);
+
+                var DocumentToSave = new Document();
+                DocumentToSave.Id = Id;
+                DocumentToSave.ApplicantId = ApplicantID;
+                DocumentToSave.DocumentName = DocumentForCreation.DocumentName;
+                DocumentToSave.DocumentType = "Image";
+                DocumentToSave.FilePath = pathtodb;
+                _AdmissionRepo.AddDocument(DocumentToSave);
+                if (!_AdmissionRepo.Save())
+                {
+                    throw new Exception("Failed To Add Document");
+                }
+
             }
 
             DocumentToSave.ApplicantId = ApplicantID;
@@ -612,10 +668,7 @@ namespace AdmissionSystem2.Controllers
             }
             //delete image from wwwroot/Images
 
-            var imagePath = Path.Combine(_WebHostEnvironment.WebRootPath, "Images", DocumentFromRepo.DocumentId + "_" + DocumentFromRepo.DocumentName);
-
-            var imagePath = Path.Combine(_WebHostEnvironment.WebRootPath, "Images", DocumentFromRepo.DocumentId+"_"+ DocumentFromRepo.DocumentName);
-
+            var imagePath = Path.Combine(_WebHostEnvironment.WebRootPath, "Images", DocumentFromRepo.Id + "_" + DocumentFromRepo.DocumentName);
             if (System.IO.File.Exists(imagePath))
                 System.IO.File.Delete(imagePath);
 
