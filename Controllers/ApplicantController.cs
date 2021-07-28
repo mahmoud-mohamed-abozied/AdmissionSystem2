@@ -33,8 +33,13 @@ namespace AdmissionSystem2.Controllers
         private IAdminRepo _AdminRepo;
         private readonly IMapper _Mapper;
         private readonly JWT _JWT;
+
         private IWebHostEnvironment _WebHostEnvironment;
         public ApplicantController(IAdmissionRepo AdmissionRepo, IWebHostEnvironment WebHostEnvironment,IAdminRepo AdminRepo, IMapper Mapper, IOptions<JWT> jwt)
+
+        private readonly IWebHostEnvironment _WebHostEnvironment;
+        public ApplicantController(IAdmissionRepo AdmissionRepo, IAdminRepo AdminRepo, IMapper Mapper, IOptions<JWT> jwt, IWebHostEnvironment WebHostEnvironment)
+
         {
             _AdmissionRepo = AdmissionRepo;
             _AdminRepo = AdminRepo;
@@ -608,7 +613,11 @@ namespace AdmissionSystem2.Controllers
                 return NotFound();
             }
             //delete image from wwwroot/Images
+
             var imagePath = Path.Combine(_WebHostEnvironment.WebRootPath, "Images", DocumentFromRepo.DocumentId + "_" + DocumentFromRepo.DocumentName);
+
+            var imagePath = Path.Combine(_WebHostEnvironment.WebRootPath, "Images", DocumentFromRepo.DocumentId+"_"+ DocumentFromRepo.DocumentName);
+
             if (System.IO.File.Exists(imagePath))
                 System.IO.File.Delete(imagePath);
 
