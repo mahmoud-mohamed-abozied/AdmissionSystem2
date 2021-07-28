@@ -33,11 +33,6 @@ namespace AdmissionSystem2.Controllers
         private IAdminRepo _AdminRepo;
         private readonly IMapper _Mapper;
         private readonly JWT _JWT;
-
-
-        private IWebHostEnvironment _WebHostEnvironment;
-       
-
         private readonly IWebHostEnvironment _WebHostEnvironment;
 
         public ApplicantController(IAdmissionRepo AdmissionRepo, IAdminRepo AdminRepo, IMapper Mapper, IOptions<JWT> jwt, IWebHostEnvironment WebHostEnvironment)
@@ -272,37 +267,6 @@ namespace AdmissionSystem2.Controllers
             }
         }
 
-        [HttpGet("ProcessingPayment")]
-        public async Task<IActionResult> ProcessingPaymentAsync([FromBody] dynamic response)
-        {
-            if (response == null)
-            {
-                return BadRequest();
-            }
-
-            if (response.obj.success == "true")
-            {
-                Payment payment = new Payment()
-                {
-                    //Id = response.obj.id,
-                    SchoolId = response.obj.order.merchant.id,
-                    Date = response.obj.order.created_at,
-                    Amount = response.obj.amount_cents / 100,
-                    PaymentMethod = response.obj.source_data.type,
-                    // ApplicantId = 
-
-                };
-                _AdmissionRepo.AddPayment(payment);
-                return Ok(payment);
-            }
-            else
-            {
-                return BadRequest();
-            }
-        }
-
-
-
         [HttpGet("{applicantId}/Payment")]
         public async Task<IActionResult> MakePaymentAsync(Guid applicantId)
         {
@@ -480,70 +444,70 @@ namespace AdmissionSystem2.Controllers
                 throw new Exception("failed to add a add Admission Details");
             }
             return Ok();
+        }
 
 
+       /* [HttpPost("{ApplicantId}/Document")]
+        public IActionResult AddDocument(Guid ApplicantID, [FromForm] DocumentForCreation DocumentForCreation)
+        {
+            if (DocumentForCreation == null)
+            {
+                return BadRequest();
+            }
+            if (_AdmissionRepo.GetApplicant(ApplicantID) == null)
+            {
+                return NotFound();
+            }
+            //    var DocumentToSave = _Mapper.Map<Document>(DocumentForCreation);
+
+            if (DocumentForCreation.Copy.Length > 0)
+            {
+                string uploadsFolder = Path.Combine(_WebHostEnvironment.WebRootPath, "Images");
+                string extension = Path.GetExtension(DocumentForCreation.Copy.FileName);
+                Guid Id = Guid.NewGuid();
+                string uniqueFileName = Id.ToString() + "_" + DocumentForCreation.DocumentName + extension;
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    DocumentForCreation.Copy.CopyTo(fileStream);
+                }
+                string pathtodb = Path.Combine("Images", uniqueFileName);
+
+                var DocumentToSave = new Document();
+                DocumentToSave.DocumentId = Id;
+                DocumentToSave.ApplicantId = ApplicantID;
+                DocumentToSave.DocumentName = DocumentForCreation.DocumentName;
+                DocumentToSave.DocumentType = "Image";
+                DocumentToSave.FilePath = pathtodb;
+                _AdmissionRepo.AddDocument(DocumentToSave);
+                if (!_AdmissionRepo.Save())
+                {
+                    throw new Exception("Failed To Add Document");
+                }
+            }
+            else
+            {
+                return BadRequest();
+            }
+
+            return Ok();
 
         }
 
-        /*
-                [HttpPost("{ApplicantId}/Document")]
-                public IActionResult AddDocument(Guid ApplicantID, [FromForm] DocumentForCreation DocumentForCreation)
-                {
-                    if (DocumentForCreation == null)
-                    {
-                        return BadRequest();
-                    }
-                    if (_AdmissionRepo.GetApplicant(ApplicantID) == null)
-                    {
-                        return NotFound();
-                    }
-                    //    var DocumentToSave = _Mapper.Map<Document>(DocumentForCreation);
+        [HttpPost("{ApplicantId}/UpdateDocument")]
+        public IActionResult UpdateDocument(Guid ApplicantID, [FromForm] IEnumerable<DocumentForCreation> DocumentForCreation)
+        {
+            foreach (var doc in DocumentForCreation)
+            {
+                AddDocument(ApplicantID, doc);
+                DeleteDocument(ApplicantID, doc.DocumentName);
+            }
+            return NoContent();
+        }*/
 
-                    if (DocumentForCreation.Copy.Length > 0)
-                    {
-                        string uploadsFolder = Path.Combine(_WebHostEnvironment.WebRootPath, "Images");
-                        string extension = Path.GetExtension(DocumentForCreation.Copy.FileName);
-                        Guid Id = Guid.NewGuid();
-                        string uniqueFileName = Id.ToString() + "_" + DocumentForCreation.DocumentName + extension;
-                        string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                        using (var fileStream = new FileStream(filePath, FileMode.Create))
-                        {
-                            DocumentForCreation.Copy.CopyTo(fileStream);
-                        }
-                        string pathtodb = Path.Combine("Images", uniqueFileName);
 
-                        var DocumentToSave = new Document();
-                        DocumentToSave.DocumentId = Id;
-                        DocumentToSave.ApplicantId = ApplicantID;
-                        DocumentToSave.DocumentName = DocumentForCreation.DocumentName;
-                        DocumentToSave.DocumentType = "Image";
-                        DocumentToSave.FilePath = pathtodb;
-                        _AdmissionRepo.AddDocument(DocumentToSave);
-                        if (!_AdmissionRepo.Save())
-                        {
-                            throw new Exception("Failed To Add Document");
-                        }
-                    }
-                    else
-                    {
-                        return BadRequest();
-                    }
 
-                    return Ok();
 
-                }
-
-                [HttpPost("{ApplicantId}/UpdateDocument")]
-                public IActionResult UpdateDocument(Guid ApplicantID, [FromForm] IEnumerable<DocumentForCreation> DocumentForCreation)
-                {
-                    foreach (var doc in DocumentForCreation)
-                    {
-                        AddDocument(ApplicantID, doc);
-                        DeleteDocument(ApplicantID, doc.DocumentName);
-                    }
-                    return NoContent();
-                }
-  */      
         [HttpPost("{ApplicantId}/Document")]
         public IActionResult AddDocument(Guid ApplicantID, [FromForm] DocumentForCreation DocumentForCreation)
         {
@@ -562,7 +526,6 @@ namespace AdmissionSystem2.Controllers
             Document DocumentToSave = new Document();
             if (file.Length > 0)
             {
-
                 using var ms = new MemoryStream();
                 file.CopyTo(ms);
                 DocumentToSave.Copy = ms.ToArray();
@@ -570,30 +533,6 @@ namespace AdmissionSystem2.Controllers
                       // fileBytes.CopyTo(DocumentToSave.Copy, 1);
                       Buffer.BlockCopy(fileBytes, 0, DocumentToSave.Copy, 0, fileBytes.Length);
                   }*/
-
-                string uploadsFolder = Path.Combine(_WebHostEnvironment.WebRootPath, "Images");
-                string extension = Path.GetExtension(DocumentForCreation.Copy.FileName);
-                Guid Id = Guid.NewGuid();
-                string uniqueFileName = Id.ToString() + "_" + DocumentForCreation.DocumentName + extension;
-                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    DocumentForCreation.Copy.CopyTo(fileStream);
-                }
-                string pathtodb = Path.Combine("Images", uniqueFileName);
-
-                var DocumentToSave = new Document();
-                DocumentToSave.Id = Id;
-                DocumentToSave.ApplicantId = ApplicantID;
-                DocumentToSave.DocumentName = DocumentForCreation.DocumentName;
-                DocumentToSave.DocumentType = "Image";
-                DocumentToSave.FilePath = pathtodb;
-                _AdmissionRepo.AddDocument(DocumentToSave);
-                if (!_AdmissionRepo.Save())
-                {
-                    throw new Exception("Failed To Add Document");
-                }
-
             }
 
             DocumentToSave.ApplicantId = ApplicantID;
@@ -653,37 +592,37 @@ namespace AdmissionSystem2.Controllers
         }
 
 
-      /*  [HttpDelete("{applicantId}/Document/{id}")]
-        public IActionResult DeleteDocument(Guid applicantId, String DocumentName)
-        {
-            if (_AdmissionRepo.GetApplicant(applicantId) == null)
-            {
-                return NotFound();
-            }
+        /*  [HttpDelete("{applicantId}/Document/{id}")]
+          public IActionResult DeleteDocument(Guid applicantId, String DocumentName)
+          {
+              if (_AdmissionRepo.GetApplicant(applicantId) == null)
+              {
+                  return NotFound();
+              }
 
-            var DocumentFromRepo = _AdminRepo.GetDocument(applicantId, DocumentName);
-            if (DocumentFromRepo == null)
-            {
-                return NotFound();
-            }
-            //delete image from wwwroot/Images
+              var DocumentFromRepo = _AdminRepo.GetDocument(applicantId, DocumentName);
+              if (DocumentFromRepo == null)
+              {
+                  return NotFound();
+              }
+              //delete image from wwwroot/Images
 
-            var imagePath = Path.Combine(_WebHostEnvironment.WebRootPath, "Images", DocumentFromRepo.Id + "_" + DocumentFromRepo.DocumentName);
-            if (System.IO.File.Exists(imagePath))
-                System.IO.File.Delete(imagePath);
+              var imagePath = Path.Combine(_WebHostEnvironment.WebRootPath, "Images", DocumentFromRepo.Id + "_" + DocumentFromRepo.DocumentName);
+              if (System.IO.File.Exists(imagePath))
+                  System.IO.File.Delete(imagePath);
 
-            _AdmissionRepo.DeleteDocument(DocumentFromRepo);
+              _AdmissionRepo.DeleteDocument(DocumentFromRepo);
 
-            if (!_AdmissionRepo.Save())
-            {
-                throw new Exception("failed to delete a Document");
-            }
+              if (!_AdmissionRepo.Save())
+              {
+                  throw new Exception("failed to delete a Document");
+              }
 
-            return NoContent();
+              return NoContent();
 
-        }
+          }
 
-        */
+          */
         [HttpDelete("{applicantId}/siblings/{id}")]
         public IActionResult DeleteSibling(Guid applicantId, Guid id)
         {
