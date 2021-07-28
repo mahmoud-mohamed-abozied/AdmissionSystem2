@@ -51,6 +51,12 @@ namespace AdmissionSystem2.Services
         void AddDocumentCriteria(DocumentCriteria documentCriterias);
         IEnumerable<DocumentCriteria> GetDocumentCriterias();
         void DeleteDocumentCriteria();
+        bool CheakPeriodOpened();
+        List <DashBoard> StudentStatus();
+        List<DashBoard> PaymentStatus();
+        List<DashBoard> PlaceOfBirthStatus();
+        List<DashBoard> NewStudentStatus();
+        List<DashBoard> HasSiblingsStatus();
 
 
     }

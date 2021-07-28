@@ -11,6 +11,6 @@ namespace AdmissionSystem2.Models
         public Guid Id { get; set; }
         public string DocumentType { get; set; }
         public string DocumentName { get; set; }
-        public string FilePath { get; set; }
+        public string Copy { get; set; }
     }
 }

@@ -8,9 +8,9 @@ namespace AdmissionSystem2.Models
 {
     public class DocumentForUpdate
     {
-        public int Id { get; set; }
+        public Guid DocumentId { get; set; }
         public string DocumentType { get; set; }
         public string DocumentName { get; set; }
-        public string Copy { get; set; }
+        public IFormFile Copy { get; set; }
     }
 }

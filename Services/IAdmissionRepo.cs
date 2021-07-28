@@ -36,6 +36,7 @@ namespace AdmissionSystem2.Services
         void UpdateAdmissionDetails(AdmissionDetails admissionDetails);
         bool ApplicantExist(Guid _ApplicantId);
         bool Save();
+        
 
 
 

@@ -60,6 +60,9 @@ namespace AdmissionSystem2.Migrations
                     b.Property<string>("Grade")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("NewStudent")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Section")
                         .HasColumnType("nvarchar(max)");
 
@@ -131,6 +134,9 @@ namespace AdmissionSystem2.Migrations
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PaymentStatus")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PlaceOfBirth")
                         .HasColumnType("nvarchar(max)");
 
@@ -163,13 +169,13 @@ namespace AdmissionSystem2.Migrations
                     b.Property<Guid>("ApplicantId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<byte[]>("Copy")
+                        .HasColumnType("varbinary(max)");
+
                     b.Property<string>("DocumentName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DocumentType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FilePath")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("DocumentId");

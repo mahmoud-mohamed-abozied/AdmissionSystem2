@@ -12,5 +12,7 @@ namespace AdmissionSystem2.Models
         public string Stage { get; set; }
         public string Grade { get; set; }
         public string AcademicYear { get; set; }
+        public string NewStudent { get; set; }
+
     }
 }
