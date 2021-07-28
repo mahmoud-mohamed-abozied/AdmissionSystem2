@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AdmissionSystem2.Migrations
 {
     [DbContext(typeof(AdmissionSystemDbContext))]
-    [Migration("20210727193329_AddPAymentStatus")]
-    partial class AddPAymentStatus
+    [Migration("20210728020545_Data")]
+    partial class Data
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -60,6 +60,9 @@ namespace AdmissionSystem2.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Grade")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NewStudent")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Section")
@@ -168,13 +171,13 @@ namespace AdmissionSystem2.Migrations
                     b.Property<Guid>("ApplicantId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<byte[]>("Copy")
+                        .HasColumnType("varbinary(max)");
+
                     b.Property<string>("DocumentName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DocumentType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FilePath")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("DocumentId");

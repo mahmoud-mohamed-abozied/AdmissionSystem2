@@ -512,7 +512,7 @@ namespace AdmissionSystem2.Controllers
                     }
                     return NoContent();
                 }
-        */
+  */      
         [HttpPost("{ApplicantId}/Document")]
         public IActionResult AddDocument(Guid ApplicantID, [FromForm] DocumentForCreation DocumentForCreation)
         {

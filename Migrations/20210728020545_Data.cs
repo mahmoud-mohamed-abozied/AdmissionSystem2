@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace AdmissionSystem2.Migrations
 {
-    public partial class NewDatabase : Migration
+    public partial class Data : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -58,7 +58,8 @@ namespace AdmissionSystem2.Migrations
                     SpokenLanguage = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AdmissionDate = table.Column<DateTime>(type: "Date", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PaymentStatus = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -127,6 +128,7 @@ namespace AdmissionSystem2.Migrations
                     Section = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Stage = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Grade = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NewStudent = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AcademicYear = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ApplicantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
@@ -148,7 +150,7 @@ namespace AdmissionSystem2.Migrations
                     DocumentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     DocumentType = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DocumentName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FilePath = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Copy = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
                     ApplicantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
