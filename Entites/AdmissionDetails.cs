@@ -15,6 +15,7 @@ namespace AdmissionSystem2.Entites
         public string Section { get; set; }
         public string Stage { get; set; }
         public string Grade { get; set; }
+        public string NewStudent { get; set; }
         public string AcademicYear { get; set; }
         [ForeignKey("ApplicantId")]
         public Applicant Applicant { get; set; }

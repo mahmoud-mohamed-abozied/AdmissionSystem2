@@ -38,6 +38,7 @@ namespace AdmissionSystem2.Entites
         public MedicalHistory MedicalHistory { set; get; }
         public Payment Payment { set; get; }
         public FamilyStatus Family_Status { get; set; }
+        public string PaymentStatus { get; set; }
 
     }
 }

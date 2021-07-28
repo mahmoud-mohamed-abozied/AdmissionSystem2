@@ -48,6 +48,42 @@ namespace AdmissionSystem2.Controllers
         {
             return View();
         }
+        [HttpGet("StudentStatus")]
+        public IActionResult GetStudentStatus()
+        {
+            var status=_AdmissionRepo.StudentStatus();
+            return Ok(status);
+        }
+        [HttpGet("CheakPeriodOpened")]
+        public IActionResult CheaPeriodOpened()
+        {
+            var cheak=_AdmissionRepo.CheakPeriodOpened();
+            return Ok(cheak);
+        }
+        [HttpGet("PaymentStatus")]
+        public IActionResult GetPaymentStatus()
+        {
+            var status = _AdmissionRepo.PaymentStatus();
+            return Ok(status);
+        }
+        [HttpGet("PlaceOfBirthStatus")]
+        public IActionResult GetDateOfBirthStatus()
+        {
+            var status = _AdmissionRepo.PlaceOfBirthStatus();
+            return Ok(status);
+        }
+        [HttpGet("NewStudentStatus")]
+        public IActionResult GetNewStudentStatus()
+        {
+            var status = _AdmissionRepo.NewStudentStatus();
+            return Ok(status);
+        }
+        [HttpGet("HasSiblingsStatus")]
+        public IActionResult HasSiblingsStatus()
+        {
+            var status = _AdmissionRepo.HasSiblingsStatus();
+            return Ok(status);
+        }
         [HttpGet("{ApplicantId}/ParentInfo/{Gender}")]
         public IActionResult GetParentInfo(Guid ApplicantId, string Gender)
         {
@@ -89,21 +125,11 @@ namespace AdmissionSystem2.Controllers
                 return NotFound();
             }
 
-            var Doc = new List<DocumentDto>();
-            Doc.Add(new DocumentDto()
-            {
-                DocumentId = DocumentFromRepo.DocumentId,
-                DocumentType = DocumentFromRepo.DocumentType,
-                DocumentName = DocumentFromRepo.DocumentName,
-                FilePath = DocumentFromRepo.FilePath
-            });
-            //  string imageBase64Data = Convert.ToBase64String(DocumentFromRepo.Copy);
-            // string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
-            return Ok(Doc);
 
-            /* string imageBase64Data = Convert.ToBase64String(DocumentFromRepo.Copy);
-             string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
-             return Ok(imageDataURL);*/
+            string imageBase64Data = Convert.ToBase64String(DocumentFromRepo.Copy);
+            string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+
+            return Ok(imageDataURL);
 
         }
         [HttpGet("{applicantId}/Documents")]
@@ -118,20 +144,19 @@ namespace AdmissionSystem2.Controllers
             var Doc = new List<DocumentDto>();
             foreach (var file in DocumentFromRepo)
             {
-                //  string imageBase64Data = Convert.ToBase64String(file.Copy);
-                // string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+                string imageBase64Data = Convert.ToBase64String(file.Copy);
+                string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
                 Doc.Add(new DocumentDto()
                 {
                     DocumentId = file.DocumentId,
                     DocumentType = file.DocumentType,
                     DocumentName = file.DocumentName,
-                    FilePath = file.FilePath
+                    Copy = imageDataURL
                 });
 
             }
             return Ok(Doc);
         }
-
 
 
         [HttpGet("{ApplicantId}")]
@@ -378,17 +403,17 @@ namespace AdmissionSystem2.Controllers
             }
             if (!_AdmissionRepo.CheakInterviewCriteria(InterviewCriteriaForCreation))
             {
-                return BadRequest("Not Fit Criteria");
+                return BadRequest();
             }
 
             var InterviewCriteriaToAdd = _Mapper.Map<InterviewCriteria>(InterviewCriteriaForCreation);
             _AdmissionRepo.AddInterviewCritera(InterviewCriteriaToAdd);
             if (!_AdmissionRepo.Save())
             {
-                throw new Exception("Failed to Add Interview Criteria");
+                throw new Exception();
             }
             _AdmissionRepo.AddInterviewDatesForApplicant(InterviewCriteriaForCreation);
-            return Ok("Successful Add For Interview Criteria");
+            return Ok();
         }
         /*   [HttpGet("{ApplicantId}/GetApplication")]
            public IActionResult GetApplication(int ApplicantId)

@@ -405,15 +405,26 @@ namespace AdmissionSystem2.Services
         }
         public bool ClearAdmissionPeriod()
         {
-            var CurrentDate = DateTime.Now.ToString("yyyy-MM-dd");
+            /* var CurrentDate = DateTime.Now.ToString("yyyy-MM-dd");
+             AdmissionPeriod AdmissionPeriod = _AdmissionSystemDbContext.AdmissionPeriod.First();
+             if (AdmissionPeriod.EndDate.Equals(CurrentDate))
+             {
+                 _AdmissionSystemDbContext.AdmissionPeriod.Remove(AdmissionPeriod);
+                 return true;
+             }*/
             AdmissionPeriod AdmissionPeriod = _AdmissionSystemDbContext.AdmissionPeriod.First();
-            if (AdmissionPeriod.EndDate.Equals(CurrentDate))
+            DateTime startTime = DateTime.Now;
+            string EndDate = GetAdmissionPeriod().EndDate + " " + GetAdmissionPeriod().EndTime;
+            DateTime EDate = DateTime.ParseExact(EndDate, "yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture);
+            TimeSpan Endspan = EDate.Subtract(startTime);
+            if (Endspan.Days <= -1)
             {
                 _AdmissionSystemDbContext.AdmissionPeriod.Remove(AdmissionPeriod);
                 return true;
             }
             return false;
         }
+       
         public bool AddAdmissionPeriod(AdmissionPeriod AdmissionPeriod)
         {
             if (!CheakAdmissionPeriod())
@@ -421,6 +432,13 @@ namespace AdmissionSystem2.Services
                 _AdmissionSystemDbContext.AdmissionPeriod.Add(AdmissionPeriod);
                 return false;
             }
+            if (ClearAdmissionPeriod())
+            {
+                return false;
+
+            }
+            
+
             return CheakAdmissionPeriod();
         }
         public AdmissionPeriod GetAdmissionPeriod()
@@ -577,6 +595,213 @@ namespace AdmissionSystem2.Services
             {
                 _AdmissionSystemDbContext.DocumentCriteria.Remove(_document);
             }
+        }
+        public bool CheakPeriodOpened()
+        {
+            if (!_AdmissionSystemDbContext.AdmissionPeriod.Any())
+            {
+                return false;
+            }
+            DateTime startTime = DateTime.Now;
+            string Date = GetAdmissionPeriod().StartDate + " " + GetAdmissionPeriod().StartTime;
+            DateTime oDate = DateTime.ParseExact(Date, "yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture);
+            TimeSpan span = startTime.Subtract(oDate);
+            /*String yourString = string.Format("{0} days, {1} hours",
+                span.Days, span.Hours);*/
+            if ((span.Days ^ span.Hours ^ span.Minutes)  <= -1)
+            {
+                return false;
+            }
+            string EndDate = GetAdmissionPeriod().EndDate + " " + GetAdmissionPeriod().EndTime;
+            DateTime EDate = DateTime.ParseExact(EndDate, "yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture);
+            TimeSpan Endspan = EDate.Subtract(startTime);
+            if (Endspan.Days <= -1)
+            {
+                return false;
+            }
+            if ((Endspan.Days <=-1 && Endspan.Hours <= -1))
+            {
+                return false;
+            }
+            return true;
+
+
+        }
+        public List<DashBoard> StudentStatus()
+        {
+            var UniqueList=new List<string>();
+            //DashBoard dashBoard1 = new DashBoard();
+            List<DashBoard> Dashboards = new List<DashBoard>();
+            var ApplicantCount = _AdmissionSystemDbContext.Applicant.Count();
+            var Applicants = _AdmissionSystemDbContext.Applicant.ToList();
+            for(int i = 0; i < ApplicantCount; i++)
+            {
+                if (!UniqueList.Contains(Applicants.ElementAt(i).Status))
+                {
+                    UniqueList.Add(Applicants.ElementAt(i).Status);
+                }
+            }
+            var UniqueListCount = new List<int>();
+            for(int i = 0; i < UniqueList.Count; i++)
+            {
+                var count = _AdmissionSystemDbContext.Applicant.Where(a => a.Status == UniqueList.ElementAt(i)).Count();
+                UniqueListCount.Add(count);
+            }
+            for(int i = 0; i < UniqueList.Count; i++)
+            {
+                DashBoard dashBoard1 = new DashBoard();
+                dashBoard1.name = UniqueList.ElementAt(i);
+                dashBoard1.value = UniqueListCount.ElementAt(i);
+                Dashboards.Add(dashBoard1);
+
+            }
+            return Dashboards;
+        }
+        public List<DashBoard> PaymentStatus()
+        {
+            var UniqueList = new List<string>();
+            //DashBoard dashBoard1 = new DashBoard();
+            List<DashBoard> Dashboards = new List<DashBoard>();
+            var ApplicantCount = _AdmissionSystemDbContext.Applicant.Count();
+            var Applicants = _AdmissionSystemDbContext.Applicant.ToList();
+            for (int i = 0; i < ApplicantCount; i++)
+            {
+                if (!UniqueList.Contains(Applicants.ElementAt(i).PaymentStatus))
+                {
+                    UniqueList.Add(Applicants.ElementAt(i).PaymentStatus);
+                }
+            }
+            var UniqueListCount = new List<int>();
+            for (int i = 0; i < UniqueList.Count; i++)
+            {
+                var count = _AdmissionSystemDbContext.Applicant.Where(a => a.PaymentStatus == UniqueList.ElementAt(i)).Count();
+                UniqueListCount.Add(count);
+            }
+            for (int i = 0; i < UniqueList.Count; i++)
+            {
+                DashBoard dashBoard1 = new DashBoard();
+                dashBoard1.name = UniqueList.ElementAt(i);
+                dashBoard1.value = UniqueListCount.ElementAt(i);
+                Dashboards.Add(dashBoard1);
+
+            }
+            return Dashboards;
+        }
+        public List<DashBoard> PlaceOfBirthStatus()
+        {
+            var UniqueList = new List<string>();
+            //DashBoard dashBoard1 = new DashBoard();
+            List<DashBoard> Dashboards = new List<DashBoard>();
+            var ApplicantCount = _AdmissionSystemDbContext.Applicant.Count();
+            var Applicants = _AdmissionSystemDbContext.Applicant.ToList();
+            for (int i = 0; i < ApplicantCount; i++)
+            {
+                if (!UniqueList.Contains(Applicants.ElementAt(i).PlaceOfBirth))
+                {
+                    UniqueList.Add(Applicants.ElementAt(i).PlaceOfBirth);
+                }
+            }
+            var UniqueListCount = new List<int>();
+            for (int i = 0; i < UniqueList.Count; i++)
+            {
+                var count = _AdmissionSystemDbContext.Applicant.Where(a => a.PlaceOfBirth== UniqueList.ElementAt(i)).Count();
+                UniqueListCount.Add(count);
+            }
+            for (int i = 0; i < UniqueList.Count; i++)
+            {
+                DashBoard dashBoard1 = new DashBoard();
+                dashBoard1.name = UniqueList.ElementAt(i);
+                dashBoard1.value = UniqueListCount.ElementAt(i);
+                Dashboards.Add(dashBoard1);
+
+            }
+            return Dashboards;
+        }
+        public List<DashBoard> NewStudentStatus()
+        {
+            var UniqueList = new List<string>();
+            //DashBoard dashBoard1 = new DashBoard();
+            List<DashBoard> Dashboards = new List<DashBoard>();
+            var ApplicantCount = _AdmissionSystemDbContext.AdmissionDetails.Count();
+            var Admission = _AdmissionSystemDbContext.AdmissionDetails.ToList();
+            for (int i = 0; i < ApplicantCount; i++)
+            {
+                if (!UniqueList.Contains(Admission.ElementAt(i).NewStudent))
+                {
+                    UniqueList.Add(Admission.ElementAt(i).NewStudent);
+                }
+            }
+            var UniqueListCount = new List<int>();
+            for (int i = 0; i < UniqueList.Count; i++)
+            {
+                var count = _AdmissionSystemDbContext.AdmissionDetails.Where(a => a.NewStudent == UniqueList.ElementAt(i)).Count();
+                UniqueListCount.Add(count);
+            }
+            for (int i = 0; i < UniqueList.Count; i++)
+            {
+                DashBoard dashBoard1 = new DashBoard();
+                dashBoard1.name = UniqueList.ElementAt(i);
+                dashBoard1.value = UniqueListCount.ElementAt(i);
+                Dashboards.Add(dashBoard1);
+
+            }
+            return Dashboards;
+        }
+        public List<DashBoard> HasSiblingsStatus()
+        {
+            var UniqueList = new List<string>();
+            //DashBoard dashBoard1 = new DashBoard();
+            List<DashBoard> Dashboards = new List<DashBoard>();
+            var ApplicantCount = _AdmissionSystemDbContext.Applicant.Count();
+            var Applicants = _AdmissionSystemDbContext.Applicant.ToList();
+            var Sibligs = _AdmissionSystemDbContext.Sibling.ToList();
+            List<string> ApplicantSiblingsCount = new List<string>();
+            for(int i=0; i < ApplicantCount; i++)
+            {
+                var count = _AdmissionSystemDbContext.Sibling.Where(a => a.ApplicantId == Applicants.ElementAt(i).ApplicantId).Count();
+                ApplicantSiblingsCount.Add(count.ToString());
+            }
+            List<string> SiblingsValue = new List<string>();
+            int zero=0  ,one=0 , two=0 , other=0 ;
+            for(int i = 0; i < ApplicantSiblingsCount.Count; i++)
+            {
+                if (ApplicantSiblingsCount.ElementAt(i) == "0")
+                {
+                    zero++;
+                }
+                else if (ApplicantSiblingsCount.ElementAt(i) == "1")
+                {
+                    one++;
+                }
+                else if (ApplicantSiblingsCount.ElementAt(i) == "2")
+                {
+                    two++;
+                }
+                else
+                {
+                    other++;
+                }
+
+
+            }
+            DashBoard Zero = new DashBoard();
+            DashBoard One = new DashBoard();
+            DashBoard Two = new DashBoard();
+            DashBoard Other = new DashBoard();
+            Zero.name = "0";
+            Zero.value = zero;
+            One.name = "1";
+            One.value = one;
+            Two.name = "2";
+            Two.value = two;
+            Other.name = "Other";
+            Other.value = other;
+            Dashboards.Add(Zero);
+            Dashboards.Add(One);
+            Dashboards.Add(Two);
+            Dashboards.Add(Other);
+
+            return Dashboards;
         }
     }
 }
